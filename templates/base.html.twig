@@ -11,8 +11,8 @@
 
         <title>{% block main_title %}{% endblock %} ⋅ ZéPS</title>
 
-        <link href="{{ app.request.basePath }}/css/bootstrap.min.css" rel="stylesheet">
-        <link href="{{ app.request.basePath }}/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+        <link href="{{ app.request.basePath }}/css/bootstrap/bootstrap.min.css" rel="stylesheet">
+        <link href="{{ app.request.basePath }}/css/workarounds/ie10-viewport-bug-workaround.css" rel="stylesheet">
         <link href="{{ app.request.basePath }}/css/site.css" rel="stylesheet">
 
         {% block stylesheets %}{% endblock %}
@@ -46,9 +46,9 @@
 
 
         <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-        <script src="{{ app.request.basePath }}/js/jquery.min.js"></script>
-        <script src="{{ app.request.basePath }}/js/bootstrap.min.js"></script>
-        <script src="{{ app.request.basePath }}/js/ie10-viewport-bug-workaround.js"></script>
+        <script src="{{ app.request.basePath }}/js/jquery/jquery.min.js"></script>
+        <script src="{{ app.request.basePath }}/js/bootstrap/bootstrap.min.js"></script>
+        <script src="{{ app.request.basePath }}/js/workarounds/ie10-viewport-bug-workaround.js"></script>
         {% block javascripts %}{% endblock %}
     </body>
 </html>
