@@ -17,17 +17,7 @@
 {% endblock %}
 
 {% block stylesheets %}
-    <link href="{{ app.request.basePath }}/js/bootstrap-select/bootstrap-select.min.css" rel="stylesheet" />
-
-    <style type="text/css">
-        .route_main_consign {
-            font-size: 1.3em;
-        }
-
-        .route_intermediate_stations {
-            font-style: italic;
-        }
-    </style>
+    <link href="{{ app.request.basePath }}/css/bootstrap-select/bootstrap-select.min.css" rel="stylesheet" />
 {% endblock %}
 
 {% block javascripts %}
@@ -36,7 +26,6 @@
 {% endblock %}
 
 {% block content %}
-
     {% if error == 'unreachable' %}
         <div class="alert alert-danger">
             <strong>L'API de recherche est injoignable.</strong>
@@ -66,7 +55,7 @@
                         <div class="form-group" id="route-form-part">
                             <label class="sr-only" for="from">Sélectionnez les points de départ et d'arrivée</label>
                             <div class="input-group">
-                                <select class="form-control" id="from" name="from">
+                                <select class="form-control selectpicker-disabled station-selector" id="from" name="from" data-live-search="true">
                                     <option value="" disabled{% if not submitted %} selected{% endif %}>Point de départ
                                     <optgroup label="Stations principales">
                                         {% for station in stations.main_stations %}
@@ -79,8 +68,8 @@
                                         {% endfor %}
                                     </optgroup>
                                 </select>
-                                <div class="input-group-addon"><span class="glyphicon glyphicon-chevron-right"></span></div>
-                                <select class="form-control" id="to" name="to">
+                                <div class="input-group-addon station-selector-between"><span class="glyphicon glyphicon-chevron-right"></span></div>
+                                <select class="form-control selectpicker-disabled station-selector" id="to" name="to" data-live-search="true">
                                     <option value="" disabled{% if not submitted %} selected{% endif %}>Destination
                                     <optgroup label="Stations principales">
                                         {% for station in stations.main_stations %}

@@ -119,3 +119,20 @@ footer.footer, footer.footer a {
 .route_intermediate_stations {
     font-style: italic;
 }
+
+
+/* Bootstrap select */
+
+/*
+.bootstrap-select {
+    width: 100% !important;
+}
+
+.station-selector-between {
+    width: 40px !important;
+}
+
+.station-selector {
+    width: 100% !important;
+}
+*/
