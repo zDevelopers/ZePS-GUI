@@ -114,14 +114,14 @@
                     <p class="lead">{{ travel_time }}</p>
 
                     <h4 class="muted small-title">Distance totale</h4>
-                    <p class="lead">{{ distance }} bloc{% if distance > 1 %}s{% endif %}</p>
+                    <p class="lead">{{ distance|number_format }} bloc{% if distance > 1 %}s{% endif %}</p>
                 </div>
                 <div class="col-xs-12 col-md-6">
                     <h4 class="muted small-title">Nombre d'étapes</h4>
-                    <p class="lead">{{ changes_count }}</p>
+                    <p class="lead">{{ changes_count|number_format }}</p>
 
                     <h4 class="muted small-title">Nombre de stations</h4>
-                    <p class="lead">{{ stations_count }}</p>
+                    <p class="lead">{{ stations_count|number_format }}</p>
                 </div>
             </div>
 
@@ -137,7 +137,7 @@
                         <tr>
                             <td>
                                 <div class="pull-right">
-                                    {{ step.length }} bloc{% if step.length > 1 %}s{% endif %}
+                                    {{ step.length|number_format }} bloc{% if step.length > 1 %}s{% endif %}
                                 </div>
 
                                 <p class="route_main_consign">À <strong>{{ step.from.full_name }}</strong>, prenez la direction <strong>{{ attribute(directions_translations, step.direction) }}</strong>.</p>

@@ -15,6 +15,10 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 
 $app['twig']->getExtension('core')->setTimezone('Europe/Paris');
 
+$app['twig']->addFilter(new Twig_SimpleFilter('number_format', function ($number, $decimals = 0, $decimal_point = ',', $thousands_separator = '&#8239;') {
+    return number_format($number, $decimals, $decimal_point, $thousands_separator);
+}, array('is_safe' => array('html'))));
+
 
 $app
     ->get('/', 'ZePS\\Controllers\\RouteSearchController::homepage')
