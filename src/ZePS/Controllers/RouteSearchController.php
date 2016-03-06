@@ -85,7 +85,7 @@ class RouteSearchController
 
         $stations = RoutesManager::get_netherrail_stations($debug);
 
-        if ($stations == null)
+        if (empty($stations['stations']))
         {
             $valid = false;
             $error = 'unreachable';
@@ -168,7 +168,8 @@ class RouteSearchController
 
                         $step_length = isset($step->path_length) ? $step->path_length : 0;
 
-                        $current_route_part['steps'][] = $step;
+                        if ($step->is_intersection)
+                            $current_route_part['steps'][] = $step;
 
                         if (isset($current_route_part['length']))
                             $current_route_part['length'] += $step_length;
