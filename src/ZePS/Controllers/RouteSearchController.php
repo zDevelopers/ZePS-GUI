@@ -26,7 +26,7 @@ class RouteSearchController
                 'from'    => htmlspecialchars(trim($app['request']->query->get('from'))),
                 'to'      => htmlspecialchars(trim($app['request']->query->get('to'))),
                 'options' => $options
-            )));
+            )), 301);
         }
 
         $stations = RoutesManager::get_netherrail_stations();
@@ -100,7 +100,7 @@ class RouteSearchController
                     'from' => $from_is_id ? $stations['stations'][$from]->code_name : $from,
                     'to' => $to_is_id ? $stations['stations'][$to]->code_name : $to,
                     'options' => $options
-                )));
+                )), 301);
             }
 
             $options_split = explode('-', $options);
