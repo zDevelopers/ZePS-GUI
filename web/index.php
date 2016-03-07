@@ -8,6 +8,12 @@ $app = new Silex\Application();
 
 $app['debug'] = true;
 
+$app['config'] = array(
+    'dynmap_root'     => 'https://map.zcraft.fr/',
+    'nether_map'      => 'V5_nether',
+    'nether_map_type' => 'flat'
+);
+
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/../templates',

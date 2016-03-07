@@ -120,6 +120,13 @@ footer.footer, footer.footer a {
     font-style: italic;
 }
 
+#route_map {
+    width: 100%;
+    height: 600px;
+
+    margin: 0;
+}
+
 
 /* Bootstrap select */
 
