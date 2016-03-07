@@ -180,8 +180,13 @@ class RouteSearchController
                     }
 
                     // Last route inserted (duplicated code :c )
-                    $current_route_part['to'] = $current_route_part['steps'][count($current_route_part['steps']) - 1];
-                    $route[] = $current_route_part;
+                    if ($current_route_part != null )
+                    {
+                        if (!empty($current_route_part['steps']))
+                            $current_route_part['to'] = $current_route_part['steps'][count($current_route_part['steps']) - 1];
+
+                        $route[] = $current_route_part;
+                    }
 
                     $stations_count = count($raw_route->stations);
                     $changes_count = count($route);
