@@ -96,7 +96,7 @@ class RouteSearchController
             $to_is_id = preg_match('/^\d+$/', $to);
 
             if ($from_is_id || $to_is_id) {
-                return $app->redirect($app['url_generator']->generate('tools.minecraft.zcraft.netherrail.results', array(
+                return $app->redirect($app['url_generator']->generate('zeps.search_results', array(
                     'from' => $from_is_id ? $stations['stations'][$from]->code_name : $from,
                     'to' => $to_is_id ? $stations['stations'][$to]->code_name : $to,
                     'options' => $options
