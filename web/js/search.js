@@ -14,7 +14,8 @@ $(function ()
     var $geolocation_modal_title         = $('#geolocation-modal-title');
     var $geolocation_modal_button        = $('#geolocation-modal-button');
 
-    var $from_select = $('#from');
+    var $from_select          = $('#from');
+    var $from_overworld_field = $('#from_overworld');
 
 
     // Added in JavaScript so the users without are not disturbed.
@@ -25,6 +26,8 @@ $(function ()
     $from_select.on('change', function (e) {
         if (this.value == "")
             open_geolocation_dialog();
+        else
+            $from_overworld_field.val('false');
     });
 
     $geolocation_modal_button.on('click', retrieve_nearest_station);
@@ -87,12 +90,18 @@ $(function ()
 
         $geolocation_modal_button.attr('disabled', true);
 
+        $geolocation_modal_title.text("Recherche...");
+
 
         var player_name = $geolocation_modal_selector_list.val();
 
         $.getJSON(routes.get_nearest.replace('playerNamePlaceholder', player_name), function (result)
         {
             $from_select.val(result.nearest_station.code_name);
+
+            if (result.from_overworld)
+                $from_overworld_field.val('true');
+
             $('#geo-geolocation-modal').modal('hide');
         })
         .fail(function (error)

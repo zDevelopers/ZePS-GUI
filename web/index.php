@@ -12,6 +12,9 @@ $app = new Silex\Application();
 $app['config'] = array
 (
     'world_name' => 'V5_nether',               // The name of the world where the netherrail is in
+    'overworld_and_nether_worlds' => array(    // A list of nether & overworld worlds. Any world except 'world_name'
+        'V5', 'V5_nether'                      // is considered as overworld.
+    ),
 
     'dynmap' => array
     (
@@ -44,8 +47,8 @@ $app
     ->bind('zeps.api.nearest_station');
 
 $app
-    ->get('/api/logged_in_players/{world_name}', 'ZePS\\Controllers\\APIController::logged_in_players')
-    ->value('world_name', '')
+    ->get('/api/logged_in_players/{world_names}', 'ZePS\\Controllers\\APIController::logged_in_players')
+    ->value('world_names', '')
     ->bind('zeps.api.logged_in_players');
 
 

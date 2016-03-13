@@ -8,7 +8,7 @@ use ZePS\Managers\DynmapBridgeManager;
 
 class APIController
 {
-    public function logged_in_players(Application $app, $world_name)
+    public function logged_in_players(Application $app, $world_names)
     {
         $players = DynmapBridgeManager::get_logged_in_players($app);
 
@@ -16,17 +16,18 @@ class APIController
             return $app->json(array('error_code' => $players, 'error_message' => $this->code2error($players)), 503);
 
 
-        if (empty($world_name))
+        if (empty($world_names))
         {
             return $app->json($players);
         }
         else
         {
             $filtered_players = array();
+            $allowed_worlds = explode(',', $world_names);
 
             foreach ($players as $player)
             {
-                if ($player['world'] == $world_name)
+                if (in_array($player['world'], $allowed_worlds))
                 {
                     $filtered_players[] = $player;
                 }
@@ -62,7 +63,7 @@ class APIController
                 return 'This player is not logged in.';
 
             case DynmapBridgeManager::ERROR_WRONG_WORLD:
-                return 'This player is not in the good world.';
+                return 'This player is not in a good world.';
 
             default:
                 return (string) $error_code;

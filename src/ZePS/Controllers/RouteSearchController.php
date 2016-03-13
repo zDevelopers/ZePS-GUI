@@ -19,6 +19,8 @@ class RouteSearchController
                 $options .= 'official-';
             if ($app['request']->query->has('accessible'))
                 $options .= 'accessible-';
+            if ($app['request']->query->has('from_overworld') && $app['request']->query->get('from_overworld') == 'true')
+                $options .= 'overworld-';
 
             $options = trim($options, '-');
 
@@ -67,6 +69,9 @@ class RouteSearchController
 
         $accessible = false;
         $official = false;
+        $from_overworld = false;
+
+        $nether_portal = array();
 
         $compute_time = 0;
         $travel_time = '';
@@ -112,6 +117,8 @@ class RouteSearchController
                 $official = true;
             if (in_array('accessible', $options_split))
                 $accessible = true;
+            if (in_array('overworld', $options_split))
+                $from_overworld = true;
 
             $raw_route = RoutesManager::get_netherrail_route($from, $to, $official, $accessible, $debug);
 
@@ -138,6 +145,14 @@ class RouteSearchController
                 {
                     $travel_time = DateTimeManager::friendly_interval($raw_route->travel_time);
                     $compute_time = $raw_route->time;
+
+                    // If needed, the nether portal coordinates are calculated
+                    if ($from_overworld && count($raw_route->stations) > 0)
+                    {
+                        $first_station = $raw_route->stations['0'];
+                        $nether_portal['x'] = $first_station->x * 8;
+                        $nether_portal['z'] = $first_station->y * 8;
+                    }
 
                     // The sections are merged if they are in the same direction
                     $current_route_part = null;
@@ -207,6 +222,9 @@ class RouteSearchController
             'route' => $route,
             'travel_time' => $travel_time,
             'compute_time' => $compute_time,
+
+            'from_overworld' => $from_overworld,
+            'nether_portal' => $nether_portal,
 
             'stations_count' => $stations_count,
             'changes_count' => $changes_count,

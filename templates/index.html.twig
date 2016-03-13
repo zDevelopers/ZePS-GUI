@@ -26,9 +26,11 @@
 
     <script type="text/javascript">
         routes = {
-            'get_players': '{{ path('zeps.api.logged_in_players', {'world_name': app.config.world_name}) }}',
+            'get_players': '{{ path('zeps.api.logged_in_players', {'world_names': app.config.overworld_and_nether_worlds|join(',')}) }}',
             'get_nearest': '{{ path('zeps.api.nearest_station', {'name': 'playerNamePlaceholder'}) }}'
         };
+
+        nether_world = '{{ app.config.world_name }}';
     </script>
 
     <script type="text/javascript" src="{{ app.request.basePath }}/js/search.js"></script>
@@ -59,6 +61,9 @@
     {% if not (not valid and error == 'unreachable') %}
         <div class="well well-large">
             <form action="{{ path('zeps.homepage') }}">
+
+                <input type="hidden" name="from_overworld" id="from_overworld" value="false" />
+
                 <div class="row">
                     <div class="col-xs-12 col-md-9 form-inline">
                         <div class="form-group" id="route-form-part">
@@ -146,6 +151,11 @@
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <div class="pull-left">
+                            <p class="text-muted" id="geolocation-modal-footer-message">
+                                Pas dans la liste ? Vérifiez que vous êtes dans un monde survie (et hors de l'End).
+                            </p>
+                        </div>
                         <button type="button" class="btn btn-primary" id="geolocation-modal-button" disabled>Localiser la station la plus proche</button>
                     </div>
                 </div>
@@ -185,6 +195,17 @@
 
             <table class="table table-bordered">
                 {% if from != to %}
+                    {%  if from_overworld %}
+                        <tr>
+                            <td>
+                                <p class="route_main_consign">Rejoignez <strong>le Nether</strong>.</p>
+                                <p class="route_intermediate_stations">
+                                    Le portail est probablement situé vers ({{ nether_portal.x }}&nbsp;; {{ nether_portal.z }}).
+                                </p>
+                            </td>
+                        </tr>
+                    {% endif %}
+
                     {% for step in route %}
                         <tr>
                             <td>

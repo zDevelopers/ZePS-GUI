@@ -147,6 +147,10 @@ footer.footer, footer.footer a {
     margin-right: 15px;
 }
 
+.modal-footer .pull-left {
+    max-width: 50%;
+}
+
 /* Bootstrap select */
 
 /*

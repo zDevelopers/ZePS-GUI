@@ -69,7 +69,8 @@ class DynmapBridgeManager extends NetworkManager
      * <pre>array
      *(
      *    'nearest_station' => the nearest station object,
-     *    'distance' => the distance between this station and the player.
+     *    'distance' => the distance between this station and the player,
+     *    'from_overworld' => true if this player starts in the overworld.
      *)</pre>
      */
     public static function get_nearest_station(Application $app, $player_name)
@@ -92,16 +93,36 @@ class DynmapBridgeManager extends NetworkManager
             }
         }
 
-        if      ($player == null)                                  return self::ERROR_NOT_LOGGED_IN;
-        else if ($player['world'] != $app['config']['world_name']) return self::ERROR_WRONG_WORLD;
+        if ($player == null)
+            return self::ERROR_NOT_LOGGED_IN;
+        else if (!in_array($player['world'], $app['config']['overworld_and_nether_worlds']))
+            return self::ERROR_WRONG_WORLD;
 
+
+        // Coordinates correction if the player is in the overworld
+
+        $player_x = $player['x'];
+        $player_z = $player['z'];
+
+        $from_overworld = false;
+
+        if ($player['world'] != $app['config']['world_name'])
+        {
+            $player_x /= 8;
+            $player_z /= 8;
+
+            $from_overworld = true;
+        }
+
+
+        // Station lookup
 
         $nearest_station           = null;
         $squared_smallest_distance = -1;
 
         foreach ($stations as $station)
         {
-            $squared_distance = self::squared_distance($player['x'], $player['z'], $station->x, $station->y);
+            $squared_distance = self::squared_distance($player_x, $player_z, $station->x, $station->y);
 
             if ($nearest_station == null || $squared_distance < $squared_smallest_distance)
             {
@@ -113,7 +134,8 @@ class DynmapBridgeManager extends NetworkManager
         return array
         (
             'nearest_station' => $nearest_station,
-            'distance' => sqrt($squared_smallest_distance)
+            'distance' => sqrt($squared_smallest_distance),
+            'from_overworld' => $from_overworld
         );
     }
 
