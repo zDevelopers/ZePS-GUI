@@ -59,7 +59,7 @@ $(function ()
                 var list_content = '';
 
                 players.forEach(function (player) {
-                    list_content += '<option data-content="<img src=\'https://crafatar.com/avatars/' + player.name + '?overlay&size=32\' alt=\'[Avatar]\' aria-hidden=\'true\' /> ' + player.name + '" value="' + player.name + '">' + player.display_name + '</option>';
+                    list_content += '<option data-content="<div class=\'avatar-in-select\'><img src=\'https://crafatar.com/avatars/' + player.name + '?overlay&size=32\' alt=\'[Avatar]\' aria-hidden=\'true\' /></div>' + player.name + '" value="' + player.name + '">' + player.display_name + '</option>';
                 });
 
                 $geolocation_modal_loading.hide();

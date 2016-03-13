@@ -142,6 +142,10 @@ footer.footer, footer.footer a {
     display: none;
 }
 
+.avatar-in-select {
+    display: inline-block;
+    margin-right: 15px;
+}
 
 /* Bootstrap select */
 
