@@ -23,6 +23,15 @@
 {% block javascripts %}
     <script type="text/javascript" src="{{ app.request.basePath }}/js/bootstrap-select/bootstrap-select.min.js"></script>
     <script type="text/javascript" src="{{ app.request.basePath }}/js/bootstrap-select/defaults-fr_FR.min.js"></script>
+
+    <script type="text/javascript">
+        routes = {
+            'get_players': '{{ path('zeps.api.logged_in_players', {'world_name': app.config.world_name}) }}',
+            'get_nearest': '{{ path('zeps.api.nearest_station', {'name': 'playerNamePlaceholder'}) }}'
+        };
+    </script>
+
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/search.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -55,8 +64,12 @@
                         <div class="form-group" id="route-form-part">
                             <label class="sr-only" for="from">Sélectionnez les points de départ et d'arrivée</label>
                             <div class="input-group">
+                                <div class="input-group-addon station-selector-between locate-user open-geolocation-dialog">
+                                    <span class="glyphicon glyphicon-map-marker" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Me localiser"></span>
+                                    <span class="sr-only">Me localiser</span>
+                                </div>
                                 <select class="form-control selectpicker-disabled station-selector" id="from" name="from" data-live-search="true">
-                                    <option value="" disabled{% if not submitted %} selected{% endif %}>Point de départ
+                                    <option value="" id="starting-point-placeholder" disabled{% if not submitted %} selected{% endif %}>Point de départ
                                     <optgroup label="Stations principales">
                                         {% for station in stations.main_stations %}
                                             <option value="{{ station.code_name }}">{{ station.full_name }}</option>
@@ -98,6 +111,45 @@
                     </div>
                 </div>
             </form>
+        </div>
+
+        <div class="modal" tabindex="-1" role="dialog" id="geo-geolocation-modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="geolocation-modal-title">Chargement...</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="geolocation-modal-loading">
+                            <img src="{{ app.request.basePath }}/img/loading.gif" alt="Chargement en cours, patientez une seconde..." />
+                        </div>
+
+                        <div id="geolocation-modal-selector">
+                            <select id="geolocation-modal-selector-select" class="selectpicker" data-width="70%" title="Sélectionnez-vous dans la liste"></select>
+                        </div>
+
+                        <div id="geolocation-modal-error-nether-empty">
+                            <p>
+                                <strong>Il n'y a personne dans le Nether.</strong><br />
+                                Allez au préalable dans ce dernier puis re-cliquez sur le bouton.
+                            </p>
+                        </div>
+                        <div id="geolocation-modal-error-cannot-retrieve">
+                            <p>
+                                <strong>Impossible de récupérer la station.</strong><br />
+                                Le serveur a retourné une erreur.
+                            </p>
+                            <p class="text-muted">
+                                Erreur <span id="geolocation-modal-error-cannot-retrieve-error-id"></span> : «&nbsp;<span id="geolocation-modal-error-cannot-retrieve-error-message"></span>&nbsp;»
+                            </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="geolocation-modal-button" disabled>Localiser la station la plus proche</button>
+                    </div>
+                </div>
+            </div>
         </div>
     {% endif %}
 

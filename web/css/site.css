@@ -121,6 +121,28 @@ footer.footer, footer.footer a {
 }
 
 
+/* User localization */
+
+.locate-user {
+    cursor: pointer;
+}
+
+.locate-user:hover {
+    color: #1b6d85;
+}
+
+.modal-body {
+    margin-top:    50px;
+    margin-bottom: 50px;
+
+    text-align: center;
+}
+
+#geolocation-modal-selector, #geolocation-modal-error-nether-empty, #geolocation-modal-error-cannot-retrieve {
+    display: none;
+}
+
+
 /* Bootstrap select */
 
 /*
