@@ -101,6 +101,12 @@ footer.footer, footer.footer a {
     color: white !important;
 }
 
+/* Fix for text cursor on input groups */
+.input-group-addon {
+    cursor: default;
+}
+
+
 /* Routes form styles */
 
 #route-form-part, #route-form-part .input-group {
@@ -129,6 +135,14 @@ footer.footer, footer.footer a {
 
 .locate-user:hover {
     color: #1b6d85;
+}
+
+.locate-user-nojs {
+    cursor: default !important;
+}
+
+.locate-user-nojs:hover {
+    color: #555555 !important;
 }
 
 .modal-body {

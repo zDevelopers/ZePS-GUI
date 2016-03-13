@@ -37,6 +37,14 @@
 {% endblock %}
 
 {% block content %}
+    <noscript>
+        <div class="alert alert-warning">
+            <strong>Javascript est désactivé.</strong>
+            Les fonctionnalités de géolocalisation ne marcheront pas.
+            <a href="http://www.enable-javascript.com/fr/">Cliquez ici pour apprendre comment activer Javascript</a>.
+        </div>
+    </noscript>
+
     {% if error == 'unreachable' %}
         <div class="alert alert-danger">
             <strong>L'API de recherche est injoignable.</strong>
@@ -69,8 +77,8 @@
                         <div class="form-group" id="route-form-part">
                             <label class="sr-only" for="from">Sélectionnez les points de départ et d'arrivée</label>
                             <div class="input-group">
-                                <div class="input-group-addon station-selector-between locate-user open-geolocation-dialog">
-                                    <span class="glyphicon glyphicon-map-marker" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Me localiser"></span>
+                                <div class="input-group-addon station-selector-between locate-user locate-user-nojs open-geolocation-dialog">
+                                    <span class="glyphicon glyphicon-globe" id="open-geolocation-icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Me localiser"></span>
                                     <span class="sr-only">Me localiser</span>
                                 </div>
                                 <select class="form-control selectpicker-disabled station-selector" id="from" name="from" data-live-search="true">

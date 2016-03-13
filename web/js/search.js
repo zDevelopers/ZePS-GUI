@@ -2,6 +2,10 @@ $(function ()
 {
     $('[data-toggle="tooltip"]').tooltip();
 
+    // Non-Javascript graceful degradation
+    $('#open-geolocation-icon').removeClass("glyphicon-globe").addClass("glyphicon-map-marker");
+    $('.locate-user').removeClass("locate-user-nojs");
+
     var $geolocation_modal_selector = $('#geolocation-modal-selector');
     var $geolocation_modal_loading  = $('#geolocation-modal-loading');
 
