@@ -3,6 +3,7 @@ $(function ()
     $('[data-toggle="tooltip"]').tooltip();
 
     // Non-Javascript graceful degradation
+    $('#starting-point-placeholder').after('<option value="">Me localiser...</option>');
     $('#open-geolocation-icon').removeClass("glyphicon-globe").addClass("glyphicon-map-marker");
     $('.locate-user').removeClass("locate-user-nojs");
 
@@ -22,12 +23,9 @@ $(function ()
     var $from_overworld_field = $('#from_overworld');
 
 
-    // Added in JavaScript so the users without are not disturbed.
-    $('#starting-point-placeholder').after('<option value="">Me localiser...</option>');
+    $('.open-geolocation-dialog, .geolocation-modal-retry').click(open_geolocation_dialog);
 
-    $('.open-geolocation-dialog').click(open_geolocation_dialog);
-
-    $from_select.on('change', function (e) {
+    $from_select.on('change', function () {
         if (this.value == "")
             open_geolocation_dialog();
         else
@@ -51,13 +49,14 @@ $(function ()
 
 
         // Then we load players in the nether and display them
-        //noinspection JSUnresolvedVariable
         $.getJSON(routes.get_players, function (players)
         {
             if (players.length == 0)
             {
                 $geolocation_modal_loading.hide();
                 $geolocation_modal_error_nether_empty.show();
+
+                $geolocation_modal_title.text("Ô rage ! ô désespoir !");
 
                 $geolocation_modal_button.attr('disabled', true);
             }
