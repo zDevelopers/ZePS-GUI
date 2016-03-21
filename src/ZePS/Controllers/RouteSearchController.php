@@ -164,7 +164,9 @@ class RouteSearchController
                         {
                             if ($current_route_part != null)
                             {
-                                $current_route_part['to'] = $current_route_part['steps'][count($current_route_part['steps']) - 1];
+                                if (isset($current_route_part['steps']) && count($current_route_part['steps']) > 0)
+                                    $current_route_part['to'] = $current_route_part['steps'][count($current_route_part['steps']) - 1];
+
                                 $route[] = $current_route_part;
                             }
 
