@@ -90,7 +90,9 @@
                                     </optgroup>
                                     <optgroup label="Toutes les stations">
                                         {% for station in stations.stations %}
-                                            <option value="{{ station.code_name }}"{% if submitted and from == station.id %} selected{% endif %}>{{ station.full_name }}</option>
+                                            {% if station.is_visible %}
+                                                <option value="{{ station.code_name }}"{% if submitted and from == station.id %} selected{% endif %}>{{ station.full_name }}</option>
+                                            {% endif %}
                                         {% endfor %}
                                     </optgroup>
                                 </select>
@@ -104,7 +106,9 @@
                                     </optgroup>
                                     <optgroup label="Toutes les stations">
                                         {% for station in stations.stations %}
-                                            <option value="{{ station.code_name }}"{% if submitted and to == station.id %} selected{% endif %}>{{ station.full_name }}</option>
+                                            {% if station.is_visible %}
+                                                <option value="{{ station.code_name }}"{% if submitted and to == station.id %} selected{% endif %}>{{ station.full_name }}</option>
+                                            {% endif %}
                                         {% endfor %}
                                     </optgroup>
                                 </select>
@@ -191,7 +195,7 @@
                     <p class="lead">{{ changes_count|number_format }}</p>
 
                     <h4 class="muted small-title">Nombre de stations</h4>
-                    <p class="lead">{{ stations_count|number_format }}</p>
+                    <p class="lead">{{ visible_stations_count|number_format }}</p>
                 </div>
             </div>
 
@@ -221,15 +225,22 @@
                                     {{ step.length|number_format }} bloc{% if step.length > 1 %}s{% endif %}
                                 </div>
 
-                                <p class="route_main_consign">À <strong>{{ step.from.full_name }}</strong>, prenez la direction <strong>{{ attribute(directions_translations, step.direction) }}</strong>.</p>
+                                <p class="route_main_consign">
+                                    {% if step.from.is_visible %}
+                                        À <strong title="Coordonnées : {{ step.from.x }} ; {{ step.from.y }}">{{ step.from.full_name }}</strong>,
+                                    {% else %}
+                                        Vers <strong>({{ step.from.x }} ; {{ step.from.y }})</strong>,
+                                    {% endif %}
+                                    prenez la direction <strong>{{ attribute(directions_translations, step.direction) }}</strong>.
+                                </p>
                                 {% if step.steps|length >= 2 %}
                                     <p class="route_intermediate_stations">
-                                        {% if step.steps|length  == 2 %}
+                                        {% if step.steps|length == 2 and step.steps[1].is_visible %}
                                             Vous passez par la station {{ step.steps[1].full_name }}.
                                         {% else %}
                                             Vous passez par les stations
                                             {% set first = true %}
-                                            {% for station in step.steps %}{% if station.id != step.from.id %}{% if not first and station.id != step.to.id %}, {% elseif station.id == step.to.id %} et {% endif %}{{ station.full_name }}{% set first = false %}{% endif %}{% endfor %}.
+                                            {% for station in step.steps %}{% if station.id != step.from.id and station.is_visible %}{% if not first and station.id != step.to.id %}, {% elseif station.id == step.to.id %} et {% endif %}{{ station.full_name }}{% set first = false %}{% endif %}{% endfor %}.
                                         {% endif %}
                                     </p>
                                 {% endif %}

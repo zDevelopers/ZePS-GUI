@@ -76,6 +76,9 @@ class RoutesManager extends NetworkManager
 
         foreach ($routes->stations AS $step)
         {
+            if (!$step->is_visible)
+                continue;
+
             $point = $step->x . ',' . $step->y . ',';
 
             if ($prev_point != null)

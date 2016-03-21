@@ -77,6 +77,7 @@ class RouteSearchController
         $travel_time = '';
 
         $stations_count = 0;
+        $visible_stations_count = 0;
         $changes_count = 0;
 
         $distance = 0;
@@ -207,6 +208,13 @@ class RouteSearchController
 
                     $stations_count = count($raw_route->stations);
                     $changes_count = count($route);
+
+                    $visible_stations_count = 0;
+                    foreach ($raw_route->stations as $station)
+                    {
+                        if ($station->is_visible)
+                            $visible_stations_count++;
+                    }
                 }
             }
         }
@@ -229,6 +237,7 @@ class RouteSearchController
             'nether_portal' => $nether_portal,
 
             'stations_count' => $stations_count,
+            'visible_stations_count' => $visible_stations_count,
             'changes_count' => $changes_count,
             'distance' => $distance,
 
