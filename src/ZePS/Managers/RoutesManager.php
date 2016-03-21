@@ -9,7 +9,7 @@ class RoutesManager extends NetworkManager
     const API_ROUTE = 'https://florian.cassayre.me/api/minecraft/netherrail';
     const API_ROUTE_IMAGE = 'https://florian.cassayre.me/api/minecraft/netherrail-map';
 
-    const MAIN_NETHERRAIL_STATIONS = 'nouvea,tentacles';
+    const MAIN_NETHERRAIL_STATIONS = 'nouvea,tentacles,vaalon';
 
 
     /**
