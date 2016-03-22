@@ -1,0 +1,19 @@
+{% extends "base.html.twig" %}
+
+{% block main_title %}Erreur 404{% endblock %}
+
+{% block content %}
+    <div class="well error-page text-center">
+        <h2>Cette page n'existe pas.</h2>
+        <p>(Même dans une dimension parallèle.)</p>
+
+        <div class="error_page_img black_meme">
+            <p class="head">That moment</p>
+            <p><img src="{{ app.request.basePath }}/img/that_moment.png" alt="XKCD: Error code comic" /></p>
+            <p class="foot">
+                When you feel like<br />
+                you're not supposed to be here
+            </p>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html.twig" %}
+
+{% block main_title %}Erreur {{ error_code }} {{ error_title }}{% endblock %}
+
+{% block content %}
+    <div class="well error-page text-center">
+        <h2>Erreur {{ error_code }} {{ error_title }}</h2>
+
+        <p class="error_page_img">
+            <img src="{{ app.request.basePath }}/img/xkcd_error_code.png" alt="XKCD: Error code comic" /><br />
+            <a class="muted" href="https://xkcd.com/1024/">xkcd</a>
+        </p>
+    </div>
+{% endblock %}

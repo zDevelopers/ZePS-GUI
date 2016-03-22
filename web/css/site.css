@@ -177,6 +177,49 @@ footer.footer, footer.footer a {
 }
 
 
+/* Error pages */
+
+.error_page_img {
+    margin-top: 50px;
+}
+
+.error_page_img img {
+    max-width: 85%;
+}
+
+.black_meme {
+    background: black;
+
+    border-radius: 10px;
+
+    max-width: 85%;
+
+    margin: 50px auto auto;
+    padding-bottom: 10px;
+
+    color: white;
+    font-size: 80px;
+    text-transform: uppercase;
+}
+
+.black_meme p {
+    margin-top: 25px;
+    margin-bottom: 25px;
+
+    font-weight: bold;
+}
+
+.black_meme .head {
+    font-size: 80px;
+}
+.black_meme .foot {
+    font-size: 45px;
+}
+
+.black_meme img {
+    max-width: 60%;
+}
+
 /* Bootstrap select */
 
 /*

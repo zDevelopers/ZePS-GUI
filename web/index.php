@@ -26,7 +26,10 @@ $app['config'] = array
 
 // Silex initialization
 
-$app['debug'] = true;
+if (in_array(@$_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1')))
+{
+    $app['debug'] = true;
+}
 
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
@@ -68,6 +71,14 @@ $app
     ->get('/{from}/{to}/{options}', 'ZePS\\Controllers\\RouteSearchController::search_results')
     ->value('options', '')
     ->bind('zeps.search_results');
+
+
+// Error handler
+
+$app->error(function(\Exception $e, $code) use ($app)
+{
+    return (new ZePS\Controllers\ErrorsController())->handle_error($app, $e, $code);
+});
 
 
 $app->run();

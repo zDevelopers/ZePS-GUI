@@ -1,0 +1,18 @@
+{% extends "base.html.twig" %}
+
+{% block main_title %}Erreur 500{% endblock %}
+
+{% block content %}
+<div class="well error-page text-center">
+    <h2>Les chatons sont malades</h2>
+    <p>
+        Sans eux, le site marche moins bien.<br />
+        N'hésitez pas à signaler le problème (avec l'adresse de la page), merci !
+    </p>
+
+    <p class="error_page_img">
+        <img src="{{ app.request.basePath }}/img/xkcd_fourier.jpg" alt="XKCD: Fourier cat comic" /><br />
+        <a class="muted" href="https://xkcd.com/26/">xkcd</a>
+    </p>
+</div>
+{% endblock %}
