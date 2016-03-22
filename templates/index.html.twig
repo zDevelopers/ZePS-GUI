@@ -84,35 +84,11 @@
                                     <span class="sr-only">Me localiser</span>
                                 </div>
                                 <select class="form-control selectpicker-disabled station-selector" id="from" name="from" data-live-search="true">
-                                    <option value="" id="starting-point-placeholder" disabled{% if not submitted %} selected{% endif %}>Point de départ
-                                    <optgroup label="Stations principales">
-                                        {% for station in stations.main_stations %}
-                                            <option value="{{ station.code_name }}">{{ station.full_name }}</option>
-                                        {% endfor %}
-                                    </optgroup>
-                                    <optgroup label="Toutes les stations">
-                                        {% for station in stations.stations %}
-                                            {% if station.is_visible %}
-                                                <option value="{{ station.code_name }}"{% if submitted and from == station.id %} selected{% endif %}>{{ station.full_name }}</option>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </optgroup>
+                                    {{ macros.stations_list(stations, submitted ? from : false, true, "Point de départ") }}
                                 </select>
                                 <div class="input-group-addon station-selector-between"><span class="glyphicon glyphicon-chevron-right"></span></div>
                                 <select class="form-control selectpicker-disabled station-selector" id="to" name="to" data-live-search="true">
-                                    <option value="" disabled{% if not submitted %} selected{% endif %}>Destination
-                                    <optgroup label="Stations principales">
-                                        {% for station in stations.main_stations %}
-                                            <option value="{{ station.code_name }}">{{ station.full_name }}</option>
-                                        {% endfor %}
-                                    </optgroup>
-                                    <optgroup label="Toutes les stations">
-                                        {% for station in stations.stations %}
-                                            {% if station.is_visible %}
-                                                <option value="{{ station.code_name }}"{% if submitted and to == station.id %} selected{% endif %}>{{ station.full_name }}</option>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </optgroup>
+                                    {{ macros.stations_list(stations, submitted ? to : false, false, "Destination") }}
                                 </select>
                             </div>
                         </div>
