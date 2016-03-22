@@ -1,3 +1,5 @@
+'use strict';
+
 // http://stackoverflow.com/a/22050874/5599794
 (function (jQuery)
 {

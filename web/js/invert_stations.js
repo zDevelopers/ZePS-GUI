@@ -1,3 +1,5 @@
+'use strict';
+
 $(function ()
 {
     var $from_select = $('#from');
