@@ -1,5 +1,7 @@
 {%  extends 'base.html.twig' %}
 
+{% import "_macros.html.twig" as macros %}
+
 {% block main_title %}
     {%  if submitted and valid %}
         {{ attribute(stations.stations, from).full_name }} → {{ attribute(stations.stations, to).full_name }} ⋅
@@ -227,7 +229,7 @@
 
                                 <p class="route_main_consign">
                                     {% if step.from.is_visible %}
-                                        À <strong title="Coordonnées : {{ step.from.x }} ; {{ step.from.y }}">{{ step.from.full_name }}</strong>,
+                                        À <strong>{{ macros.station(step.from) }}</strong>,
                                     {% else %}
                                         Vers <strong>({{ step.from.x }} ; {{ step.from.y }})</strong>,
                                     {% endif %}
@@ -236,11 +238,11 @@
                                 {% if step.steps|length >= 2 %}
                                     <p class="route_intermediate_stations">
                                         {% if step.steps|length == 2 and step.steps[1].is_visible %}
-                                            Vous passez par la station {{ step.steps[1].full_name }}.
+                                            Vous passez par la station {{ macros.station(step.steps[1]) }}.
                                         {% else %}
                                             Vous passez par les stations
                                             {% set first = true %}
-                                            {% for station in step.steps %}{% if station.id != step.from.id and station.is_visible %}{% if not first and station.id != step.to.id %}, {% elseif station.id == step.to.id %} et {% endif %}{{ station.full_name }}{% set first = false %}{% endif %}{% endfor %}.
+                                            {% for station in step.steps %}{% if station.id != step.from.id and station.is_visible %}{% if not first and station.id != step.to.id %}, {% elseif station.id == step.to.id %} et {% endif %}{{ macros.station(station) }}{% set first = false %}{% endif %}{% endfor %}.
                                         {% endif %}
                                     </p>
                                 {% endif %}
@@ -248,11 +250,11 @@
                         </tr>
                     {% endfor %}
                     <tr>
-                        <td>Vous arrivez à {{ attribute(stations.stations, to).full_name }}.</td>
+                        <td>Vous arrivez à {{ macros.station(attribute(stations.stations, to)) }}.</td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td>Ne bougez pas. Vous êtes déjà à {{ attribute(stations.stations, to).full_name }}.</td>
+                        <td>Ne bougez pas. Vous êtes déjà à {{ macros.station(attribute(stations.stations, to)) }}.</td>
                     </tr>
                 {% endif %}
             </table>

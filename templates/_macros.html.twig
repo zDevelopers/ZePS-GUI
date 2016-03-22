@@ -1,0 +1,3 @@
+{% macro station(station_obj) %}{% spaceless %}
+    <span class="station-name station-withname-{{ station_obj.code_name }}" title="Coordonnées : {{ station_obj.x }} ; {{ station_obj.y }}">{{ station_obj.full_name }}</span>
+{% endspaceless %}{% endmacro %}
