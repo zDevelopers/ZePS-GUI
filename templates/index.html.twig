@@ -36,6 +36,7 @@
     </script>
 
     <script type="text/javascript" src="{{ app.request.basePath }}/js/search.js"></script>
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/invert_stations.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -79,14 +80,20 @@
                         <div class="form-group" id="route-form-part">
                             <label class="sr-only" for="from">Sélectionnez les points de départ et d'arrivée</label>
                             <div class="input-group">
-                                <div class="input-group-addon station-selector-between locate-user locate-user-nojs open-geolocation-dialog">
+                                <div class="input-group-addon station-selector-between cliquable-icon cliquable-icon-nojs open-geolocation-dialog">
                                     <span class="glyphicon glyphicon-globe" id="open-geolocation-icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Me localiser"></span>
                                     <span class="sr-only">Me localiser</span>
                                 </div>
+
                                 <select class="form-control selectpicker-disabled station-selector" id="from" name="from" data-live-search="true">
                                     {{ macros.stations_list(stations, submitted ? from : false, true, "Point de départ") }}
                                 </select>
-                                <div class="input-group-addon station-selector-between"><span class="glyphicon glyphicon-chevron-right"></span></div>
+
+                                <div class="input-group-addon station-selector-between cliquable-icon cliquable-icon-nojs ">
+                                    <span class="glyphicon glyphicon-chevron-right" id="invert-from-to" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Inverser origine et destination"></span>
+                                    <span class="sr-only">(Inverser origine et destination)</span>
+                                </div>
+
                                 <select class="form-control selectpicker-disabled station-selector" id="to" name="to" data-live-search="true">
                                     {{ macros.stations_list(stations, submitted ? to : false, false, "Destination") }}
                                 </select>

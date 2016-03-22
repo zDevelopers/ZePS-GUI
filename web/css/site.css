@@ -129,19 +129,19 @@ footer.footer, footer.footer a {
 
 /* User localization */
 
-.locate-user {
+.cliquable-icon {
     cursor: pointer;
 }
 
-.locate-user:hover {
+.cliquable-icon:hover {
     color: #1b6d85;
 }
 
-.locate-user-nojs {
+.cliquable-icon-nojs {
     cursor: default !important;
 }
 
-.locate-user-nojs:hover {
+.cliquable-icon-nojs:hover {
     color: #555555 !important;
 }
 

@@ -5,7 +5,7 @@ $(function ()
     // Non-Javascript graceful degradation
     $('#starting-point-placeholder').after('<option value="">Me localiser...</option>');
     $('#open-geolocation-icon').removeClass("glyphicon-globe").addClass("glyphicon-map-marker");
-    $('.locate-user').removeClass("locate-user-nojs");
+    $('.cliquable-icon').removeClass("cliquable-icon-nojs");
 
     var $geolocation_modal_selector = $('#geolocation-modal-selector');
     var $geolocation_modal_loading  = $('#geolocation-modal-loading');
