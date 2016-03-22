@@ -30,6 +30,8 @@
         routes = {
             'get_players': '{{ path('zeps.api.logged_in_players', {'world_names': app.config.overworld_and_nether_worlds|join(',')}) }}',
             'get_nearest': '{{ path('zeps.api.nearest_station', {'name': 'playerNamePlaceholder'}) }}',
+            'get_length': '{{ path('zeps.api.route_length', {'from_id': 'from_id_placeholder', 'to_id': 'to_id_placeholder', 'official': 'official_placeholder', 'accessible': 'accessible_placeholder'}) }}',
+            'public_search_results': '{{ path('zeps.search_results', {'from': 'from_placeholer', 'to': 'to_placeholder', 'options': 'options_placeholder'}) }}'
         };
 
         nether_world = '{{ app.config.world_name }}';
@@ -41,11 +43,6 @@
     {# There's no point calculating this if we are already displaying a quickest path. #}
     {% if submitted and valid and not error and not through_spawn %}
         <script type="text/javascript">
-            routes = {
-                'get_length': '{{ path('zeps.api.route_length', {'from_id': 'from_id_placeholder', 'to_id': 'to_id_placeholder', 'official': 'official_placeholder', 'accessible': 'accessible_placeholder'}) }}',
-                'public_search_results': '{{ path('zeps.search_results', {'from': 'from_placeholer', 'to': 'to_placeholder', 'options': 'options_placeholder'}) }}'
-            };
-
             route_infos = {
                 'from_id': {{ from }},
                 'to_id': {{ to }},
