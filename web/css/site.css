@@ -165,6 +165,18 @@ footer.footer, footer.footer a {
     max-width: 50%;
 }
 
+
+/* Quickest path */
+
+#quickest-path {
+    display: none;
+}
+
+#quickest-path > p {
+    font-weight: bold;
+}
+
+
 /* Bootstrap select */
 
 /*

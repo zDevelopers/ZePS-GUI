@@ -29,7 +29,7 @@
     <script type="text/javascript">
         routes = {
             'get_players': '{{ path('zeps.api.logged_in_players', {'world_names': app.config.overworld_and_nether_worlds|join(',')}) }}',
-            'get_nearest': '{{ path('zeps.api.nearest_station', {'name': 'playerNamePlaceholder'}) }}'
+            'get_nearest': '{{ path('zeps.api.nearest_station', {'name': 'playerNamePlaceholder'}) }}',
         };
 
         nether_world = '{{ app.config.world_name }}';
@@ -37,6 +37,31 @@
 
     <script type="text/javascript" src="{{ app.request.basePath }}/js/search.js"></script>
     <script type="text/javascript" src="{{ app.request.basePath }}/js/invert_stations.js"></script>
+
+    {# There's no point calculating this if we are already displaying a quickest path. #}
+    {% if submitted and valid and not error and not through_spawn %}
+        <script type="text/javascript">
+            routes = {
+                'get_length': '{{ path('zeps.api.route_length', {'from_id': 'from_id_placeholder', 'to_id': 'to_id_placeholder', 'official': 'official_placeholder', 'accessible': 'accessible_placeholder'}) }}',
+                'public_search_results': '{{ path('zeps.search_results', {'from': 'from_placeholer', 'to': 'to_placeholder', 'options': 'options_placeholder'}) }}'
+            };
+
+            route_infos = {
+                'from_id': {{ from }},
+                'to_id': {{ to }},
+                'official': {{ options.official ? 'true' : 'false' }},
+                'accessible': {{ options.accessible ? 'true' : 'false' }},
+                'raw_options': '{{ raw_options }}',
+                'travel_time': {{ travel_time_seconds }}
+            };
+
+            alternative_starts = [{% for station in stations.main_stations %}{{ station.id }}, {% endfor %}];
+        </script>
+
+        <script type="text/javascript" src="{{ app.request.basePath }}/js/jquery/whenall.jquery.js"></script>
+        <script type="text/javascript" src="{{ app.request.basePath }}/js/datetime.js"></script>
+        <script type="text/javascript" src="{{ app.request.basePath }}/js/quickest_path.js"></script>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -161,6 +186,19 @@
     {% endif %}
 
     {% if submitted and valid and not error %}
+        <div class="alert alert-info" id="quickest-path">
+            <div class="pull-right">
+                <p>
+                    <a id="quickest-path-link" href="">Afficher cet itinéraire</a>
+                </p>
+            </div>
+
+            <p>
+                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>&nbsp;
+                Vous économisez <span id="quickest-path-saved-time"></span> en passant par <span id="quickest-path-station"></span>.
+            </p>
+        </div>
+
         <div class="well">
             <div class="pull-right">
                 <a href="http://florian.cassayre.me/netherrail?from={{ from }}&amp;to={{ to }}">Voir sur le site original</a>
@@ -191,6 +229,43 @@
             <h2>Itinéraire</h2>
 
             <table class="table table-bordered">
+                {% if through_spawn %}
+                    <tr>
+                        <td>
+                            <p class="route_main_consign">Rejoignez <strong>la capitale</strong> ({{ macros.station(attribute(stations.stations, spawn_station_id)) }}).</p>
+                            <p class="route_intermediate_stations">
+                                Vous pouvez utiliser <code>/spawn</code>.
+                            </p>
+                        </td>
+                    </tr>
+                    {% if from != spawn_station_id %}
+                        <tr>
+                            <td>
+                                <p class="route_main_consign">Rendez-vous à <strong>{{ macros.station(attribute(stations.stations, from)) }}</strong> via le portail de la capitale.</p>
+                                <p class="route_intermediate_stations">
+                                    Les portails sont situés au sous-sol de la mairie.
+                                </p>
+                            </td>
+                        </tr>
+                        {% if from != to %}
+                            <tr>
+                                <td>
+                                    <p class="route_main_consign">Entrez dans <strong>le Nether</strong>.</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% elseif from != to %}
+                        <tr>
+                            <td>
+                                <p class="route_main_consign">Entrez dans <strong>le Nether</strong>.</p>
+                                <p class="route_intermediate_stations">
+                                    Le portails est situé au sous-sol de la mairie.
+                                </p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endif %}
+
                 {% if from != to %}
                     {%  if from_overworld %}
                         <tr>
@@ -232,6 +307,10 @@
                             </td>
                         </tr>
                     {% endfor %}
+                    <tr>
+                        <td>Vous arrivez à {{ macros.station(attribute(stations.stations, to)) }}.</td>
+                    </tr>
+                {% elseif through_spawn %}
                     <tr>
                         <td>Vous arrivez à {{ macros.station(attribute(stations.stations, to)) }}.</td>
                     </tr>

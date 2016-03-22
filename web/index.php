@@ -51,6 +51,12 @@ $app
     ->value('world_names', '')
     ->bind('zeps.api.logged_in_players');
 
+$app
+    ->get('/api/route_length/{from_id}/{to_id}/{official}/{accessible}', 'ZePS\\Controllers\\APIController::route_length')
+    ->value('official', false)
+    ->value('accessible', false)
+    ->bind('zeps.api.route_length');
+
 
 // Route search pages
 

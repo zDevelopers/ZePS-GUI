@@ -19,6 +19,8 @@ class RouteSearchController
                 $options .= 'official-';
             if ($app['request']->query->has('accessible'))
                 $options .= 'accessible-';
+            if ($app['request']->query->has('spawn'))
+                $options .= 'spawn-';
             if ($app['request']->query->has('from_overworld') && $app['request']->query->get('from_overworld') == 'true')
                 $options .= 'overworld-';
 
@@ -45,13 +47,16 @@ class RouteSearchController
             'from' => -1,
             'to' => -1,
             'options' => array('official' => false, 'accessible' => false),
+            'raw_options' => '',
             'stations' => $stations,
             'route' => array(),
             'travel_time' => '',
+            'travel_time_seconds' => 0,
             'compute_time' => 0,
             'stations_count' => 0,
             'changes_count' => 0,
             'directions_translations' => array(),
+            'spawn_station' => RoutesManager::SPAWN_STATION,
             'image' => ''
         )));
     }
@@ -70,6 +75,8 @@ class RouteSearchController
         $accessible = false;
         $official = false;
         $from_overworld = false;
+
+        $through_spawn = false;
 
         $nether_portal = array();
 
@@ -120,6 +127,8 @@ class RouteSearchController
                 $accessible = true;
             if (in_array('overworld', $options_split))
                 $from_overworld = true;
+            if (in_array('spawn', $options_split))
+                $through_spawn = true;
 
             $raw_route = RoutesManager::get_netherrail_route($from, $to, $official, $accessible, $debug);
 
@@ -227,14 +236,18 @@ class RouteSearchController
             'from' => $from,
             'to' => $to,
             'options' => array('official' => $official, 'accessible' => $accessible),
+            'raw_options' => $options,
             'stations' => $stations,
 
             'route' => $route,
             'travel_time' => $travel_time,
+            'travel_time_seconds' => $raw_route->travel_time,
             'compute_time' => $compute_time,
 
             'from_overworld' => $from_overworld,
             'nether_portal' => $nether_portal,
+
+            'through_spawn' => $through_spawn,
 
             'stations_count' => $stations_count,
             'visible_stations_count' => $visible_stations_count,
@@ -242,6 +255,9 @@ class RouteSearchController
             'distance' => $distance,
 
             'directions_translations' => $directions_translations,
+
+            'spawn_station' => RoutesManager::SPAWN_STATION,
+            'spawn_station_id' => RoutesManager::station_name_to_id($stations, RoutesManager::SPAWN_STATION),
 
             'image' => $error == null ? RoutesManager::get_netherrail_route_image($raw_route) : ''
         )));
