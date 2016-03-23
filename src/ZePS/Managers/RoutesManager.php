@@ -10,15 +10,18 @@ class RoutesManager extends NetworkManager
     const API_ROUTE_IMAGE = 'https://florian.cassayre.me/api/minecraft/netherrail-map';
 
     const SPAWN_STATION = 'tentacles';
-    const MAIN_NETHERRAIL_STATIONS = 'nouvea,tentacles,vaalon';
+    const MAIN_NETHERRAIL_STATIONS = 'tentacles,vaalon,nouvea';
 
 
     /**
      * Returns the netherrail stations.
      *
      * @param bool $debug True to print debug notices.
+     *
      * @return array An array, with two keys: a 'stations' one containing all the stations, and a 'main_stations'
      * containing the main stations.
+     * The 'stations' sub-array is indexed by station ID, and the 'main_stations' one is indexed with arbitrary values
+     * only used to sort them (in the same order than in RoutesManager::MAIN_NETHERRAIL_STATIONS).
      */
     public static function get_netherrail_stations($debug = false)
     {
@@ -37,7 +40,9 @@ class RoutesManager extends NetworkManager
 
         foreach ($json->stations AS $station)
             if (\in_array($station->code_name, $main_stations_codes))
-                $main_stations[$station->id] = $station;
+                $main_stations[array_search($station->code_name, $main_stations_codes)] = $station;
+
+        ksort($main_stations);
 
         return array(
             'stations' => $stations,
