@@ -264,7 +264,7 @@
                 {% endif %}
 
                 {% if from != to %}
-                    {%  if from_overworld %}
+                    {%  if from_overworld and not through_spawn %}
                         <tr>
                             <td>
                                 <p class="route_main_consign">Rejoignez <strong>le Nether</strong>.</p>
