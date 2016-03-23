@@ -108,8 +108,13 @@ class RouteSearchController
             $from_is_id = preg_match('/^\d+$/', $from);
             $to_is_id = preg_match('/^\d+$/', $to);
 
-            if ($from_is_id || $to_is_id) {
-                return $app->redirect($app['url_generator']->generate('zeps.search_results', array(
+            if ($from_is_id || $to_is_id)
+            {
+                if (!isset($stations['stations'][$from]) || !isset($stations['stations'][$to]))
+                    $app->abort(404);
+
+                return $app->redirect($app['url_generator']->generate('zeps.search_results', array
+                (
                     'from' => $from_is_id ? $stations['stations'][$from]->code_name : $from,
                     'to' => $to_is_id ? $stations['stations'][$to]->code_name : $to,
                     'options' => $options
@@ -120,6 +125,9 @@ class RouteSearchController
 
             $from = RoutesManager::station_name_to_id($stations, $from);
             $to = RoutesManager::station_name_to_id($stations, $to);
+
+            if ($from == null || $to == null)
+                $app->abort(404);
 
             if (in_array('official', $options_split))
                 $official = true;
