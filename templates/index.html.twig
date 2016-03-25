@@ -328,3 +328,9 @@
         </div>
     {% endif %}
 {% endblock %}
+
+{% block footer_in_line %}
+    {% if submitted and valid %}
+         — <span title="Temps nécessaire pour calculer l'itinéraire : {{ compute_time }} ms">{{ compute_time }} ms</span>
+    {% endif %}
+{% endblock %}
