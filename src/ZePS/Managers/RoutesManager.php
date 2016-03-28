@@ -118,7 +118,7 @@ class RoutesManager extends NetworkManager
     {
         foreach ($stations['stations'] AS $station)
             if ($station->code_name == $station_name)
-                return $station->id;
+                return (int) $station->id;
 
         return null;
     }

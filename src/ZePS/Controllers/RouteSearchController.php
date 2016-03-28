@@ -126,7 +126,7 @@ class RouteSearchController
             $from = RoutesManager::station_name_to_id($stations, $from);
             $to = RoutesManager::station_name_to_id($stations, $to);
 
-            if ($from == null || $to == null)
+            if ($from === null || $to === null)
                 $app->abort(404);
 
             if (in_array('official', $options_split))
