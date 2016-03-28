@@ -1,5 +1,8 @@
 <?php
 
+use Silex\Application;
+use Symfony\Component\HttpFoundation\Request;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/autoload.php';
 
@@ -31,6 +34,12 @@ if (in_array(@$_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1')))
     $app['debug'] = true;
 }
 
+$app['maintenance'] = false;
+if (file_exists(__DIR__.'/../maintenance'))
+{
+    $app['maintenance'] = true;
+}
+
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/../templates',
@@ -41,6 +50,15 @@ $app['twig']->getExtension('core')->setTimezone('Europe/Paris');
 $app['twig']->addFilter(new Twig_SimpleFilter('number_format', function ($number, $decimals = 0, $decimal_point = ',', $thousands_separator = '&#8239;') {
     return number_format($number, $decimals, $decimal_point, $thousands_separator);
 }, array('is_safe' => array('html'))));
+
+
+// Maintenance mode
+
+$app->before(function (Request $request, Application $app)
+{
+    if ($app['maintenance'])
+        $app->abort(503);
+}, Application::EARLY_EVENT);
 
 
 // Internal API first due to the genericity of the last URL (search_results).
