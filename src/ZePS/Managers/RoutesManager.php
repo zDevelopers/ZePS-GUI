@@ -122,4 +122,72 @@ class RoutesManager extends NetworkManager
 
         return null;
     }
+
+    /**
+     * Returns the closest station from the given coordinates.
+     *
+     * @param array $stations The stations, as returned by get_netherrail_stations.
+     * @param double $x The X coordinate
+     * @param double $z The Z coordinate
+     * @param bool $from_overworld true if the given coordinates are from the overworld.
+     *
+     * @return array An array with the following keys:
+     *               - 'nearest_station': the object of the nearest station;
+     *               - 'distance': the distance from the given point to the station, or from the nether equivalent of
+     *                             the point, if from the overworld;
+     *               - 'from_overworld': true if from overworld, to know how to understand the distance
+     */
+    public static function get_closest_station($stations, $x, $z, $from_overworld)
+    {
+        // Coordinates correction if the player is in the overworld
+
+        if ($from_overworld)
+        {
+            $x /= 8;
+            $z /= 8;
+        }
+
+
+        // Station lookup
+
+        $nearest_station           = null;
+        $squared_smallest_distance = -1;
+
+        foreach ($stations['stations'] as $station)
+        {
+            $squared_distance = self::squared_distance($x, $z, $station->x, $station->y);
+
+            if ($nearest_station == null || $squared_distance < $squared_smallest_distance)
+            {
+                $nearest_station           = $station;
+                $squared_smallest_distance = $squared_distance;
+            }
+        }
+
+
+        return array
+        (
+            'nearest_station' => $nearest_station,
+            'distance' => sqrt($squared_smallest_distance),
+            'from_overworld' => $from_overworld
+        );
+    }
+
+    /**
+     * Calculate the squared distance between two points.
+     *
+     * The squared distance is calculated because this is only used for comparison, and it avoid the use of the
+     * square root function, improving performances.
+     *
+     * @param float $x1 X-coordinate of the first point.
+     * @param float $z1 Z-coordinate of the first point.
+     * @param float $x2 X-coordinate of the second point.
+     * @param float $z2 Z-coordinate of the second point.
+     *
+     * @return float The squared distance between (x1, z1) and (x2, z2).
+     */
+    private static function squared_distance($x1, $z1, $x2, $z2)
+    {
+        return pow(abs($x1 - $x2), 2) + pow(abs($z1 - $z2), 2);
+    }
 }

@@ -79,7 +79,7 @@ class DynmapBridgeManager extends NetworkManager
         if (!is_array($players))
             return $players; // error code
 
-        $stations = RoutesManager::get_netherrail_stations()['stations'];
+        $stations = RoutesManager::get_netherrail_stations();
         if (count($stations) == 0)
             return self::ERROR_CANNOT_LOAD_STATIONS;
 
@@ -104,57 +104,8 @@ class DynmapBridgeManager extends NetworkManager
         $player_x = $player['x'];
         $player_z = $player['z'];
 
-        $from_overworld = false;
+        $from_overworld = ($player['world'] != $app['config']['world_name']);
 
-        if ($player['world'] != $app['config']['world_name'])
-        {
-            $player_x /= 8;
-            $player_z /= 8;
-
-            $from_overworld = true;
-        }
-
-
-        // Station lookup
-
-        $nearest_station           = null;
-        $squared_smallest_distance = -1;
-
-        foreach ($stations as $station)
-        {
-            $squared_distance = self::squared_distance($player_x, $player_z, $station->x, $station->y);
-
-            if ($nearest_station == null || $squared_distance < $squared_smallest_distance)
-            {
-                $nearest_station           = $station;
-                $squared_smallest_distance = $squared_distance;
-            }
-        }
-
-        return array
-        (
-            'nearest_station' => $nearest_station,
-            'distance' => sqrt($squared_smallest_distance),
-            'from_overworld' => $from_overworld
-        );
-    }
-
-
-    /**
-     * Calculate the squared distance between two points.
-     *
-     * The squared distance is calculated because this is only used for comparison, and it avoid the use of the
-     * square root function, improving performances.
-     *
-     * @param float $x1 X-coordinate of the first point.
-     * @param float $z1 Z-coordinate of the first point.
-     * @param float $x2 X-coordinate of the second point.
-     * @param float $z2 Z-coordinate of the second point.
-     *
-     * @return float The squared distance between (x1, z1) and (x2, z2).
-     */
-    private function squared_distance($x1, $z1, $x2, $z2)
-    {
-        return pow(abs($x1 - $x2), 2) + pow(abs($z1 - $z2), 2);
+        return RoutesManager::get_closest_station($stations, $player_x, $player_z, $from_overworld);
     }
 }

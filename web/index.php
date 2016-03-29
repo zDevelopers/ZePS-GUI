@@ -79,6 +79,13 @@ $app
     ->bind('zeps.api.route_length');
 
 
+// Redirect pages
+
+$app
+    ->get('/from_location', 'ZePS\\Controllers\\RedirectsController::from_location')
+    ->bind('zeps.redirects.from_location');
+
+
 // Route search pages
 
 $app
