@@ -1,0 +1,48 @@
+{%  extends 'base.html.twig' %}
+
+{% block main_title %}Plan du réseau{% endblock %}
+
+{% block nav_title %}Z<em>é</em>PS ⋅ Plan du réseau{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ app.request.basePath }}/css/leaflet/leaflet.css" rel="stylesheet" />
+    <link href="{{ app.request.basePath }}/css/leaflet/leaflet.label.css" rel="stylesheet" />
+
+    <style type="text/css">
+        #network_map {
+            height: 600px;
+        }
+
+        .station-label {
+            transform-origin: 0% 0%;
+            transform: rotate(-45deg) translateY(-10px);
+        }
+        .station-label.station-label-intersection {
+            font-size: 130%;
+            font-weight: bolder;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.js"></script>
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.label.js"></script>
+
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/network_map.js"></script>
+{% endblock %}
+
+{% block content %}
+    <noscript>
+        <div class="alert alert-warning">
+            <strong>Javascript est requis pour consulter cette page.</strong>
+            <a href="http://www.enable-javascript.com/fr/">Cliquez ici pour apprendre comment activer Javascript</a>.
+        </div>
+    </noscript>
+
+    <div class="well well-large" id="network_map">
+        <h4 class="text-center">Chargement de la carte en cours...</h4>
+        <p class="text-center">
+            Toujours rien ? Vérifiez que JavaScript est actif.
+        </p>
+    </div>
+{% endblock %}

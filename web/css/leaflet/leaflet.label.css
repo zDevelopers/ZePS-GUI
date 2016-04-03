@@ -1,0 +1,22 @@
+.leaflet-label {
+    color: #111;
+    display: block;
+    font: 12px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    padding: 1px 6px;
+    position: absolute;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 4;
+
+    transform: rotate(45deg);
+}
+
+.leaflet-label.leaflet-clickable {
+    cursor: pointer;
+    pointer-events: auto;
+}

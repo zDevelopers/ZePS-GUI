@@ -29,8 +29,17 @@ body {
     color: white;
 }
 
-.header .nav-pills li.active a {
+.nav-pills li a {
+    color: white !important;
+}
+
+.nav-pills li:hover a {
+    color: #0f0f0f !important;
+}
+
+.header .nav-pills li.active a, .header .nav-pills li.active:hover a {
     background-color: #0f0f0f;
+    color: white !important;
 }
 
 .footer {
