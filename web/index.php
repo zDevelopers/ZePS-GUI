@@ -81,6 +81,10 @@ $app
     ->value('accessible', false)
     ->bind('zeps.api.route_length');
 
+$app
+    ->get('/api/stations_network', 'ZePS\\Controllers\\NetworkMapController::network_json')
+    ->bind('zeps.api.stations_network');
+
 
 // Redirect pages
 

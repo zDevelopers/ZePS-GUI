@@ -13,6 +13,12 @@
     <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.js"></script>
     <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.label.js"></script>
 
+    <script type="text/javascript">
+        var routes = {
+            stations_network: '{{ path('zeps.api.stations_network') }}'
+        };
+    </script>
+
     <script type="text/javascript" src="{{ app.request.basePath }}/js/network_map.js"></script>
 {% endblock %}
 

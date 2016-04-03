@@ -6,6 +6,7 @@ namespace ZePS\Managers;
 class RoutesManager extends NetworkManager
 {
     const API_LIST = 'https://florian.cassayre.me/api/minecraft/netherrail-list';
+    const API_NETWORK = self::API_LIST . '?withNetwork=true';
     const API_ROUTE = 'https://florian.cassayre.me/api/minecraft/netherrail';
     const API_ROUTE_IMAGE = 'https://florian.cassayre.me/api/minecraft/netherrail-map';
 
@@ -105,6 +106,23 @@ class RoutesManager extends NetworkManager
         $points = \substr($points, 0, -1);
 
         return self::API_ROUTE_IMAGE . '?lines=' . $lines . '&points=' . $points;
+    }
+
+    /**
+     * Loads the network (stations list with relative links between stations).
+     *
+     * @param bool $debug True to print debug notices.
+     *
+     * @return object
+     */
+    public static function get_netherrail_network($debug = false)
+    {
+        $response = self::get_json(self::API_NETWORK, $debug);
+
+        if ($response == null || $response->result != 'success')
+            return array();
+
+        return $response->stations;
     }
 
     /**
