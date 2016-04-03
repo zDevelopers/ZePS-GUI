@@ -7,21 +7,6 @@
 {% block stylesheets %}
     <link href="{{ app.request.basePath }}/css/leaflet/leaflet.css" rel="stylesheet" />
     <link href="{{ app.request.basePath }}/css/leaflet/leaflet.label.css" rel="stylesheet" />
-
-    <style type="text/css">
-        #network_map {
-            height: 600px;
-        }
-
-        .station-label {
-            transform-origin: 0% 0%;
-            transform: rotate(-45deg) translateY(-10px);
-        }
-        .station-label.station-label-intersection {
-            font-size: 130%;
-            font-weight: bolder;
-        }
-    </style>
 {% endblock %}
 
 {% block javascripts %}
