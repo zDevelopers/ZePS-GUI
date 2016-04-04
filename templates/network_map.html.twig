@@ -13,15 +13,18 @@
     <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.js"></script>
     <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.label.js"></script>
 
-    <script type="text/javascript">
-        var routes = {
-            stations_network: '{{ path('zeps.api.stations_network') }}'
-        };
-
-        var main_stations = '{{ main_stations }}'.split(',');
-    </script>
-
     <script type="text/javascript" src="{{ app.request.basePath }}/js/network_map.js"></script>
+
+    <script type="text/javascript">
+        $(function()
+        {
+            NetworkMap.network_api      = '{{ path('zeps.api.stations_network') }}';
+            NetworkMap.main_stations    = '{{ main_stations }}'.split(',');
+            NetworkMap.map_container_id = 'network_map';
+
+            NetworkMap.init($('#still_nothing_loader'));
+        });
+    </script>
 {% endblock %}
 
 {% block content %}
