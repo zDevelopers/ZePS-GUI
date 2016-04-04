@@ -332,6 +332,55 @@
                 NetworkMap.map.on('zoomend', function () { NetworkMap._adapt_zoom(); });
 
 
+                // Adds display of the labels on hover, if not already displayed
+                var mouse_in = function(e)
+                {
+                    var $label = $(e.target.getLabel()._container);
+
+                    if (!$label.is(":visible"))
+                    {
+                        $label.fadeIn(200);
+                        $label.data('zeps-network-map-previously-hidden', true);
+
+                        e.target.setStyle({
+                            stroke: true,
+                            weight: 5
+                        });
+                    }
+                };
+                var mouse_out = function(e)
+                {
+                    var $label = $(e.target.getLabel()._container);
+
+                    if ($label.data('zeps-network-map-previously-hidden'))
+                    {
+                        $label.fadeOut(200);
+                        $label.removeData('zeps-network-map-previously-hidden');
+
+                        e.target.setStyle({
+                            stroke: false,
+                            weight: 0
+                        });
+                    }
+                };
+
+                var groups = [
+                    NetworkMap.layer_others, NetworkMap.layer_terminus,
+                    NetworkMap.layer_intersections, NetworkMap.layer_main
+                ];
+
+                groups.forEach(function(group)
+                {
+                    group.eachLayer(function(marker)
+                    {
+                        marker.on({
+                            mouseover: mouse_in,
+                            mouseout: mouse_out
+                        });
+                    });
+                });
+
+
                 // Callback
                 if (callback)
                     callback(NetworkMap);

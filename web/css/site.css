@@ -213,7 +213,9 @@ footer.footer, footer.footer a {
     text-transform: uppercase;
     font-weight: normal;
 }
-
+.station-label.label-force-display {
+    display: block !important;
+}
 
 /* Error pages */
 
