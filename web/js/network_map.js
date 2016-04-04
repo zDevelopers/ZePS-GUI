@@ -167,6 +167,18 @@
         },
 
         /**
+         * Adds a layer to the map, if not previously added.
+         *
+         * @param layer The layer to add.
+         * @private
+         */
+        _add_layer: function(layer)
+        {
+            if (!NetworkMap.map.hasLayer(layer))
+                NetworkMap.map.addLayer(layer);
+        },
+
+        /**
          * Graceful adaptation to the zoom level.
          *
          * 12+:   all content displayed
@@ -181,30 +193,30 @@
 
             var $labels = $('.leaflet-label');
             var $labels_major = $('.leaflet-label.major_station');
-            var $labels_terminus = $('.leaflet-label.terminus_station');
+            var $label_main = $('.leaflet-label.main_station');
 
             if (zoom_level >= 11)
             {
                 $labels.show();
 
-                if (!NetworkMap.map.hasLayer(NetworkMap.layer_others))
-                    NetworkMap.map.addLayer(NetworkMap.layer_others);
+                NetworkMap._add_layer(NetworkMap.layer_others);
+                NetworkMap._add_layer(NetworkMap.layer_terminus);
             }
             else if (zoom_level == 10)
             {
                 $labels.hide();
                 $labels_major.show();
 
-                if (!NetworkMap.map.hasLayer(NetworkMap.layer_others))
-                    NetworkMap.map.addLayer(NetworkMap.layer_others);
+                NetworkMap._add_layer(NetworkMap.layer_others);
+                NetworkMap._add_layer(NetworkMap.layer_terminus);
             }
             else if (zoom_level == 9)
             {
                 $labels.hide();
-                $labels_major.show();
-                $labels_terminus.hide();
+                $label_main.show();
 
                 NetworkMap.map.removeLayer(NetworkMap.layer_others);
+                NetworkMap.map.removeLayer(NetworkMap.layer_terminus);
             }
         },
 
@@ -340,7 +352,9 @@
                     if (!$label.is(":visible"))
                     {
                         $label.fadeIn(200);
+
                         $label.data('zeps-network-map-previously-hidden', true);
+                        $label.data('zeps-network-map-previous-container-style', e.target.options);
 
                         e.target.setStyle({
                             stroke: true,
@@ -355,12 +369,10 @@
                     if ($label.data('zeps-network-map-previously-hidden'))
                     {
                         $label.fadeOut(200);
-                        $label.removeData('zeps-network-map-previously-hidden');
+                        e.target.setStyle($label.data('zeps-network-map-previous-container-style'));
 
-                        e.target.setStyle({
-                            stroke: false,
-                            weight: 0
-                        });
+                        $label.removeData('zeps-network-map-previously-hidden');
+                        $label.removeData('zeps-network-map-previous-container-style');
                     }
                 };
 
