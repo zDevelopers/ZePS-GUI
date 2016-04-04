@@ -131,6 +131,14 @@ function adapt_zoom(map, layer_others)
 $(function ()
 {
     var $network_map = $('#network_map');
+    var $still_nothing_loader = $('#still_nothing_loader');
+
+    $network_map.show();
+    $still_nothing_loader.hide();
+
+    // Displays the secondary loader a few seconds later, when the map should be loaded.
+    setTimeout(function () { $still_nothing_loader.show(); },4000);
+
 
     var stations_color_dot = 'purple';
     var stations_color_lines = 'purple';
