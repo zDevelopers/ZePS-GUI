@@ -194,7 +194,7 @@ footer.footer, footer.footer a {
 
 .station-label {
     transform-origin: 0% 0%;
-    transform: rotate(-45deg) translateY(-10px);
+    transform: rotate(-38deg) translateY(-10px) translateX(-6px);
 }
 .station-label.station-label-intersection {
     font-size: 130%;

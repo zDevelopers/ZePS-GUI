@@ -12,8 +12,6 @@
     pointer-events: none;
     white-space: nowrap;
     z-index: 4;
-
-    transform: rotate(45deg);
 }
 
 .leaflet-label.leaflet-clickable {
