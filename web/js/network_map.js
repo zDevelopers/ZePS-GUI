@@ -1,31 +1,5 @@
 'use strict';
 
-// Thanks to http://stackoverflow.com/a/31104813/5599794
-L.Path.prototype.setZIndex = function (index)
-{
-    var obj = $(this._container || this._path);
-    if (!obj.length) return; // not supported on canvas
-    var parent = obj.parent();
-    obj.data('order', index).detach();
-
-    var lower = parent.children().filter(function ()
-    {
-        var order = $(this).data('order');
-        if (order == undefined) return false;
-        return order <= index;
-    });
-
-    if (lower.length)
-    {
-        lower.last().after(obj);
-    }
-    else
-    {
-        parent.prepend(obj);
-    }
-};
-
-
 /**
  * Converts Minecraft coordinates to lat/long used by Leaflet.
  *
@@ -57,45 +31,102 @@ function get_neighborhood_infos(station)
     };
 }
 
-function add_station(map, name, location, color, is_intersection, is_terminus)
+function add_station(name, location, color, is_intersection, is_terminus, is_main)
 {
-    L.circleMarker(coords2latlng(location), {
+    var label_classes = [];
+    if (is_intersection || is_terminus || is_main)
+        label_classes.push('major_station');
+    if (is_terminus)
+        label_classes.push('terminus_station');
+    if (is_main)
+        label_classes.push('main_station');
+
+
+    return L.circleMarker(coords2latlng(location), {
         color: is_terminus ? 'black' : color,
         fillColor: is_intersection ? 'white' : (is_terminus ? 'black' : color),
 
         opacity: 0.76,
         fillOpacity: 1,
 
-        className: 'network-map-station'
-    }).bindLabel('<div class="station-label' + (is_intersection ? ' station-label-intersection' : '') + '">' + name + '</div>', {
-        noHide: true
-    }).addTo(map);
+        className: 'network-map-station major_station'
+    }).bindLabel('<div class="station-label' + (is_intersection || is_main ? ' station-label-intersection' : '') + '">' + name + '</div>', {
+        noHide: true,
+        className: label_classes.join(' ')
+    });
 }
 
-function add_line(map, from, to, color)
+function add_line(from, to, color)
 {
-    var line = L.polyline([coords2latlng(from), coords2latlng(to)], {
+    return L.polyline([coords2latlng(from), coords2latlng(to)], {
         color: color,
         opacity: 1,
         clickable: false,
 
         className: 'network-map-line'
-    }).addTo(map);
-
-    // Lines need to be always under the stations dots
-    line.setZIndex(-9001);
+    });
 }
 
-function link_stations(map, network, station_base, direction, color)
+function link_stations(lines, network, station_base, direction, color)
 {
     if (station_base.network[direction])
     {
         var station_other = network[station_base.network[direction]];
 
         if (station_other)
-            add_line(map, [station_base.x, station_base.y], [station_other.x, station_other.y], color);
+            lines.push(add_line([station_base.x, station_base.y], [station_other.x, station_other.y], color));
     }
 }
+
+
+/**
+ * Graceful adaptation to the zoom level.
+ *
+ * 12+:   all content displayed
+ * 10-12: all dots, but labels of the main stations (intersections & main cities) only.
+ * 10-:   only dots & labels of the main stations.
+ *
+ * @param map The Leaflet map object
+ * @param layer_others The layer containing the dots of the less useful stations, hidden at low zooms.
+ */
+function adapt_zoom(map, layer_others)
+{
+    var zoom_level = map.getZoom();
+
+    var $labels          = $('.leaflet-label');
+    var $labels_major    = $('.leaflet-label.major_station');
+    var $labels_terminus = $('.leaflet-label.terminus_station');
+
+    if (zoom_level >= 11)
+    {
+        $labels.show();
+
+        if (!map.hasLayer(layer_others))
+            map.addLayer(layer_others);
+    }
+    else if (zoom_level == 10)
+    {
+        $labels.hide();
+        $labels_major.show();
+
+        if (!map.hasLayer(layer_others))
+            map.addLayer(layer_others);
+    }
+    else if (zoom_level == 9)
+    {
+        $labels.hide();
+        $labels_major.show();
+        $labels_terminus.hide();
+
+        map.removeLayer(layer_others);
+    }
+}
+
+
+
+// --------------------
+
+
 
 $(function ()
 {
@@ -115,32 +146,79 @@ $(function ()
         });
 
 
-        // Removes the loader
-        $network_map.empty();
+        // Creates list of markers (will become layers later)
+        var markers_main          = [];
+        var markers_intersections = [];
+        var markers_terminus      = [];
+        var markers_others        = [];
+
+        var lines                 = [];
 
 
-        // Loads the map
-        var map = L.map('network_map').setView([0, 0], 10);
-
-        map.attributionControl.addAttribution('Plan du Netherrail <a href="https://zcraft.fr">Zcraftien</a> | Données aggrégées par <a href="https://github.com/FlorianCassayre/ZePS-Core">Florian Cassayre</a>');
-
-
-        // Adds the stations
+        // Creates the stations, and the lines between them
         network.forEach(function(station)
         {
             if (station.is_visible)
             {
                 var neighborhood = get_neighborhood_infos(station);
-                add_station(map, station.full_name, [station.x, station.y], stations_color_dot, neighborhood.is_intersection, neighborhood.is_terminus);
+                var is_main_station = main_stations.indexOf(station.code_name) > -1;
+
+                var marker_station = add_station(
+                    station.full_name, [station.x, station.y], stations_color_dot,
+                    neighborhood.is_intersection, neighborhood.is_terminus, is_main_station
+                );
+
+                if      (is_main_station)              markers_main.push(marker_station);
+                else if (neighborhood.is_intersection) markers_intersections.push(marker_station);
+                else if (neighborhood.is_terminus)     markers_terminus.push(marker_station);
+                else                                   markers_others.push(marker_station);
             }
 
             if (station.network)
             {
-                link_stations(map, network_by_id, station, 'east', stations_color_lines);
-                link_stations(map, network_by_id, station, 'north', stations_color_lines);
-                link_stations(map, network_by_id, station, 'south', stations_color_lines);
-                link_stations(map, network_by_id, station, 'west', stations_color_lines);
+                link_stations(lines, network_by_id, station, 'east', stations_color_lines);
+                link_stations(lines, network_by_id, station, 'north', stations_color_lines);
+                link_stations(lines, network_by_id, station, 'south', stations_color_lines);
+                link_stations(lines, network_by_id, station, 'west', stations_color_lines);
             }
         });
+
+
+        // Creates the layers, and display them on the map
+        var layer_main          = L.layerGroup(markers_main);
+        var layer_intersections = L.layerGroup(markers_intersections);
+        var layer_terminus      = L.layerGroup(markers_terminus);
+        var layer_others        = L.layerGroup(markers_others);
+        var layer_lines         = L.layerGroup(lines);
+
+
+        // Removes the loader
+        $network_map.empty();
+
+
+        // Loads the map
+        var map = L.map('network_map', {
+            center: [0, 0],
+            zoom: 10,
+
+            minZoom: 9,
+            maxZoom: 14,
+
+            layers: [
+                layer_lines,  // Lines added first because they need to be displayed under the other layers.
+
+                layer_main,
+                layer_intersections,
+                layer_terminus,
+                layer_others
+            ]
+        });
+
+        map.attributionControl.addAttribution('Plan du Netherrail <a href="https://zcraft.fr">Zcraftien</a> | Données aggrégées par <a href="https://github.com/FlorianCassayre/ZePS-Core">Florian Cassayre</a>');
+
+
+        // Ensures the zoom is handled correctly
+        adapt_zoom(map, layer_others);
+        map.on('zoomend', function() { adapt_zoom(map, layer_others); });
     });
 });

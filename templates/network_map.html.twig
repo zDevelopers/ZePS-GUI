@@ -17,6 +17,8 @@
         var routes = {
             stations_network: '{{ path('zeps.api.stations_network') }}'
         };
+
+        var main_stations = '{{ main_stations }}'.split(',');
     </script>
 
     <script type="text/javascript" src="{{ app.request.basePath }}/js/network_map.js"></script>
