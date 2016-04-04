@@ -6,7 +6,7 @@ namespace ZePS\Managers;
 class RoutesManager extends NetworkManager
 {
     const API_LIST = 'https://florian.cassayre.me/api/minecraft/netherrail-list';
-    const API_NETWORK = self::API_LIST . '?withNetwork=true';
+    const API_NETWORK = 'https://florian.cassayre.me/api/minecraft/netherrail-list?withNetwork=true';
     const API_ROUTE = 'https://florian.cassayre.me/api/minecraft/netherrail';
     const API_ROUTE_IMAGE = 'https://florian.cassayre.me/api/minecraft/netherrail-map';
 
