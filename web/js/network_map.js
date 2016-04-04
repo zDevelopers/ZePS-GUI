@@ -212,13 +212,14 @@ $(function ()
             minZoom: 9,
             maxZoom: 14,
 
+            // Layers are added by inverted order of importance—the last will be displayed on top.
             layers: [
-                layer_lines,  // Lines added first because they need to be displayed under the other layers.
+                layer_lines,
 
-                layer_main,
-                layer_intersections,
+                layer_others,
                 layer_terminus,
-                layer_others
+                layer_intersections,
+                layer_main
             ]
         });
 
