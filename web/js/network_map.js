@@ -20,6 +20,7 @@
         stations_color_dot: 'purple',
         stations_color_dot_intersection: 'white',
         stations_color_dot_terminus: 'black',
+        stations_color_dot_main: '#cd0000',
         stations_color_lines: 'purple',
 
         // The main stations (array)
@@ -86,13 +87,33 @@
             if (is_main)
                 label_classes.push('main_station');
 
+            var outlineColor = NetworkMap.stations_color_dot;
+            var insideColor  = NetworkMap.stations_color_dot;
+
+            if (is_main)
+            {
+                insideColor = NetworkMap.stations_color_dot_main;
+            }
+            else if (is_intersection)
+            {
+                insideColor = NetworkMap.stations_color_dot_intersection;
+            }
+            else if (is_terminus)
+            {
+                insideColor = NetworkMap.stations_color_dot_terminus;
+                outlineColor = NetworkMap.stations_color_dot_terminus;
+            }
+
 
             return L.circleMarker(NetworkMap._coords_to_latlng(location), {
-                color: is_terminus ? NetworkMap.stations_color_dot_terminus : color,
-                fillColor: is_intersection ? NetworkMap.stations_color_dot_intersection : (is_terminus ? NetworkMap.stations_color_dot_terminus : color),
+                color: outlineColor,
+                fillColor: insideColor,
 
                 opacity: 0.76,
                 fillOpacity: 1,
+
+                weight: is_main ? 5 : 2,
+                stroke: is_main || is_intersection,
 
                 className: 'network-map-station'
             }).bindLabel('<div class="station-label' + (is_intersection || is_main ? ' station-label-intersection' : '') + (is_main ? ' station-label-main' : '') + '">' + name + '</div>', {

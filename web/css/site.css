@@ -208,6 +208,11 @@ footer.footer, footer.footer a {
     font-size: 130%;
     font-weight: bolder;
 }
+.station-label.station-label-main {
+    font-size: 160%;
+    text-transform: uppercase;
+    font-weight: normal;
+}
 
 
 /* Error pages */
