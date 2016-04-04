@@ -189,7 +189,15 @@ footer.footer, footer.footer a {
 /* Network map */
 
 #network_map {
-    height: 600px;
+    position: absolute;
+    top: 60px;
+    left: 0;
+
+    width: 100%;
+    height: calc(100% - 60px);
+
+    border-radius: 0;
+    border: medium none;
 }
 
 .station-label {
