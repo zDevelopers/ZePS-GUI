@@ -140,6 +140,12 @@ footer.footer, footer.footer a {
     color: whitesmoke;
 }
 
+@media screen and (max-width: 768px) {
+    #homepage-quote {
+        width: 100%;
+    }
+}
+
 
 /* Routes form styles */
 
