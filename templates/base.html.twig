@@ -29,7 +29,8 @@
             <div class="header clearfix">
                 <nav>
                     <ul class="nav nav-pills pull-right">
-                        <li role="presentation" class="active"><a href="{{ path('zeps.homepage') }}">Itinéraire</a></li>
+                        <li role="presentation"{% if not section %} class="active"{% endif %}><a href="{{ path('zeps.homepage') }}">Itinéraire</a></li>
+                        <li role="presentation"{% if section and section == 'network_map' %} class="active"{% endif %}><a href="{{ path('zeps.network_map') }}">Carte du réseau</a></li>
                     </ul>
                 </nav>
                 <h3>{% block nav_title %}Z<em>é</em>PS{% endblock %}</h3>

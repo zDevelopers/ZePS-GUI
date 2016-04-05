@@ -1,0 +1,44 @@
+{%  extends 'base.html.twig' %}
+
+{% block main_title %}Plan du réseau{% endblock %}
+
+{% block nav_title %}Z<em>é</em>PS ⋅ Plan du réseau{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ app.request.basePath }}/css/leaflet/leaflet.css" rel="stylesheet" />
+    <link href="{{ app.request.basePath }}/css/leaflet/leaflet.label.css" rel="stylesheet" />
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.js"></script>
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.label.js"></script>
+
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/network_map.js"></script>
+
+    <script type="text/javascript">
+        $(function()
+        {
+            NetworkMap.network_api      = '{{ path('zeps.api.stations_network') }}';
+            NetworkMap.main_stations    = '{{ main_stations }}'.split(',');
+            NetworkMap.map_container_id = 'network_map';
+
+            NetworkMap.init($('#still_nothing_loader'));
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <noscript>
+        <div class="alert alert-warning">
+            <strong>Javascript est requis pour consulter cette page.</strong>
+            <a href="http://www.enable-javascript.com/fr/">Cliquez ici pour apprendre comment activer Javascript</a>.
+        </div>
+    </noscript>
+
+    <div class="well well-large" id="network_map" style="display: none;">
+        <h4 class="text-center">Chargement de la carte en cours...</h4>
+        <p class="text-center" id="still_nothing_loader">
+            Toujours rien ? Vérifiez que vous n'avez pas perdu votre accès internet entre temps.
+        </p>
+    </div>
+{% endblock %}

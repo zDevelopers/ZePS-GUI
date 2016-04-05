@@ -29,8 +29,17 @@ body {
     color: white;
 }
 
-.header .nav-pills li.active a {
+.nav-pills li a {
+    color: white !important;
+}
+
+.nav-pills li:hover a {
+    color: #0f0f0f !important;
+}
+
+.header .nav-pills li.active a, .header .nav-pills li.active:hover a {
     background-color: #0f0f0f;
+    color: white !important;
 }
 
 .footer {
@@ -176,6 +185,37 @@ footer.footer, footer.footer a {
     font-weight: bold;
 }
 
+
+/* Network map */
+
+#network_map {
+    position: absolute;
+    top: 60px;
+    left: 0;
+
+    width: 100%;
+    height: calc(100% - 60px);
+
+    border-radius: 0;
+    border: medium none;
+}
+
+.station-label {
+    transform-origin: 0% 0%;
+    transform: rotate(-38deg) translateY(-10px) translateX(-6px);
+}
+.station-label.station-label-intersection {
+    font-size: 130%;
+    font-weight: bolder;
+}
+.station-label.station-label-main {
+    font-size: 160%;
+    text-transform: uppercase;
+    font-weight: normal;
+}
+.station-label.label-force-display {
+    display: block !important;
+}
 
 /* Error pages */
 

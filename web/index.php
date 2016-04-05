@@ -42,7 +42,10 @@ if (file_exists(__DIR__.'/../maintenance'))
 
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
-    'twig.path' => __DIR__.'/../templates',
+    'twig.path'    => __DIR__.'/../templates',
+    'twig.options' => array(
+        'strict_variables' => false
+    )
 ));
 
 $app['twig']->getExtension('core')->setTimezone('Europe/Paris');
@@ -78,12 +81,23 @@ $app
     ->value('accessible', false)
     ->bind('zeps.api.route_length');
 
+$app
+    ->get('/api/stations_network', 'ZePS\\Controllers\\NetworkMapController::network_json')
+    ->bind('zeps.api.stations_network');
+
 
 // Redirect pages
 
 $app
     ->get('/from_location', 'ZePS\\Controllers\\RedirectsController::from_location')
     ->bind('zeps.redirects.from_location');
+
+
+// Network map
+
+$app
+    ->get('/plan', 'ZePS\\Controllers\\NetworkMapController::network_map')
+    ->bind('zeps.network_map');
 
 
 // Route search pages
