@@ -23,6 +23,10 @@ $app['config'] = array
     (
         'root' => 'http://map.zcraft.fr',      // The root of the dynmap, aka the public URL used to access it.
         'standalone' => true                   // Non-standalone dynmap installation currently not supported!
+    ),
+
+    'twig' => array(
+        'cache' => __DIR__ . '/../cache/twig'
     )
 );
 
@@ -44,7 +48,9 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path'    => __DIR__.'/../templates',
     'twig.options' => array(
-        'strict_variables' => false
+        'strict_variables' => false,
+        'cache' => $app['debug'] ? false : $app['config']['twig']['cache'],
+        'auto_reload' => $app['debug']
     )
 ));
 
