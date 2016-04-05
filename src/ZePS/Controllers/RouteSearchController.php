@@ -4,6 +4,7 @@ namespace ZePS\Controllers;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
+use ZePS\Managers\QuotesManager;
 use ZePS\Managers\RoutesManager;
 use ZePS\Managers\DateTimeManager;
 
@@ -57,7 +58,8 @@ class RouteSearchController
             'changes_count' => 0,
             'directions_translations' => array(),
             'spawn_station' => RoutesManager::SPAWN_STATION,
-            'image' => ''
+            'image' => '',
+            'quote' => QuotesManager::get_random_quote()
         )));
     }
 

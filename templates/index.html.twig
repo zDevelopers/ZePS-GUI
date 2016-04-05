@@ -326,6 +326,13 @@
                 <img src="{{ image }}" alt="Plan visuel du trajet" class="img-polaroid" />
             </div>
         </div>
+    {% else %}
+        {% if quote %}
+            <blockquote id="homepage-quote">
+                <p>{{ quote.quote }}</p>
+                <footer>{{ quote.author }}</footer>
+            </blockquote>
+        {% endif %}
     {% endif %}
 {% endblock %}
 

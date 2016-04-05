@@ -111,8 +111,33 @@ footer.footer, footer.footer a {
 }
 
 /* Fix for text cursor on input groups */
+
 .input-group-addon {
     cursor: default;
+}
+
+
+/* Index quote style */
+
+#homepage-quote {
+    width: 60%;
+    margin: 30px auto 30px;
+
+    border: none;
+}
+
+#homepage-quote p {
+    text-align: center;
+    font-style: italic;
+
+    color: white;
+}
+
+#homepage-quote footer {
+    text-align: right;
+    font-style: normal;
+
+    color: whitesmoke;
 }
 
 
