@@ -357,6 +357,7 @@
 
                         $label.data('zeps-network-map-previously-hidden', true);
                         $label.data('zeps-network-map-previous-container-style', e.target.options);
+                        $label.data('zeps-network-map-displayed-at-zoom', NetworkMap.map.getZoom());
 
                         e.target.setStyle({
                             stroke: true,
@@ -370,7 +371,12 @@
 
                     if ($label.data('zeps-network-map-previously-hidden'))
                     {
-                        $label.fadeOut(200);
+                        // We hide the label only if the zoom level is the same.
+                        // Else, either the zoom level change hidden it, and we don't have to change that, or
+                        // it makes it always displayed, and again we don't have to change anything.
+                        if ($label.data('zeps-network-map-displayed-at-zoom') == NetworkMap.map.getZoom())
+                            $label.fadeOut(200);
+
                         e.target.setStyle($label.data('zeps-network-map-previous-container-style'));
 
                         $label.removeData('zeps-network-map-previously-hidden');
