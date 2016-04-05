@@ -193,30 +193,32 @@
 
             var $labels = $('.leaflet-label');
             var $labels_major = $('.leaflet-label.major_station');
+            var $label_terminus = $('.leaflet-label.terminus_station');
             var $label_main = $('.leaflet-label.main_station');
 
             if (zoom_level >= 11)
             {
-                $labels.show();
-
                 NetworkMap._add_layer(NetworkMap.layer_others);
                 NetworkMap._add_layer(NetworkMap.layer_terminus);
+
+                $labels.show();
             }
             else if (zoom_level == 10)
             {
-                $labels.hide();
-                $labels_major.show();
-
                 NetworkMap._add_layer(NetworkMap.layer_others);
                 NetworkMap._add_layer(NetworkMap.layer_terminus);
+
+                $labels.hide();
+                $labels_major.show();
+                $label_terminus.hide();
             }
             else if (zoom_level == 9)
             {
-                $labels.hide();
-                $label_main.show();
-
                 NetworkMap.map.removeLayer(NetworkMap.layer_others);
                 NetworkMap.map.removeLayer(NetworkMap.layer_terminus);
+
+                $labels.hide();
+                $label_main.show();
             }
         },
 
