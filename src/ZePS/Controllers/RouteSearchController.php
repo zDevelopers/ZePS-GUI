@@ -71,7 +71,6 @@ class RouteSearchController
         $error = null;
         $raw_error = null;
 
-        $raw_route = array();
         $route = array();
 
         $accessible = false;
@@ -81,15 +80,6 @@ class RouteSearchController
         $through_spawn = false;
 
         $nether_portal = array();
-
-        $compute_time = 0;
-        $travel_time = '';
-
-        $stations_count = 0;
-        $visible_stations_count = 0;
-        $changes_count = 0;
-
-        $distance = 0;
 
         $directions_translations = array(
             'north' => 'nord',
@@ -125,8 +115,8 @@ class RouteSearchController
 
             $options_split = explode('-', $options);
 
-            $from = RoutesManager::station_name_to_id($stations, $from);
-            $to = RoutesManager::station_name_to_id($stations, $to);
+            $from = RoutesManager::station_name_to_id($from);
+            $to   = RoutesManager::station_name_to_id($to);
 
             if ($from === null || $to === null)
                 $app->abort(404);
@@ -140,101 +130,34 @@ class RouteSearchController
             if (in_array('spawn', $options_split))
                 $through_spawn = true;
 
-            $raw_route = RoutesManager::get_netherrail_route($from, $to, $official, $accessible, $debug);
+            try
+            {
+                $route = RoutesManager::get_netherrail_route($from, $to, $official, $accessible, $debug);
 
-            if ($raw_route == null)
-            {
-                $valid = false;
-                $error = 'unreachable';
-            }
-            else
-            {
-                if ($raw_route->result == "failed")
+                if ($route == null)
                 {
-                    $raw_error = $raw_route->cause;
-                    if ($raw_error == "Path not found.")
-                    {
-                        $error = 'no_path';
-                    }
-                    else
-                    {
-                        $error = 'unknown';
-                    }
+                    $valid = false;
+                    $error = 'unreachable';
                 }
                 else
                 {
-                    $travel_time = DateTimeManager::friendly_interval($raw_route->travel_time);
-                    $compute_time = $raw_route->time;
+                    $route->compact();
 
                     // If needed, the nether portal coordinates are calculated
-                    if ($from_overworld && count($raw_route->path) > 0)
+                    if ($from_overworld && $route->getStepsCount() > 0)
                     {
-                        $first_station = $raw_route->path['0'];
-                        $nether_portal['x'] = $first_station->x * 8;
-                        $nether_portal['z'] = $first_station->y * 8;
-                    }
-
-                    // The sections are merged if they are in the same direction
-                    $current_route_part = null;
-
-                    foreach ($raw_route->path AS $step)
-                    {
-                        // New direction?
-                        if ($current_route_part == null || (isset($step->path_direction) && $step->path_direction != $current_route_part['direction']))
-                        {
-                            if ($current_route_part != null)
-                            {
-                                if (isset($current_route_part['steps']) && count($current_route_part['steps']) > 0)
-                                    $current_route_part['to'] = $current_route_part['steps'][count($current_route_part['steps']) - 1];
-
-                                $route[] = $current_route_part;
-                            }
-
-                            // It was not the last one
-                            if (isset($step->path_direction))
-                            {
-                                $current_route_part = array(
-                                    'direction' => $step->path_direction,
-                                    'from' => $step,
-                                    'to' => null,
-                                    'steps' => array(),
-                                    'length' => 0
-                                );
-                            }
-                        }
-
-                        $step_length = isset($step->path_length) ? $step->path_length : 0;
-
-                        if ($step->is_intersection)
-                            $current_route_part['steps'][] = $step;
-
-                        if (isset($current_route_part['length']))
-                            $current_route_part['length'] += $step_length;
-                        else
-                            $current_route_part['length'] = $step_length;
-
-                        $distance += $step_length;
-                    }
-
-                    // Last route inserted (duplicated code :c )
-                    if ($current_route_part != null )
-                    {
-                        if (!empty($current_route_part['steps']))
-                            $current_route_part['to'] = $current_route_part['steps'][count($current_route_part['steps']) - 1];
-
-                        $route[] = $current_route_part;
-                    }
-
-                    $stations_count = count($raw_route->stations);
-                    $changes_count = count($route);
-
-                    $visible_stations_count = 0;
-                    foreach ($raw_route->path as $station)
-                    {
-                        if ($station->is_visible)
-                            $visible_stations_count++;
+                        $first_station = $route->getPath()[0]->getStation();
+                        $nether_portal['x'] = $first_station->getLocationX() * 8;
+                        $nether_portal['z'] = $first_station->getLocationZ() * 8;
                     }
                 }
+            }
+            catch(\RuntimeException $e)
+            {
+                if ($e->getMessage() == 'Path not found.')
+                    $error = 'no_path';
+                else
+                    $error = 'unknown';
             }
         }
 
@@ -250,26 +173,18 @@ class RouteSearchController
             'stations' => $stations,
 
             'route' => $route,
-            'travel_time' => $travel_time,
-            'travel_time_seconds' => $raw_route->travel_time,
-            'compute_time' => $compute_time,
 
             'from_overworld' => $from_overworld,
             'nether_portal' => $nether_portal,
 
             'through_spawn' => $through_spawn,
 
-            'stations_count' => $stations_count,
-            'visible_stations_count' => $visible_stations_count,
-            'changes_count' => $changes_count,
-            'distance' => $distance,
-
             'directions_translations' => $directions_translations,
 
             'spawn_station' => RoutesManager::SPAWN_STATION,
-            'spawn_station_id' => RoutesManager::station_name_to_id($stations, RoutesManager::SPAWN_STATION),
+            'spawn_station_id' => RoutesManager::station_name_to_id(RoutesManager::SPAWN_STATION),
 
-            'image' => $error == null ? RoutesManager::get_netherrail_route_image($raw_route) : ''
+            'image' => $error == null ? RoutesManager::get_netherrail_route_image($route) : ''
         )));
     }
 }

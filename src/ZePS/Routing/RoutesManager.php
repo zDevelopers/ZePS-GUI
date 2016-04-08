@@ -7,17 +7,21 @@ use ZePS\Misc\NetworkManager;
 
 class RoutesManager extends NetworkManager
 {
-    const API_LIST = 'https://florian.cassayre.me/api/minecraft/netherrail-list';
-    const API_NETWORK = 'https://florian.cassayre.me/api/minecraft/netherrail-list?withNetwork=true';
-    const API_ROUTE = 'https://florian.cassayre.me/api/minecraft/netherrail';
-    const API_ROUTE_IMAGE = 'https://florian.cassayre.me/api/minecraft/netherrail-map';
+    const API_LIST = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/list';
+    const API_NETWORK = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/list?withNetwork=true';
+    const API_ROUTE = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/path';
+    const API_ROUTE_IMAGE = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/map';
 
     const SPAWN_STATION = 'tentacles';
     const MAIN_NETHERRAIL_STATIONS = 'tentacles,vaalon,nouvea';
 
 
+    private static $netherrail_stations = null;
+
+
     /**
      * Returns the netherrail stations.
+     * The results of this method are cached. The first call calls the API to retrieves the stations.
      *
      * @param bool $debug True to print debug notices.
      *
@@ -28,29 +32,75 @@ class RoutesManager extends NetworkManager
      */
     public static function get_netherrail_stations($debug = false)
     {
-        $json = self::get_json(self::API_LIST, $debug);
+        if (self::$netherrail_stations == null)
+        {
+            $json = self::get_json(self::API_LIST, $debug);
 
-        if ($json == null || $json->result != "success")
-            return array('stations' => array(), 'main_stations' => array());
+            if ($json == null || $json->result != "success")
+            {
+                self::$netherrail_stations = array('stations' => array(), 'main_stations' => array());
+            }
+            else
+            {
+                $stations = array();
 
-        $stations = array();
+                foreach ($json->stations as $station)
+                {
+                    $station = Station::fromJSON($station);
+                    $stations[$station->getId()] = $station;
+                }
 
-        foreach ($json->stations AS $station)
-            $stations[$station->id] = $station;
+                $main_stations = array();
+                $main_stations_codes = \explode(',', self::MAIN_NETHERRAIL_STATIONS);
 
-        $main_stations = array();
-        $main_stations_codes = \explode(',', self::MAIN_NETHERRAIL_STATIONS);
+                foreach ($stations as $station)
+                {
+                    if (\in_array($station->getName(), $main_stations_codes))
+                    {
+                        $main_stations[array_search($station->getName(), $main_stations_codes)] = $station;
+                    }
+                }
 
-        foreach ($json->stations AS $station)
-            if (\in_array($station->code_name, $main_stations_codes))
-                $main_stations[array_search($station->code_name, $main_stations_codes)] = $station;
+                ksort($main_stations);
 
-        ksort($main_stations);
+                self::$netherrail_stations = array(
+                    'stations' => $stations,
+                    'main_stations' => $main_stations
+                );
+            }
+        }
 
-        return array(
-            'stations' => $stations,
-            'main_stations' => $main_stations
-        );
+        return self::$netherrail_stations;
+    }
+
+    /**
+     * Retrieves a station by ID.
+     *
+     * @param integer $id The station ID.
+     * @return Station The station, or `null` if not found.
+     */
+    public static function get_station_by_id($id)
+    {
+        $stations = self::get_netherrail_stations()['stations'];
+
+        return isset($stations[$id]) ? $stations[$id] : null;
+    }
+
+    /**
+     * Retrieves a station by code name.
+     *
+     * @param string $code_name The station's code name.
+     * @return Station The station, or `null` if not found.
+     */
+    public static function get_station_by_codename($code_name)
+    {
+        $stations = self::get_netherrail_stations()['stations'];
+
+        foreach ($stations as $station)
+            if ($station->getName() == $code_name)
+                return $station;
+
+        return null;
     }
 
     /**
@@ -61,17 +111,22 @@ class RoutesManager extends NetworkManager
      * @param bool $official If true, avoids non-official stations.
      * @param bool $accessible If true, avoids stations non accessible from the modern netherrail.
      * @param bool $debug True to print debug notices.
-     * @return object The route.
+     * @return RoutingPath The route, or null if not retrievable.
      */
     public static function get_netherrail_route($from, $to, $official = false, $accessible = false, $debug = false)
     {
-        return self::get_json(self::API_ROUTE . '?begin=' . $from . '&end=' . $to . '&official=' . ($official ? 'true' : 'false') . '&accessible=' . ($accessible ? 'true' : 'false'), $debug);
+        $json = self::get_json(self::API_ROUTE . '?begin=' . $from . '&end=' . $to . '&official=' . ($official ? 'true' : 'false') . '&accessible=' . ($accessible ? 'true' : 'false'), $debug);
+
+        if (!isset($json->result) || $json->result != 'success')
+            throw new \RuntimeException($json->cause, $json->result);
+
+        return RoutingPath::fromJSON($json);
     }
 
     /**
      * Returns a link to an image representing the route.
      *
-     * @param object $routes The route, as returned by self::get_netherrail_route.
+     * @param RoutingPath $routes The route.
      * @return string The image URL.
      */
     public static function get_netherrail_route_image($routes)
@@ -79,27 +134,27 @@ class RoutesManager extends NetworkManager
         $lines  = '';
         $points = '';
 
-        $lines_limites = array();
+        $lines_limits = array();
 
         $prev_point = null;
 
-        foreach ($routes->path AS $step)
+        foreach ($routes->getPath() as $step)
         {
-            if (!$step->station->is_visible)
+            if (!$step->getStation()->isVisible())
                 continue;
 
-            $point = $step->station->x . ',' . $step->station->y . ',';
+            $point = $step->getStation()->getLocationX() . ',' . $step->getStation()->getLocationZ() . ',';
 
             if ($prev_point != null)
             {
-                $lines_limites[] = $prev_point . $point;
+                $lines_limits[] = $prev_point . $point;
             }
 
             $points .= $point;
             $prev_point = $point;
         }
 
-        foreach ($lines_limites AS $line)
+        foreach ($lines_limits as $line)
         {
             $lines .= $line;
         }
@@ -130,34 +185,29 @@ class RoutesManager extends NetworkManager
     /**
      * Converts a station's code_name to the station ID.
      *
-     * @param array $stations The stations, as returned by get_netherrail_stations.
      * @param string $station_name The station's code name.
+     *
      * @return int The station's ID, or null if not found.
      */
-    public static function station_name_to_id($stations, $station_name)
+    public static function station_name_to_id($station_name)
     {
-        foreach ($stations['stations'] AS $station)
-            if ($station->code_name == $station_name)
-                return (int) $station->id;
+        $station = self::get_station_by_codename($station_name);
 
-        return null;
+        if ($station != null)  return $station->getId();
+        else                   return null;
     }
 
     /**
      * Returns the closest station from the given coordinates.
      *
-     * @param array $stations The stations, as returned by get_netherrail_stations.
-     * @param double $x The X coordinate
-     * @param double $z The Z coordinate
-     * @param bool $from_overworld true if the given coordinates are from the overworld.
+     * @param double $x              The X coordinate
+     * @param double $z              The Z coordinate
+     * @param bool   $from_overworld true if the given coordinates are from the overworld.
      *
      * @return array An array with the following keys:
      *               - 'nearest_station': the object of the nearest station;
-     *               - 'distance': the distance from the given point to the station, or from the nether equivalent of
-     *                             the point, if from the overworld;
-     *               - 'from_overworld': true if from overworld, to know how to understand the distance
      */
-    public static function get_closest_station($stations, $x, $z, $from_overworld)
+    public static function get_closest_station($x, $z, $from_overworld)
     {
         // Coordinates correction if the player is in the overworld
 
@@ -173,9 +223,9 @@ class RoutesManager extends NetworkManager
         $nearest_station           = null;
         $squared_smallest_distance = -1;
 
-        foreach ($stations['stations'] as $station)
+        foreach (self::get_netherrail_stations()['stations'] as $station)
         {
-            $squared_distance = self::squared_distance($x, $z, $station->x, $station->y);
+            $squared_distance = self::squared_distance($x, $z, $station->getLocationX(), $station->getLocationZ());
 
             if ($nearest_station == null || $squared_distance < $squared_smallest_distance)
             {

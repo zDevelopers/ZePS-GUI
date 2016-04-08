@@ -1,18 +1,18 @@
 {% macro station(station_obj) %}{% spaceless %}
-    <span class="station-name station-withname-{{ station_obj.code_name }}" title="Coordonnées : {{ station_obj.x }} ; {{ station_obj.y }}">{{ station_obj.full_name }}</span>
+    <span class="station-name station-withname-{{ station_obj.name }}" title="Coordonnées : {{ station_obj.locationX }} ; {{ station_obj.locationZ }}">{{ station_obj.displayName }}</span>
 {% endspaceless %}{% endmacro %}
 
 {% macro stations_list(stations, selected_id, geolocation_enabled, placeholder) %}
     <option value=""{% if geolocation_enabled %} id="starting-point-placeholder"{% endif %} disabled{% if not selected_id %} selected{% endif %}>{{ placeholder }}
     <optgroup label="Stations principales">
         {% for station in stations.main_stations %}
-            <option value="{{ station.code_name }}">{{ station.full_name }}</option>
+            <option value="{{ station.name }}">{{ station.displayName }}</option>
         {% endfor %}
     </optgroup>
     <optgroup label="Toutes les stations">
         {% for station in stations.stations %}
-            {% if station.is_visible %}
-                <option value="{{ station.code_name }}"{% if selected_id is not same as(false) and selected_id == station.id %} selected{% endif %}>{{ station.full_name }}</option>
+            {% if station.isVisible %}
+                <option value="{{ station.name }}"{% if selected_id is not same as(false) and selected_id == station.id %} selected{% endif %}>{{ station.displayName }}</option>
             {% endif %}
         {% endfor %}
     </optgroup>

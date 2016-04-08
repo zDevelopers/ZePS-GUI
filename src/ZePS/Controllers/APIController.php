@@ -52,12 +52,10 @@ class APIController
 
     public function route_length(Application $app, $from_id, $to_id, $official, $accessible)
     {
-        $stations = RoutesManager::get_netherrail_stations()['stations'];
-
         return $app->json(array(
-            'from_station' => $stations[$from_id],
-            'to_station'   => $stations[$to_id],
-            'travel_time'  => RoutesManager::get_netherrail_route($from_id, $to_id, $official, $accessible)->travel_time
+            'from_station' => RoutesManager::get_station_by_id($from_id) -> toJSON(),
+            'to_station'   => RoutesManager::get_station_by_id($to_id) -> toJSON(),
+            'travel_time'  => RoutesManager::get_netherrail_route($from_id, $to_id, $official, $accessible)->getTravelTime()
         ));
     }
 

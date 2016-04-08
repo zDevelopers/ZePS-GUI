@@ -15,12 +15,6 @@ class RedirectsController
      */
     private $dynmap_players = null;
 
-    /**
-     * Cached stations list (as returned by RoutesManager::get_netherrail_stations).
-     * @var array
-     */
-    private $stations = null;
-
 
     /**
      * Arguments (by order of importance):
@@ -41,8 +35,7 @@ class RedirectsController
     {
         $query = $app['request']->query;
 
-        $this->stations = RoutesManager::get_netherrail_stations();
-        if (empty($this->stations['stations'])) $app->abort(503);
+        if (empty(RoutesManager::get_netherrail_stations()['stations'])) $app->abort(503);
 
 
         $from = $this->load_parameters($app, $query, 'from');
@@ -57,8 +50,8 @@ class RedirectsController
         $to_station   = $this->get_station($to);
 
         return $app->redirect($app['url_generator']->generate('zeps.search_results', array(
-            'from'    => $from_station->code_name,
-            'to'      => $to_station->code_name,
+            'from'    => $from_station->getName(),
+            'to'      => $to_station->getName(),
             'options' => $from['overworld'] === true ? 'overworld' : ''
         )), 301);
     }
@@ -123,16 +116,7 @@ class RedirectsController
         }
         else if ($query->has($basename.'Station'))
         {
-            $station_name = $query->get($basename.'Station');
-
-            foreach ($this->stations['stations'] as $current_station)
-            {
-                if ($current_station->code_name == $station_name)
-                {
-                    $station = $current_station;
-                    break;
-                }
-            }
+            $station = RoutesManager::get_station_by_codename($query->get($basename.'Station'));
 
             // If the station is still null, a station with this name does not exists.
             if ($station === null)
@@ -140,11 +124,10 @@ class RedirectsController
         }
         else if ($query->has($basename.'StationID'))
         {
-            $station_id = $query->get($basename.'StationID');
+            $station = RoutesManager::get_station_by_id((integer) $query->get($basename.'StationID'));
 
-            if (isset($this->stations['stations'][$station_id]))
-                $station = $this->stations['stations'][$station_id];
-            else
+            // If the station is still null, a station with this ID does not exists.
+            if ($station === null)
                 return false;
         }
 
@@ -178,7 +161,7 @@ class RedirectsController
             return $parameters['station'];
 
         // Here we need to retrieve the closest station.
-        return RoutesManager::get_closest_station($this->stations, $parameters['x'], $parameters['z'], $parameters['overworld'])['nearest_station'];
+        return RoutesManager::get_closest_station($parameters['x'], $parameters['z'], $parameters['overworld'])['nearest_station'];
     }
 
 
