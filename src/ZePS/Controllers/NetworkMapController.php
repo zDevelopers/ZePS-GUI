@@ -4,7 +4,7 @@ namespace ZePS\Controllers;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
-use ZePS\Managers\RoutesManager;
+use ZePS\Routing\RoutesManager;
 
 
 class NetworkMapController

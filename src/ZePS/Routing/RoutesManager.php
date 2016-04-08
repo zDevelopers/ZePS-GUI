@@ -1,6 +1,8 @@
 <?php
 
-namespace ZePS\Managers;
+namespace ZePS\Routing;
+
+use ZePS\Misc\NetworkManager;
 
 
 class RoutesManager extends NetworkManager
@@ -81,12 +83,12 @@ class RoutesManager extends NetworkManager
 
         $prev_point = null;
 
-        foreach ($routes->stations AS $step)
+        foreach ($routes->path AS $step)
         {
-            if (!$step->is_visible)
+            if (!$step->station->is_visible)
                 continue;
 
-            $point = $step->x . ',' . $step->y . ',';
+            $point = $step->station->x . ',' . $step->station->y . ',';
 
             if ($prev_point != null)
             {

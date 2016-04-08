@@ -3,8 +3,8 @@
 namespace ZePS\Controllers;
 
 use Silex\Application;
-use ZePS\Managers\DynmapBridgeManager;
-use ZePS\Managers\RoutesManager;
+use ZePS\Dynmap\DynmapBridgeManager;
+use ZePS\Routing\RoutesManager;
 
 
 class APIController

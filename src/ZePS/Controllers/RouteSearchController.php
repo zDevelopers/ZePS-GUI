@@ -4,9 +4,9 @@ namespace ZePS\Controllers;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
-use ZePS\Managers\QuotesManager;
-use ZePS\Managers\RoutesManager;
-use ZePS\Managers\DateTimeManager;
+use ZePS\Quotes\QuotesManager;
+use ZePS\Routing\RoutesManager;
+use ZePS\Misc\DateTimeManager;
 
 
 class RouteSearchController
@@ -167,9 +167,9 @@ class RouteSearchController
                     $compute_time = $raw_route->time;
 
                     // If needed, the nether portal coordinates are calculated
-                    if ($from_overworld && count($raw_route->stations) > 0)
+                    if ($from_overworld && count($raw_route->path) > 0)
                     {
-                        $first_station = $raw_route->stations['0'];
+                        $first_station = $raw_route->path['0'];
                         $nether_portal['x'] = $first_station->x * 8;
                         $nether_portal['z'] = $first_station->y * 8;
                     }
@@ -177,7 +177,7 @@ class RouteSearchController
                     // The sections are merged if they are in the same direction
                     $current_route_part = null;
 
-                    foreach ($raw_route->stations AS $step)
+                    foreach ($raw_route->path AS $step)
                     {
                         // New direction?
                         if ($current_route_part == null || (isset($step->path_direction) && $step->path_direction != $current_route_part['direction']))
@@ -229,7 +229,7 @@ class RouteSearchController
                     $changes_count = count($route);
 
                     $visible_stations_count = 0;
-                    foreach ($raw_route->stations as $station)
+                    foreach ($raw_route->path as $station)
                     {
                         if ($station->is_visible)
                             $visible_stations_count++;

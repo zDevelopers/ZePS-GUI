@@ -1,8 +1,10 @@
 <?php
 
-namespace ZePS\Managers;
+namespace ZePS\Dynmap;
 
 use Silex\Application;
+use ZePS\Misc\NetworkManager;
+use ZePS\Routing\RoutesManager;
 
 
 class DynmapBridgeManager extends NetworkManager
