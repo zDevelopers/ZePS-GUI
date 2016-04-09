@@ -46,7 +46,11 @@ class APIController
         if (is_int($station))
             return $app->json(array('error_code' => $station, 'error_message' => $this->code2error($station)), 503);
 
-        return $app->json($station);
+        return $app->json(array(
+            'nearest_station' => $station['nearest_station']->toJSON(),
+            'distance' => $station['distance'],
+            'from_overworld' => $station['from_overworld']
+        ));
     }
 
 
