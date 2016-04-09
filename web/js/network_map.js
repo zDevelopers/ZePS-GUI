@@ -26,6 +26,11 @@
         stations_color_dot_main: '#cd0000',
         stations_default_color_lines: 'purple',
 
+        // The stations sizes
+        stations_size_outline_normal: 2,
+        stations_size_outline_main: 5,
+        station_size_dot: 10,
+
         // The main stations (array)
         main_stations: [],
 
@@ -143,7 +148,7 @@
                 opacity: 0.76,
                 fillOpacity: 1,
 
-                weight: is_main ? 5 : 2,
+                weight: is_main ? NetworkMap.stations_size_outline_main : NetworkMap.stations_size_outline_normal,
                 stroke: is_main || is_intersection,
 
                 className: 'network-map-station'
@@ -156,6 +161,10 @@
             // Station metadata
             station.zeps_station_code_name = code_name;
             station.zeps_station_id        = id;
+
+            station.zeps_station_is_main         = is_main;
+            station.zeps_station_is_terminus     = is_terminus;
+            station.zeps_station_is_intersection = is_intersection;
 
 
             return station;
@@ -259,6 +268,33 @@
         },
 
         /**
+         * Updates the size of a circle marker.
+         *
+         * @param marker The marker to update.
+         * @param size The new size. If undefined, reset to the default size.
+         * @private
+         */
+        _update_station_dot_size: function(marker, size)
+        {
+            marker.setRadius(size ? size : NetworkMap.station_size_dot);
+        },
+
+        /**
+         * Updates the size of all circle markers in the given layer.
+         *
+         * @param layer The layer to update.
+         * @param size The new size. If undefined, reset to the default size.
+         * @private
+         */
+        _update_layer_dot_size: function(layer, size)
+        {
+            layer.eachLayer(function (marker)
+            {
+                NetworkMap._update_station_dot_size(marker, size);
+            });
+        },
+
+        /**
          * Adds a layer to the map, if not previously added.
          *
          * @param layer The layer to add.
@@ -293,6 +329,11 @@
                 NetworkMap._add_layer(NetworkMap.layer_others);
                 NetworkMap._add_layer(NetworkMap.layer_terminus);
 
+                NetworkMap._update_layer_dot_size(NetworkMap.layer_intersections);
+                NetworkMap._update_layer_dot_size(NetworkMap.layer_main);
+                NetworkMap._update_layer_dot_size(NetworkMap.layer_terminus);
+                NetworkMap._update_layer_dot_size(NetworkMap.layer_others);
+
                 $labels.show();
             }
             else if (zoom_level == 10)
@@ -300,14 +341,35 @@
                 NetworkMap._add_layer(NetworkMap.layer_others);
                 NetworkMap._add_layer(NetworkMap.layer_terminus);
 
+                NetworkMap._update_layer_dot_size(NetworkMap.layer_intersections);
+                NetworkMap._update_layer_dot_size(NetworkMap.layer_main);
+                NetworkMap._update_layer_dot_size(NetworkMap.layer_terminus);
+                NetworkMap._update_layer_dot_size(NetworkMap.layer_others);
+
                 $labels.hide();
                 $labels_major.show();
                 $label_terminus.hide();
             }
             else if (zoom_level == 9)
             {
+                NetworkMap._add_layer(NetworkMap.layer_others);
+                NetworkMap._add_layer(NetworkMap.layer_terminus);
+
+                NetworkMap._update_layer_dot_size(NetworkMap.layer_main, 8);
+                NetworkMap._update_layer_dot_size(NetworkMap.layer_intersections, 8);
+                NetworkMap._update_layer_dot_size(NetworkMap.layer_terminus, 5);
+                NetworkMap._update_layer_dot_size(NetworkMap.layer_others, 5);
+
+                $labels.hide();
+                $label_main.show();
+            }
+            else if (zoom_level == 8)
+            {
                 NetworkMap.map.removeLayer(NetworkMap.layer_others);
                 NetworkMap.map.removeLayer(NetworkMap.layer_terminus);
+
+                NetworkMap._update_layer_dot_size(NetworkMap.layer_intersections, 4);
+                NetworkMap._update_layer_dot_size(NetworkMap.layer_main, 7);
 
                 $labels.hide();
                 $label_main.show();
@@ -423,7 +485,7 @@
                         center: [0, 0],
                         zoom: 10,
 
-                        minZoom: 9,
+                        minZoom: 8,
                         maxZoom: 14,
 
                         // Layers are added by inverted order of importance—the last will be displayed on top.
