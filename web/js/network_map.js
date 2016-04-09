@@ -65,9 +65,26 @@
         _get_neighborhood_infos: function(station)
         {
             var relations_count = Object.keys(station.network).length;
+            var is_intersection = false;
+
+            if (relations_count > 2)
+            {
+                is_intersection = true;
+            }
+            else if (relations_count == 2)
+            {
+                // If there are two relations, it's an intersection if they are not in the same axis.
+                var direction1 = station.network[0].direction;
+                var direction2 = station.network[1].direction;
+
+                var axis1 = (direction1 == 'east' || direction1 == 'west') ? 0 : 1;
+                var axis2 = (direction2 == 'east' || direction2 == 'west') ? 0 : 1;
+
+                if (axis1 != axis2) is_intersection = true;
+            }
 
             return {
-                is_intersection: relations_count > 2,
+                is_intersection: is_intersection,
                 is_terminus: relations_count <= 1
             };
         },
