@@ -32,6 +32,9 @@
         // The raw network object returned by the API but indexed by station ID.
         network: {},
 
+        // The links already drawn, avoiding duplicated lines (better performances, plus visible in the dashed lines).
+        lines_drawn: [],
+
 
         /**
          * Converts Minecraft coordinates to lat/long used by Leaflet.
@@ -128,18 +131,32 @@
          * @param from The line's first point (array: first key is X, other is Z coordinate in Minecraft system).
          * @param to The line's last point.
          * @param color The line's color.
+         * @param is_rail True if this is a railway segment.
          * @return {*} A Leaflet polyline object.
          * @private
          */
-        _create_line: function(from, to, color)
+        _create_line: function(from, to, color, is_rail)
         {
             return L.polyline([NetworkMap._coords_to_latlng(from), NetworkMap._coords_to_latlng(to)], {
                 color: color,
                 opacity: 1,
                 clickable: false,
 
+                dashArray: !is_rail ? '5, 5, 1, 5' : null,
+
                 className: 'network-map-line'
             });
+        },
+
+        __encode_link: function(station1, station2)
+        {
+            return station1.x + ',' + station1.y + ';' + station2.x + ',' + station2.y;
+        },
+
+        __link_exists: function(station1, station2)
+        {
+            return NetworkMap.lines_drawn.indexOf(NetworkMap.__encode_link(station1, station2)) > -1
+                || NetworkMap.lines_drawn.indexOf(NetworkMap.__encode_link(station2, station1)) > -1;
         },
 
         /**
@@ -154,15 +171,29 @@
          */
         _link_stations: function(lines, station_base, direction, color)
         {
-            if (station_base.network[direction])
+            // We try to find a link in this direction
+            var link = null;
+            station_base.network.forEach(function(network_link)
             {
-                var station_other = NetworkMap.network[station_base.network[direction]];
+                if (network_link.direction == direction)
+                {
+                    link = network_link;
+                }
+            });
 
-                if (station_other)
+            if (link != null)
+            {
+                var station_other = NetworkMap.network[link.to];
+
+                if (station_other && !NetworkMap.__link_exists(station_base, station_other))
+                {
                     lines.push(NetworkMap._create_line(
                         [station_base.x, station_base.y], [station_other.x, station_other.y],
-                        color
+                        color, link.is_rail
                     ));
+
+                    NetworkMap.lines_drawn.push(NetworkMap.__encode_link(station_base, station_other));
+                }
             }
         },
 
