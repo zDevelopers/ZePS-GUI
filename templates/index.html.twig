@@ -286,7 +286,7 @@
                                     {% if step.stationFrom.isVisible %}
                                         À <strong>{{ macros.station(step.stationFrom) }}</strong>,
                                     {% else %}
-                                        Vers <strong>({{ step.from.x }} ; {{ step.from.y }})</strong>,
+                                        Vers <strong>({{ step.stationFrom.locationX }} ; {{ step.stationFrom.locationZ }})</strong>,
                                     {% endif %}
                                     prenez la direction <strong>{{ attribute(directions_translations, step.direction) }}</strong>.
                                 </p>
