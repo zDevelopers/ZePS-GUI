@@ -26,4 +26,14 @@ class NetworkMapController
 
         return $app->json($network);
     }
+
+    public function network_colors_json(Application $app)
+    {
+        $colors = RoutesManager::get_netherrail_network_colors();
+
+        if ($colors === null || empty($colors))
+            $app->abort(503);
+
+        return $app->json($colors);
+    }
 }

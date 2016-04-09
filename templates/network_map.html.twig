@@ -18,9 +18,10 @@
     <script type="text/javascript">
         $(function()
         {
-            NetworkMap.network_api      = '{{ path('zeps.api.stations_network') }}';
-            NetworkMap.main_stations    = '{{ main_stations }}'.split(',');
-            NetworkMap.map_container_id = 'network_map';
+            NetworkMap.network_api        = '{{ path('zeps.api.stations_network') }}';
+            NetworkMap.network_colors_api = '{{ path('zeps.api.stations_network_colors') }}';
+            NetworkMap.main_stations      = '{{ main_stations }}'.split(',');
+            NetworkMap.map_container_id   = 'network_map';
 
             NetworkMap.init($('#still_nothing_loader'));
         });

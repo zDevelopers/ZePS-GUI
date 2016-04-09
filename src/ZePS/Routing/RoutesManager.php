@@ -9,6 +9,7 @@ class RoutesManager extends NetworkManager
 {
     const API_LIST = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/list';
     const API_NETWORK = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/list?withNetwork=true';
+    const API_NETWORK_COLORS = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/colors';
     const API_ROUTE = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/path';
     const API_ROUTE_IMAGE = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/map';
 
@@ -180,6 +181,18 @@ class RoutesManager extends NetworkManager
             return array();
 
         return $response->stations;
+    }
+
+    /**
+     * Loads the network colors (colors of the lines based on the coordinates and the orientation).
+     *
+     * @param bool $debug True to print debug notices.
+     *
+     * @return object
+     */
+    public static function get_netherrail_network_colors($debug = false)
+    {
+        return self::get_json(self::API_NETWORK_COLORS, $debug);
     }
 
     /**

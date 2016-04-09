@@ -95,6 +95,10 @@ $app
     ->get('/api/stations_network', 'ZePS\\Controllers\\NetworkMapController::network_json')
     ->bind('zeps.api.stations_network');
 
+$app
+    ->get('/api/stations_network_colors', 'ZePS\\Controllers\\NetworkMapController::network_colors_json')
+    ->bind('zeps.api.stations_network_colors');
+
 
 // Redirect pages
 
