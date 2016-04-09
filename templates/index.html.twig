@@ -4,7 +4,7 @@
 
 {% block main_title %}
     {%  if submitted and valid %}
-        {{ attribute(stations.stations, from).full_name }} → {{ attribute(stations.stations, to).full_name }} ⋅
+        {{ attribute(stations.stations, from).displayName }} → {{ attribute(stations.stations, to).displayName }} ⋅
     {% endif %}
     Itinéraire
 {% endblock %}
@@ -12,7 +12,7 @@
 {% block title %}
     <h1>Z<em>é</em>PS</h1>
     {% if submitted and valid %}
-        <p>De {{ attribute(stations.stations, from).full_name }} à {{ attribute(stations.stations, to).full_name }}</p>
+        <p>De {{ attribute(stations.stations, from).displayName }} à {{ attribute(stations.stations, to).displayName }}</p>
     {% else %}
         <p>Itinéraire dans le Netherrail</p>
     {% endif %}
@@ -49,7 +49,7 @@
                 'official': {{ options.official ? 'true' : 'false' }},
                 'accessible': {{ options.accessible ? 'true' : 'false' }},
                 'raw_options': '{{ raw_options }}',
-                'travel_time': {{ travel_time_seconds }}
+                'travel_time': {{ route.travelTime }}
             };
 
             alternative_starts = [{% for station in stations.main_stations %}{{ station.id }}, {% endfor %}];
@@ -205,17 +205,17 @@
             <div class="row">
                 <div class="col-xs-12 col-md-6">
                     <h4 class="muted small-title">Temps de trajet</h4>
-                    <p class="lead">{{ travel_time }}</p>
+                    <p class="lead">{{ route.travelTime|time_format }}</p>
 
                     <h4 class="muted small-title">Distance totale</h4>
-                    <p class="lead">{{ distance|number_format }} bloc{% if distance > 1 %}s{% endif %}</p>
+                    <p class="lead">{{ route.length|number_format }} bloc{% if route.length > 1 %}s{% endif %}</p>
                 </div>
                 <div class="col-xs-12 col-md-6">
                     <h4 class="muted small-title">Nombre d'étapes</h4>
-                    <p class="lead">{{ changes_count|number_format }}</p>
+                    <p class="lead">{{ route.compactStepCount|number_format }}</p>
 
                     <h4 class="muted small-title">Nombre de stations</h4>
-                    <p class="lead">{{ visible_stations_count|number_format }}</p>
+                    <p class="lead">{{ route.stationsCount|number_format }}</p>
                 </div>
             </div>
 
@@ -275,7 +275,7 @@
                         </tr>
                     {% endif %}
 
-                    {% for step in route %}
+                    {% for step in route.compactPath %}
                         <tr>
                             <td>
                                 <div class="pull-right">
@@ -283,21 +283,21 @@
                                 </div>
 
                                 <p class="route_main_consign">
-                                    {% if step.from.is_visible %}
-                                        À <strong>{{ macros.station(step.from) }}</strong>,
+                                    {% if step.stationFrom.isVisible %}
+                                        À <strong>{{ macros.station(step.stationFrom) }}</strong>,
                                     {% else %}
-                                        Vers <strong>({{ step.from.x }} ; {{ step.from.y }})</strong>,
+                                        Vers <strong>({{ step.stationFrom.locationX }} ; {{ step.stationFrom.locationZ }})</strong>,
                                     {% endif %}
                                     prenez la direction <strong>{{ attribute(directions_translations, step.direction) }}</strong>.
                                 </p>
                                 {% if step.steps|length >= 2 %}
                                     <p class="route_intermediate_stations">
-                                        {% if step.steps|length == 2 and step.steps[1].is_visible %}
-                                            Vous passez par la station {{ macros.station(step.steps[1]) }}.
+                                        {% if step.steps|length == 2 and step.steps[1].station.isVisible %}
+                                            Vous passez par la station {{ macros.station(step.steps[1].station) }}.
                                         {% else %}
                                             Vous passez par les stations
                                             {% set first = true %}
-                                            {% for station in step.steps %}{% if station.id != step.from.id and station.is_visible %}{% if not first and station.id != step.to.id %}, {% elseif station.id == step.to.id %} et {% endif %}{{ macros.station(station) }}{% set first = false %}{% endif %}{% endfor %}.
+                                            {% for substep in step.steps %}{% if substep.station.id != step.stationFrom.id and substep.station.isVisible %}{% if not first and substep.station.id != step.stationTo.id %}, {% elseif substep.station.id == step.stationTo.id %} et {% endif %}{{ macros.station(substep.station) }}{% set first = false %}{% endif %}{% endfor %}.
                                         {% endif %}
                                     </p>
                                 {% endif %}
@@ -338,6 +338,6 @@
 
 {% block footer_in_line %}
     {% if submitted and valid %}
-         — <span title="Temps nécessaire pour calculer l'itinéraire : {{ compute_time }} ms">{{ compute_time }} ms</span>
+         — <span title="Temps nécessaire pour calculer l'itinéraire : {{ route.computeTime }} ms">{{ route.computeTime }} ms</span>
     {% endif %}
 {% endblock %}

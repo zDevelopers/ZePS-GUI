@@ -60,6 +60,10 @@ $app['twig']->addFilter(new Twig_SimpleFilter('number_format', function ($number
     return number_format($number, $decimals, $decimal_point, $thousands_separator);
 }, array('is_safe' => array('html'))));
 
+$app['twig']->addFilter(new Twig_SimpleFilter('time_format', function ($seconds, $with_seconds = true) {
+    return \ZePS\Misc\DateTimeManager::friendly_interval($seconds, $with_seconds);
+}));
+
 
 // Maintenance mode
 
@@ -90,6 +94,10 @@ $app
 $app
     ->get('/api/stations_network', 'ZePS\\Controllers\\NetworkMapController::network_json')
     ->bind('zeps.api.stations_network');
+
+$app
+    ->get('/api/stations_network_colors', 'ZePS\\Controllers\\NetworkMapController::network_colors_json')
+    ->bind('zeps.api.stations_network_colors');
 
 
 // Redirect pages

@@ -3,8 +3,8 @@
 namespace ZePS\Controllers;
 
 use Silex\Application;
-use ZePS\Managers\DynmapBridgeManager;
-use ZePS\Managers\RoutesManager;
+use ZePS\Dynmap\DynmapBridgeManager;
+use ZePS\Routing\RoutesManager;
 
 
 class APIController
@@ -46,18 +46,20 @@ class APIController
         if (is_int($station))
             return $app->json(array('error_code' => $station, 'error_message' => $this->code2error($station)), 503);
 
-        return $app->json($station);
+        return $app->json(array(
+            'nearest_station' => $station['nearest_station']->toJSON(),
+            'distance' => $station['distance'],
+            'from_overworld' => $station['from_overworld']
+        ));
     }
 
 
     public function route_length(Application $app, $from_id, $to_id, $official, $accessible)
     {
-        $stations = RoutesManager::get_netherrail_stations()['stations'];
-
         return $app->json(array(
-            'from_station' => $stations[$from_id],
-            'to_station'   => $stations[$to_id],
-            'travel_time'  => RoutesManager::get_netherrail_route($from_id, $to_id, $official, $accessible)->travel_time
+            'from_station' => RoutesManager::get_station_by_id($from_id) -> toJSON(),
+            'to_station'   => RoutesManager::get_station_by_id($to_id) -> toJSON(),
+            'travel_time'  => RoutesManager::get_netherrail_route($from_id, $to_id, $official, $accessible)->getTravelTime()
         ));
     }
 

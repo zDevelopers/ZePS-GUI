@@ -161,7 +161,7 @@ footer.footer, footer.footer a {
 }
 
 
-/* User localization */
+/* User geolocation */
 
 .cliquable-icon {
     cursor: pointer;
@@ -223,11 +223,16 @@ footer.footer, footer.footer a {
 
     border-radius: 0;
     border: medium none;
+
+    background-color: whitesmoke;
 }
 
 .station-label {
     transform-origin: 0% 0%;
     transform: rotate(-38deg) translateY(-10px) translateX(-6px);
+
+    font-size: 125%;
+    text-shadow: 3px 3px 3px whitesmoke, -3px -3px 3px whitesmoke
 }
 
 .station-label.station-label-intersection {

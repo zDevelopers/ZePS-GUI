@@ -1,8 +1,10 @@
 <?php
 
-namespace ZePS\Managers;
+namespace ZePS\Dynmap;
 
 use Silex\Application;
+use ZePS\Misc\NetworkManager;
+use ZePS\Routing\RoutesManager;
 
 
 class DynmapBridgeManager extends NetworkManager
@@ -106,6 +108,6 @@ class DynmapBridgeManager extends NetworkManager
 
         $from_overworld = ($player['world'] != $app['config']['world_name']);
 
-        return RoutesManager::get_closest_station($stations, $player_x, $player_z, $from_overworld);
+        return RoutesManager::get_closest_station($player_x, $player_z, $from_overworld);
     }
 }

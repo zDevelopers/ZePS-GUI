@@ -1,6 +1,6 @@
 <?php
 
-namespace ZePS\Managers;
+namespace ZePS\Misc;
 
 
 abstract class NetworkManager
