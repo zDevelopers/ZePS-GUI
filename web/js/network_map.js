@@ -9,6 +9,10 @@
         // The container ID
         map_container_id: undefined,
 
+        // If true, a button will be added to get a permanent link to the current location, and such a location
+        // will be loaded and used as default from the URL anchor, if available.
+        permanent_url_with_anchor: false,
+
         // The layers displayed on the map
         layer_main: undefined,
         layer_intersections: undefined,
@@ -45,6 +49,9 @@
         lines_drawn: [],
 
 
+        // -------------------- Utilities
+
+
         /**
          * Converts Minecraft coordinates to lat/long used by Leaflet.
          *
@@ -58,6 +65,18 @@
         _coords_to_latlng: function (coordinates)
         {
             return [-coordinates[1] / 1000, coordinates[0] / 1000];
+        },
+
+        /**
+         * Converts lat/long used by Leaflet to Minecraft coordinates.
+         *
+         * @param latlng The lat/lng of Leaflet, in a two-sized array [lat, lng].
+         * @returns {*[]} The x/z coordinates, in a two-sized array.
+         * @private
+         */
+        _latlng_to_coords: function (latlng)
+        {
+            return [Math.round(latlng[1] * 1000), Math.round(-latlng[0] * 1000)];
         },
 
         /**
@@ -93,6 +112,10 @@
                 is_terminus: relations_count <= 1
             };
         },
+
+
+        // -------------------- Map creation
+
 
         /**
          * Creates a station.
@@ -306,6 +329,10 @@
                 NetworkMap.map.addLayer(layer);
         },
 
+
+        // -------------------- Zoom adaptation
+
+
         /**
          * Graceful adaptation to the zoom level.
          *
@@ -377,7 +404,47 @@
         },
 
 
-        // --------------------
+        // -------------------- Permanent links with hashes
+
+
+        /**
+         * Encodes the current location (x, z and zoom) in the URL hash.
+         * @private
+         */
+        _encode_location_in_hash: function () {
+            var center = NetworkMap.map.getCenter();
+            var center_coordinates = NetworkMap._latlng_to_coords([center.lat, center.lng]);
+            var zoom = NetworkMap.map.getZoom();
+
+            window.location.hash = center_coordinates[0] + ',' + center_coordinates[1] + ',' + zoom;
+        },
+
+        /**
+         * Loads a location from the URL hash.
+         * @private
+         */
+        _update_location_from_hash: function () {
+            var location_components = window.location.hash.substring(1).split(',');
+
+            if (location_components.length >= 2) {
+                var center_lat = parseInt(location_components[0]);
+                var center_lng = parseInt(location_components[1]);
+
+                if (!isNaN(center_lat) && !isNaN(center_lng)) {
+                    var center = NetworkMap._coords_to_latlng([center_lat, center_lng]);
+                    var zoom = 10;
+
+                    if (location_components.length >= 3)
+                        zoom = parseInt(location_components[2]);
+
+                    if (!isNaN(zoom))
+                        NetworkMap.map.setView(center, zoom);
+                }
+            }
+        },
+
+
+        // -------------------- Initialization
 
 
         /**
@@ -557,6 +624,23 @@
                                 mouseout: mouse_out
                             });
                         });
+                    });
+
+
+                    // Updates the displayed location if needed
+                    if (NetworkMap.permanent_url_with_anchor)
+                    {
+                        NetworkMap._update_location_from_hash();
+
+                        L
+                            .easyButton('glyphicon-link', NetworkMap._encode_location_in_hash, 'Lien permanent')
+                            .addTo(NetworkMap.map);
+                    }
+
+
+                    // Enables tooltips
+                    $('.leaflet-bar-part').tooltip({
+                        placement: 'right'
                     });
 
 

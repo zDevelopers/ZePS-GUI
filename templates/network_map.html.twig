@@ -7,21 +7,27 @@
 {% block stylesheets %}
     <link href="{{ app.request.basePath }}/css/leaflet/leaflet.css" rel="stylesheet" />
     <link href="{{ app.request.basePath }}/css/leaflet/leaflet.label.css" rel="stylesheet" />
+    <link href="{{ app.request.basePath }}/css/leaflet/easy-button.css" rel="stylesheet" />
 {% endblock %}
 
 {% block javascripts %}
     <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.js"></script>
     <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.label.js"></script>
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/easy-button.js"></script>
 
     <script type="text/javascript" src="{{ app.request.basePath }}/js/network_map.js"></script>
 
     <script type="text/javascript">
         $(function()
         {
+            $('[data-toggle="tooltip"]').tooltip();
+
             NetworkMap.network_api        = '{{ path('zeps.api.stations_network') }}';
             NetworkMap.network_colors_api = '{{ path('zeps.api.stations_network_colors') }}';
             NetworkMap.main_stations      = '{{ main_stations }}'.split(',');
             NetworkMap.map_container_id   = 'network_map';
+
+            NetworkMap.permanent_url_with_anchor = true;
 
             NetworkMap.init($('#still_nothing_loader'));
         });
