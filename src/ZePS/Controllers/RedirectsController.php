@@ -3,6 +3,7 @@
 namespace ZePS\Controllers;
 
 use Silex\Application;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use ZePS\Dynmap\DynmapBridgeManager;
 use ZePS\Routing\RoutesManager;
 
@@ -71,7 +72,7 @@ class RedirectsController
      *                    - 'station': an object representing the station (null if no station given).
      *                    Or false, if the GET parameters are incorrect.
      */
-    private function load_parameters($app, $query, $basename)
+    private function load_parameters(Application $app, ParameterBag $query, $basename)
     {
         $x         = null;
         $z         = null;

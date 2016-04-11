@@ -5,7 +5,6 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use ZePS\Dynmap\DynmapBridgeManager;
 use ZePS\Misc\APIChecksumChecker;
-use ZePS\Misc\NetworkManager;
 use ZePS\Quotes\QuotesManager;
 use ZePS\Routing\RoutesManager;
 
