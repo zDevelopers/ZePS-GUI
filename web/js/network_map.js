@@ -582,6 +582,10 @@
                     var mouse_in = function (e) {
                         var $label = $(e.target.getLabel()._container);
 
+                        // Z-index update, so the label il always above others when pointed
+                        $label.data('zeps-network-map-old-zindex', $label.css('z-index'));
+                        $label.css('z-index', 9001);
+
                         if (!$label.is(":visible")) {
                             $label.fadeIn(200);
 
@@ -597,6 +601,7 @@
                     };
                     var mouse_out = function (e) {
                         var $label = $(e.target.getLabel()._container);
+                        var old_zindex = $label.data('zeps-network-map-old-zindex');
 
                         if ($label.data('zeps-network-map-previously-hidden')) {
                             // We hide the label only if the zoom level is the same.
@@ -609,6 +614,12 @@
 
                             $label.removeData('zeps-network-map-previously-hidden');
                             $label.removeData('zeps-network-map-previous-container-style');
+                        }
+
+                        if (old_zindex)
+                        {
+                            $label.css('z-index', old_zindex);
+                            $label.removeData('zeps-network-map-old-zindex');
                         }
                     };
 
