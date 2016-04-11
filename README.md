@@ -3,6 +3,9 @@
 L'interface d'un outil de calcul d'itinéraire dans le Nether Zcraftien, et peut-être plus à l'avenir...
 
 
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/2819b28e-eaa4-4b5f-8b36-71b1d3dd3f1f/big.png)](https://insight.sensiolabs.com/projects/2819b28e-eaa4-4b5f-8b36-71b1d3dd3f1f)
+
+
 ## Installation & update
 
 ### Installation
@@ -38,9 +41,30 @@ php composer.phar update
 rm -rf cache/*
 ```
 
+## Deployment
+
 ### Local test server
 
+Just use the PHP's integrated server.
 ```bash
 php -S 0.0.0.0:8080 -t ./web/
 ```
 The app should be accessible at [127.0.0.1:8080](http://127.0.0.1:8080), or at the same port using your local IP address from other devices (e.g. phones).
+
+### Real server
+
+The server serving the application must serve the `/web/` directory only.  
+By default, the service will be available through `https://root/index.php`, `https://root/index.php/plan`, etc. To remove the filename part, use a rewrite rule, like this one for Apache:
+
+```apache
+<IfModule mod_rewrite.c>
+        Options -MultiViews
+
+        RewriteEngine On
+        RewriteBase /
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule ^ index.php [L]
+</IfModule>
+```
+(with all usual security features too, like no indexing, etc.).
