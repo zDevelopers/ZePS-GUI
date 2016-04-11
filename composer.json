@@ -1,4 +1,25 @@
 {
+    "name": "zdevelopers/zeps-gui",
+    "description": "A route generator, GPS and map displayer for a Minecraft Netherrail network, initialy designed for the zcraft server.",
+    "homepage": "http://zeps.carrade.eu",
+    "license": "CECILL-B",
+    "version": "1.3",
+
+    "type": "project",
+
+    "authors": [
+        {
+            "name": "Amaury Carrade",
+            "homepage": "http://amaury.carrade.eu",
+            "role": "Lead GUI Developer"
+        },
+        {
+            "name": "Florian Cassayre",
+            "homepage": "http://florian.cassayre.me/",
+            "role": "Lead Routing API Developer"
+        }
+    ],
+
     "require": {
         "silex/silex": "~1.0",
         "twig/twig": "~1.0",
