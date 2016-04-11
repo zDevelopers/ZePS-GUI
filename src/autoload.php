@@ -1,8 +1,6 @@
 <?php
 
-function zpes_autoloader($pClassName)
+spl_autoload_register(function ($pClassName)
 {
     include_once(__DIR__ . '/' . str_replace('\\', '/', $pClassName) . '.php');
-}
-
-spl_autoload_register('zpes_autoloader');
+});
