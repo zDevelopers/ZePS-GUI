@@ -17,7 +17,7 @@ class RoutesManager extends NetworkManager
     const MAIN_NETHERRAIL_STATIONS = 'tentacles,vaalon,nouvea';
 
 
-    private static $netherrail_stations = null;
+    private $netherrail_stations = null;
 
 
     /**
@@ -31,15 +31,15 @@ class RoutesManager extends NetworkManager
      * The 'stations' sub-array is indexed by station ID, and the 'main_stations' one is indexed with arbitrary values
      * only used to sort them (in the same order than in RoutesManager::MAIN_NETHERRAIL_STATIONS).
      */
-    public static function get_netherrail_stations($debug = false)
+    public function get_netherrail_stations($debug = false)
     {
-        if (self::$netherrail_stations == null)
+        if ($this->netherrail_stations == null)
         {
-            $json = self::get_json(self::API_LIST, $debug);
+            $json = $this->get_json(self::API_LIST, $debug);
 
             if ($json == null || $json->result != "success")
             {
-                self::$netherrail_stations = array('stations' => array(), 'main_stations' => array());
+                $this->netherrail_stations = array('stations' => array(), 'main_stations' => array());
             }
             else
             {
@@ -64,14 +64,14 @@ class RoutesManager extends NetworkManager
 
                 ksort($main_stations);
 
-                self::$netherrail_stations = array(
+                $this->netherrail_stations = array(
                     'stations' => $stations,
                     'main_stations' => $main_stations
                 );
             }
         }
 
-        return self::$netherrail_stations;
+        return $this->netherrail_stations;
     }
 
     /**
@@ -80,9 +80,9 @@ class RoutesManager extends NetworkManager
      * @param integer $id The station ID.
      * @return Station The station, or `null` if not found.
      */
-    public static function get_station_by_id($id)
+    public function get_station_by_id($id)
     {
-        $stations = self::get_netherrail_stations()['stations'];
+        $stations = $this->get_netherrail_stations()['stations'];
 
         return isset($stations[$id]) ? $stations[$id] : null;
     }
@@ -93,9 +93,9 @@ class RoutesManager extends NetworkManager
      * @param string $code_name The station's code name.
      * @return Station The station, or `null` if not found.
      */
-    public static function get_station_by_codename($code_name)
+    public function get_station_by_codename($code_name)
     {
-        $stations = self::get_netherrail_stations()['stations'];
+        $stations = $this->get_netherrail_stations()['stations'];
 
         foreach ($stations as $station)
             if ($station->getName() == $code_name)
@@ -114,9 +114,9 @@ class RoutesManager extends NetworkManager
      * @param bool $debug True to print debug notices.
      * @return RoutingPath The route, or null if not retrievable.
      */
-    public static function get_netherrail_route($from, $to, $official = false, $accessible = false, $debug = false)
+    public function get_netherrail_route($from, $to, $official = false, $accessible = false, $debug = false)
     {
-        $json = self::get_json(self::API_ROUTE . '?begin=' . $from . '&end=' . $to . '&official=' . ($official ? 'true' : 'false') . '&accessible=' . ($accessible ? 'true' : 'false'), $debug);
+        $json = $this->get_json(self::API_ROUTE . '?begin=' . $from . '&end=' . $to . '&official=' . ($official ? 'true' : 'false') . '&accessible=' . ($accessible ? 'true' : 'false'), $debug);
 
         if (!isset($json->result) || $json->result != 'success')
             throw new \RuntimeException($json->cause, $json->result);
@@ -130,7 +130,7 @@ class RoutesManager extends NetworkManager
      * @param RoutingPath $routes The route.
      * @return string The image URL.
      */
-    public static function get_netherrail_route_image($routes)
+    public function get_netherrail_route_image($routes)
     {
         $lines  = '';
         $points = '';
@@ -173,9 +173,9 @@ class RoutesManager extends NetworkManager
      *
      * @return object
      */
-    public static function get_netherrail_network($debug = false)
+    public function get_netherrail_network($debug = false)
     {
-        $response = self::get_json(self::API_NETWORK, $debug);
+        $response = $this->get_json(self::API_NETWORK, $debug);
 
         if ($response == null || $response->result != 'success')
             return array();
@@ -190,9 +190,9 @@ class RoutesManager extends NetworkManager
      *
      * @return object
      */
-    public static function get_netherrail_network_colors($debug = false)
+    public function get_netherrail_network_colors($debug = false)
     {
-        return self::get_json(self::API_NETWORK_COLORS, $debug);
+        return $this->get_json(self::API_NETWORK_COLORS, $debug);
     }
 
     /**
@@ -202,9 +202,9 @@ class RoutesManager extends NetworkManager
      *
      * @return int The station's ID, or null if not found.
      */
-    public static function station_name_to_id($station_name)
+    public function station_name_to_id($station_name)
     {
-        $station = self::get_station_by_codename($station_name);
+        $station = $this->get_station_by_codename($station_name);
 
         if ($station != null)  return $station->getId();
         else                   return null;
@@ -220,7 +220,7 @@ class RoutesManager extends NetworkManager
      * @return array An array with the following keys:
      *               - 'nearest_station': the object of the nearest station;
      */
-    public static function get_closest_station($x, $z, $from_overworld)
+    public function get_closest_station($x, $z, $from_overworld)
     {
         // Coordinates correction if the player is in the overworld
 
@@ -236,9 +236,9 @@ class RoutesManager extends NetworkManager
         $nearest_station           = null;
         $squared_smallest_distance = -1;
 
-        foreach (self::get_netherrail_stations()['stations'] as $station)
+        foreach ($this->get_netherrail_stations()['stations'] as $station)
         {
-            $squared_distance = self::squared_distance($x, $z, $station->getLocationX(), $station->getLocationZ());
+            $squared_distance = $this->squared_distance($x, $z, $station->getLocationX(), $station->getLocationZ());
 
             if ($nearest_station == null || $squared_distance < $squared_smallest_distance)
             {
@@ -269,7 +269,7 @@ class RoutesManager extends NetworkManager
      *
      * @return float The squared distance between (x1, z1) and (x2, z2).
      */
-    private static function squared_distance($x1, $z1, $x2, $z2)
+    private function squared_distance($x1, $z1, $x2, $z2)
     {
         return pow(abs($x1 - $x2), 2) + pow(abs($z1 - $z2), 2);
     }

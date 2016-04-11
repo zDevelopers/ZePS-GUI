@@ -2,9 +2,19 @@
 
 namespace ZePS\Misc;
 
+use Silex\Application;
+
 
 abstract class NetworkManager
 {
+    protected $app;
+
+
+    public function __construct(Application $app)
+    {
+        $this->app = $app;
+    }
+
     /**
      * Retrieves a JSON content.
      *
@@ -12,7 +22,7 @@ abstract class NetworkManager
      * @param bool $debug True to print debug notices.
      * @return object The retrieved JSON object.
      */
-    protected static function get_json($url, $debug = false)
+    protected function get_json($url, $debug = false)
     {
         $ch = \curl_init();
         \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);

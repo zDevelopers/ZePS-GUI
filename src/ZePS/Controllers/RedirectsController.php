@@ -35,7 +35,7 @@ class RedirectsController
     {
         $query = $app['request']->query;
 
-        if (empty(RoutesManager::get_netherrail_stations()['stations'])) $app->abort(503);
+        if (empty($app['zeps.routing']->get_netherrail_stations()['stations'])) $app->abort(503);
 
 
         $from = $this->load_parameters($app, $query, 'from');
@@ -46,8 +46,8 @@ class RedirectsController
             $app->abort(400);
 
 
-        $from_station = $this->get_station($from);
-        $to_station   = $this->get_station($to);
+        $from_station = $this->get_station($app, $from);
+        $to_station   = $this->get_station($app, $to);
 
         return $app->redirect($app['url_generator']->generate('zeps.search_results', array(
             'from'    => $from_station->getName(),
@@ -91,7 +91,7 @@ class RedirectsController
         {
             // Populate cache first
             if ($this->dynmap_players === null)
-                $this->dynmap_players = DynmapBridgeManager::get_logged_in_players($app);
+                $this->dynmap_players = $app['zeps.dynmap']->get_logged_in_players();
 
             // Lookup for the player
             foreach ($this->dynmap_players as $dynmap_player)
@@ -116,7 +116,7 @@ class RedirectsController
         }
         else if ($query->has($basename.'Station'))
         {
-            $station = RoutesManager::get_station_by_codename($query->get($basename.'Station'));
+            $station = $app['zeps.routing']->get_station_by_codename($query->get($basename.'Station'));
 
             // If the station is still null, a station with this name does not exists.
             if ($station === null)
@@ -124,7 +124,7 @@ class RedirectsController
         }
         else if ($query->has($basename.'StationID'))
         {
-            $station = RoutesManager::get_station_by_id((integer) $query->get($basename.'StationID'));
+            $station = $app['zeps.routing']->get_station_by_id((integer) $query->get($basename.'StationID'));
 
             // If the station is still null, a station with this ID does not exists.
             if ($station === null)
@@ -152,16 +152,18 @@ class RedirectsController
     /**
      * Retrieves the station for these loaded parameters.
      *
-     * @param array $parameters The parameters returned by the load_parameters method.
+     * @param Application $app The Silex application
+     * @param array       $parameters The parameters returned by the load_parameters method.
+     *
      * @return object A station object.
      */
-    private function get_station(array $parameters)
+    private function get_station(Application $app, array $parameters)
     {
         if ($parameters['station'] !== null)
             return $parameters['station'];
 
         // Here we need to retrieve the closest station.
-        return RoutesManager::get_closest_station($parameters['x'], $parameters['z'], $parameters['overworld'])['nearest_station'];
+        return $app['zeps.routing']->get_closest_station($parameters['x'], $parameters['z'], $parameters['overworld'])['nearest_station'];
     }
 
 

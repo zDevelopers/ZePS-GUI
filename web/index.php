@@ -2,6 +2,10 @@
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use ZePS\Dynmap\DynmapBridgeManager;
+use ZePS\Misc\NetworkManager;
+use ZePS\Quotes\QuotesManager;
+use ZePS\Routing\RoutesManager;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/autoload.php';
@@ -65,6 +69,13 @@ $app['twig']->addFilter(new Twig_SimpleFilter('number_format', function ($number
 $app['twig']->addFilter(new Twig_SimpleFilter('time_format', function ($seconds, $with_seconds = true) {
     return \ZePS\Misc\DateTimeManager::friendly_interval($seconds, $with_seconds);
 }));
+
+
+// Internal services
+
+$app['zeps.routing'] = $app->share(function($app) { return new RoutesManager($app); });
+$app['zeps.dynmap']  = $app->share(function($app) { return new DynmapBridgeManager($app); });
+$app['zeps.quotes']  = $app->share(function($app) { return new QuotesManager(); });
 
 
 // Maintenance mode

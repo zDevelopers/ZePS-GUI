@@ -11,7 +11,7 @@ class APIController
 {
     public function logged_in_players(Application $app, $world_names)
     {
-        $players = DynmapBridgeManager::get_logged_in_players($app);
+        $players = $app['zeps.dynmap']->get_logged_in_players();
 
         if (is_int($players))
             return $app->json(array('error_code' => $players, 'error_message' => $this->code2error($players)), 503);
@@ -41,7 +41,7 @@ class APIController
 
     public function nearest_station(Application $app, $name)
     {
-        $station = DynmapBridgeManager::get_nearest_station($app, $name);
+        $station = $app['zeps.dynmap']->get_nearest_station($name);
 
         if (is_int($station))
             return $app->json(array('error_code' => $station, 'error_message' => $this->code2error($station)), 503);
@@ -57,9 +57,9 @@ class APIController
     public function route_length(Application $app, $from_id, $to_id, $official, $accessible)
     {
         return $app->json(array(
-            'from_station' => RoutesManager::get_station_by_id($from_id) -> toJSON(),
-            'to_station'   => RoutesManager::get_station_by_id($to_id) -> toJSON(),
-            'travel_time'  => RoutesManager::get_netherrail_route($from_id, $to_id, $official, $accessible)->getTravelTime()
+            'from_station' => $app['zeps.routing']->get_station_by_id($from_id) -> toJSON(),
+            'to_station'   => $app['zeps.routing']->get_station_by_id($to_id) -> toJSON(),
+            'travel_time'  => $app['zeps.routing']->get_netherrail_route($from_id, $to_id, $official, $accessible)->getTravelTime()
         ));
     }
 

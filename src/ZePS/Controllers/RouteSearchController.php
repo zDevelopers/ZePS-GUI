@@ -4,9 +4,7 @@ namespace ZePS\Controllers;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
-use ZePS\Quotes\QuotesManager;
 use ZePS\Routing\RoutesManager;
-use ZePS\Misc\DateTimeManager;
 
 
 class RouteSearchController
@@ -34,7 +32,7 @@ class RouteSearchController
             )), 301);
         }
 
-        $stations = RoutesManager::get_netherrail_stations();
+        $stations = $app['zeps.routing']->get_netherrail_stations();
 
         $error = null;
         if (empty($stations['stations']))
@@ -59,7 +57,7 @@ class RouteSearchController
             'directions_translations' => array(),
             'spawn_station' => RoutesManager::SPAWN_STATION,
             'image' => '',
-            'quote' => QuotesManager::get_random_quote()
+            'quote' => $app['zeps.quotes']->get_random_quote()
         )));
     }
 
@@ -88,7 +86,7 @@ class RouteSearchController
             'west' => 'ouest'
         );
 
-        $stations = RoutesManager::get_netherrail_stations($debug);
+        $stations = $app['zeps.routing']->get_netherrail_stations($debug);
 
         if (empty($stations['stations']))
         {
@@ -115,8 +113,8 @@ class RouteSearchController
 
             $options_split = explode('-', $options);
 
-            $from = RoutesManager::station_name_to_id($from);
-            $to   = RoutesManager::station_name_to_id($to);
+            $from = $app['zeps.routing']->station_name_to_id($from);
+            $to   = $app['zeps.routing']->station_name_to_id($to);
 
             if ($from === null || $to === null)
                 $app->abort(404);
@@ -132,7 +130,8 @@ class RouteSearchController
 
             try
             {
-                $route = RoutesManager::get_netherrail_route($from, $to, $official, $accessible, $debug);
+                /** @var $route \Zeps\Routing\RoutingPath */
+                $route = $app['zeps.routing']->get_netherrail_route($from, $to, $official, $accessible, $debug);
 
                 if ($route == null)
                 {
@@ -182,9 +181,9 @@ class RouteSearchController
             'directions_translations' => $directions_translations,
 
             'spawn_station' => RoutesManager::SPAWN_STATION,
-            'spawn_station_id' => RoutesManager::station_name_to_id(RoutesManager::SPAWN_STATION),
+            'spawn_station_id' => $app['zeps.routing']->station_name_to_id(RoutesManager::SPAWN_STATION),
 
-            'image' => $error == null ? RoutesManager::get_netherrail_route_image($route) : ''
+            'image' => $error == null ? $app['zeps.routing']->get_netherrail_route_image($route) : ''
         )));
     }
 }

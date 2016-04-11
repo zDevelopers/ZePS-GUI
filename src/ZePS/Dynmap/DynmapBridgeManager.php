@@ -22,18 +22,16 @@ class DynmapBridgeManager extends NetworkManager
     /**
      * Returns the online players locations.
      *
-     * @param Application $app The Silex application (needed to retrieve config).
-     *
      * @return array An array containing the players logged in, each entry being an array with keys "name",
      * "display_name", "world", "x", "y" and "z".
      */
-    public static function get_logged_in_players(Application $app)
+    public function get_logged_in_players()
     {
         $dynmap_infos_path = self::DYNMAP_STANDALONE_INFO_PATH;
-        $dynmap_infos_path = str_replace('{worldname}', $app['config']['world_name_nether'], $dynmap_infos_path);
+        $dynmap_infos_path = str_replace('{worldname}', $this->app['config']['world_name_nether'], $dynmap_infos_path);
         $dynmap_infos_path = str_replace('{timestamp}', time(), $dynmap_infos_path);
 
-        $dynmap_infos = self::get_json($app['config']['dynmap']['root'] . $dynmap_infos_path);
+        $dynmap_infos = $this->get_json($this->app['config']['dynmap']['root'] . $dynmap_infos_path);
 
         if ($dynmap_infos === false || !isset($dynmap_infos->players))
             return self::ERROR_CANNOT_LOAD_DYNMAP_PLAYERS;
@@ -63,25 +61,19 @@ class DynmapBridgeManager extends NetworkManager
     /**
      * Returns the station nearest the given player name.
      *
-     * @param Application $app         The Silex application (needed to retrieve config).
-     * @param string      $player_name The player name to localize.
+     * @param string $player_name The player name to localize.
      *
      * @return array An array following the format below, or an integer representing the error, if any (see <code>ERROR_*</code>
      * constants).
-     * <pre>array
-     *(
-     *    'nearest_station' => the nearest station object,
-     *    'distance' => the distance between this station and the player,
-     *    'from_overworld' => true if this player starts in the overworld.
-     *)</pre>
+     * @internal param Application $app The Silex application (needed to retrieve config).
      */
-    public static function get_nearest_station(Application $app, $player_name)
+    public function get_nearest_station($player_name)
     {
-        $players = self::get_logged_in_players($app);
+        $players = self::get_logged_in_players();
         if (!is_array($players))
             return $players; // error code
 
-        $stations = RoutesManager::get_netherrail_stations();
+        $stations = $this->app['zeps.routing']->get_netherrail_stations();
         if (count($stations) == 0)
             return self::ERROR_CANNOT_LOAD_STATIONS;
 
@@ -97,7 +89,7 @@ class DynmapBridgeManager extends NetworkManager
 
         if ($player == null)
             return self::ERROR_NOT_LOGGED_IN;
-        else if (!in_array($player['world'], $app['config']['overworld_and_nether_worlds']))
+        else if (!in_array($player['world'], $this->app['config']['overworld_and_nether_worlds']))
             return self::ERROR_WRONG_WORLD;
 
 
@@ -106,8 +98,8 @@ class DynmapBridgeManager extends NetworkManager
         $player_x = $player['x'];
         $player_z = $player['z'];
 
-        $from_overworld = ($player['world'] != $app['config']['world_name_nether']);
+        $from_overworld = ($player['world'] != $this->app['config']['world_name_nether']);
 
-        return RoutesManager::get_closest_station($player_x, $player_z, $from_overworld);
+        return $this->app['zeps.routing']->get_closest_station($player_x, $player_z, $from_overworld);
     }
 }

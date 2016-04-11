@@ -19,7 +19,7 @@ class NetworkMapController
 
     public function network_json(Application $app)
     {
-        $network = RoutesManager::get_netherrail_network();
+        $network = $app['zeps.routing']->get_netherrail_network();
 
         if (empty($network))
             $app->abort(503);
@@ -29,7 +29,7 @@ class NetworkMapController
 
     public function network_colors_json(Application $app)
     {
-        $colors = RoutesManager::get_netherrail_network_colors();
+        $colors = $app['zeps.routing']->get_netherrail_network_colors();
 
         if ($colors === null || empty($colors))
             $app->abort(503);
