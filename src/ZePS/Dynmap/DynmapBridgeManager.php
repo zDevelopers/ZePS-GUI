@@ -4,7 +4,6 @@ namespace ZePS\Dynmap;
 
 use Silex\Application;
 use ZePS\Misc\NetworkManager;
-use ZePS\Routing\RoutesManager;
 
 
 class DynmapBridgeManager extends NetworkManager
@@ -99,7 +98,7 @@ class DynmapBridgeManager extends NetworkManager
             }
         }
 
-        if ($player == null)
+        if ($player === null)
             return self::ERROR_NOT_LOGGED_IN;
         else if (!in_array($player['world'], $this->app['config']['overworld_and_nether_worlds']))
             return self::ERROR_WRONG_WORLD;

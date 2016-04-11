@@ -132,16 +132,16 @@ class RoutingPath
         foreach ($this->path as $step)
         {
             // New direction?
-            if ($current_compact_step == null || $step->getDirection() != $current_compact_step->getDirection())
+            if ($current_compact_step === null || $step->getDirection() !== $current_compact_step->getDirection())
             {
-                if ($current_compact_step != null)
+                if ($current_compact_step !== null)
                 {
                     $current_compact_step->finalize();
                     $this->compact_path[] = $current_compact_step;
                 }
 
                 // It was not the last one
-                if ($step->getDirection() != null)
+                if ($step->getDirection() !== null)
                 {
                     $current_compact_step = new RoutingPathCompactStep(
                         $step->getStation(),
@@ -154,14 +154,14 @@ class RoutingPath
                 }
             }
 
-            if ($current_compact_step != null)
+            if ($current_compact_step !== null)
             {
                 $current_compact_step->addStep($step);
             }
         }
 
         // Last route inserted (duplicated code :c )
-        if ($current_compact_step != null)
+        if ($current_compact_step !== null)
         {
             $current_compact_step->finalize();
             $this->compact_path[] = $current_compact_step;
@@ -380,7 +380,7 @@ class RoutingPathCompactStep
      */
     public function addStep(RoutingPathStep $step)
     {
-        if ($step->getDirection() != $this->direction && $step->getDirection() != null)
+        if ($step->getDirection() !== $this->direction && $step->getDirection() !== null)
             throw new \InvalidArgumentException('Trying to add a step to a compact one but the added step is not in the same direction as the compact step.');
 
         if ($step->getStation()->isIntersection())
@@ -396,7 +396,7 @@ class RoutingPathCompactStep
      */
     public function finalize()
     {
-        if ($this->station_to == null)
+        if ($this->station_to === null)
         {
             $sub_steps_count = count($this->getSteps());
 

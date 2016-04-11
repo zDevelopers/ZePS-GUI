@@ -133,7 +133,7 @@ class RouteSearchController
                 /** @var $route \Zeps\Routing\RoutingPath */
                 $route = $app['zeps.routing']->get_netherrail_route($from, $to, $official, $accessible, $debug);
 
-                if ($route == null)
+                if ($route === null)
                 {
                     $valid = false;
                     $error = 'unreachable';
@@ -183,7 +183,7 @@ class RouteSearchController
             'spawn_station' => RoutesManager::SPAWN_STATION,
             'spawn_station_id' => $app['zeps.routing']->station_name_to_id(RoutesManager::SPAWN_STATION),
 
-            'image' => $error == null ? $app['zeps.routing']->get_netherrail_route_image($route) : ''
+            'image' => $error === null ? $app['zeps.routing']->get_netherrail_route_image($route) : ''
         )));
     }
 }

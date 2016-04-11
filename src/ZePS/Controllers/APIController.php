@@ -4,7 +4,6 @@ namespace ZePS\Controllers;
 
 use Silex\Application;
 use ZePS\Dynmap\DynmapBridgeManager;
-use ZePS\Routing\RoutesManager;
 
 
 class APIController

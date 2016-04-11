@@ -4,8 +4,6 @@ namespace ZePS\Controllers;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\ParameterBag;
-use ZePS\Dynmap\DynmapBridgeManager;
-use ZePS\Routing\RoutesManager;
 
 
 class RedirectsController

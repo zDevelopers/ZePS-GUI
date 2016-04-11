@@ -46,11 +46,11 @@ class RoutesManager extends NetworkManager
      */
     public function get_netherrail_stations()
     {
-        if ($this->netherrail_stations == null)
+        if ($this->netherrail_stations === null)
         {
             $json = $this->get_json(self::API_LIST);
 
-            if ($json == null || $json->result != "success")
+            if ($json === null || $json->result !== "success")
             {
                 $this->netherrail_stations = array('stations' => array(), 'main_stations' => array());
             }
@@ -160,7 +160,7 @@ class RoutesManager extends NetworkManager
 
             $point = $step->getStation()->getLocationX() . ',' . $step->getStation()->getLocationZ() . ',';
 
-            if ($prev_point != null)
+            if ($prev_point !== null)
             {
                 $lines_limits[] = $prev_point . $point;
             }
@@ -191,7 +191,7 @@ class RoutesManager extends NetworkManager
     {
         $response = $this->get_json(self::API_NETWORK);
 
-        if ($response == null || $response->result != 'success')
+        if ($response === null || $response->result != 'success')
             return array();
 
         return $response->stations;
@@ -220,8 +220,8 @@ class RoutesManager extends NetworkManager
     {
         $station = $this->get_station_by_codename($station_name);
 
-        if ($station != null)  return $station->getId();
-        else                   return null;
+        if ($station !== null)  return $station->getId();
+        else                    return null;
     }
 
     /**
@@ -254,7 +254,7 @@ class RoutesManager extends NetworkManager
         {
             $squared_distance = $this->squared_distance($x, $z, $station->getLocationX(), $station->getLocationZ());
 
-            if ($nearest_station == null || $squared_distance < $squared_smallest_distance)
+            if ($nearest_station === null || $squared_distance < $squared_smallest_distance)
             {
                 $nearest_station           = $station;
                 $squared_smallest_distance = $squared_distance;
