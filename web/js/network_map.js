@@ -685,7 +685,7 @@
                                 if (NetworkMap.dynmap_map_overworld)
                                     links.push('<a href="' + NetworkMap.dynmap_root + '/' + '?worldname=' + NetworkMap.dynmap_map_overworld + '&mapname=' + NetworkMap.dynmap_map_type + '&x=' + (marker.zeps.station.x * 8) + '&y=64&z=' + (marker.zeps.station.y * 8) + '" target="_blank">surface</a>');
                                 if (NetworkMap.dynmap_map_nether)
-                                    links.push('<a href="' + NetworkMap.dynmap_root + '/' + '?worldname=' + NetworkMap.dynmap_map_nether + '&mapname=' + NetworkMap.dynmap_map_type + '&x=' + marker.zeps.station.x + '&y=64&z=' + marker.zeps.station.y + '" target="_blank">nether</a>');
+                                    links.push('<a href="' + NetworkMap.dynmap_root + '/' + '?worldname=' + NetworkMap.dynmap_map_nether + '&mapname=' + NetworkMap.dynmap_map_type + '&x=' + marker.zeps.station.x + '&y=64&z=' + marker.zeps.station.y + '&zoom=3" target="_blank">nether</a>');
 
                                 popup += links.join(', ');
                             }
