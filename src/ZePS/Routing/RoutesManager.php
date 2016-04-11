@@ -2,6 +2,7 @@
 
 namespace ZePS\Routing;
 
+use Silex\Application;
 use ZePS\Misc\NetworkManager;
 
 
@@ -21,21 +22,33 @@ class RoutesManager extends NetworkManager
 
 
     /**
+     * RoutesManager constructor.
+     *
+     * @param Application $app The Silex application
+     */
+    public function __construct($app)
+    {
+        parent::__construct($app);
+
+        // Unlimited cache (removed when the cache is cleared, when the router's checksum changes).
+        $this->cache_lifetime = 0;
+    }
+
+
+    /**
      * Returns the netherrail stations.
      * The results of this method are cached. The first call calls the API to retrieves the stations.
      *
-     * @param bool $debug True to print debug notices.
-     *
      * @return array An array, with two keys: a 'stations' one containing all the stations, and a 'main_stations'
      * containing the main stations.
-     * The 'stations' sub-array is indexed by station ID, and the 'main_stations' one is indexed with arbitrary values
-     * only used to sort them (in the same order than in RoutesManager::MAIN_NETHERRAIL_STATIONS).
+     * @internal param bool $debug True to print debug notices.
+     *
      */
-    public function get_netherrail_stations($debug = false)
+    public function get_netherrail_stations()
     {
         if ($this->netherrail_stations == null)
         {
-            $json = $this->get_json(self::API_LIST, $debug);
+            $json = $this->get_json(self::API_LIST);
 
             if ($json == null || $json->result != "success")
             {
@@ -107,21 +120,22 @@ class RoutesManager extends NetworkManager
     /**
      * Retrieves a route.
      *
-     * @param int $from The departure station ID.
-     * @param int $to The destination station ID.
-     * @param bool $official If true, avoids non-official stations.
+     * @param int  $from       The departure station ID.
+     * @param int  $to         The destination station ID.
+     * @param bool $official   If true, avoids non-official stations.
      * @param bool $accessible If true, avoids stations non accessible from the modern netherrail.
-     * @param bool $debug True to print debug notices.
+     *
      * @return RoutingPath The route, or null if not retrievable.
+     * @internal param bool $debug True to print debug notices.
      */
-    public function get_netherrail_route($from, $to, $official = false, $accessible = false, $debug = false)
+    public function get_netherrail_route($from, $to, $official = false, $accessible = false)
     {
-        $json = $this->get_json(self::API_ROUTE . '?begin=' . $from . '&end=' . $to . '&official=' . ($official ? 'true' : 'false') . '&accessible=' . ($accessible ? 'true' : 'false'), $debug);
+        $json = $this->get_json(self::API_ROUTE . '?begin=' . $from . '&end=' . $to . '&official=' . ($official ? 'true' : 'false') . '&accessible=' . ($accessible ? 'true' : 'false'));
 
         if (!isset($json->result) || $json->result != 'success')
             throw new \RuntimeException($json->cause, $json->result);
 
-        return RoutingPath::fromJSON($json);
+        return RoutingPath::fromJSON($this->app, $json);
     }
 
     /**
@@ -169,13 +183,13 @@ class RoutesManager extends NetworkManager
     /**
      * Loads the network (stations list with relative links between stations).
      *
-     * @param bool $debug True to print debug notices.
-     *
      * @return object
+     * @internal param bool $debug True to print debug notices.
+     *
      */
-    public function get_netherrail_network($debug = false)
+    public function get_netherrail_network()
     {
-        $response = $this->get_json(self::API_NETWORK, $debug);
+        $response = $this->get_json(self::API_NETWORK);
 
         if ($response == null || $response->result != 'success')
             return array();
@@ -186,13 +200,13 @@ class RoutesManager extends NetworkManager
     /**
      * Loads the network colors (colors of the lines based on the coordinates and the orientation).
      *
-     * @param bool $debug True to print debug notices.
-     *
      * @return object
+     * @internal param bool $debug True to print debug notices.
+     *
      */
-    public function get_netherrail_network_colors($debug = false)
+    public function get_netherrail_network_colors()
     {
-        return $this->get_json(self::API_NETWORK_COLORS, $debug);
+        return $this->get_json(self::API_NETWORK_COLORS);
     }
 
     /**

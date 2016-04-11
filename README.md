@@ -7,6 +7,8 @@ L'interface d'un outil de calcul d'itinéraire dans le Nether Zcraftien, et peut
 
 ### Installation
 
+PHP 5.5+ is required to run this application.
+
 ```bash
 # Clones the repository
 git clone https://github.com/zDevelopers/ZePS-GUI.git
@@ -30,7 +32,7 @@ php composer.phar install
 git pull
 
 # Updates the dependencies (if needed)
-php composer.phar install
+php composer.phar update
 
 # Clears the cache (always)
 rm -rf cache/*

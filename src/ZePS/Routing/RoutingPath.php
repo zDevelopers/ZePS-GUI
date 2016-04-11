@@ -1,6 +1,7 @@
 <?php
 
 namespace ZePS\Routing;
+use Silex\Application;
 
 
 /**
@@ -41,14 +42,16 @@ class RoutingPath
     /**
      * Loads a path from a JSON representation.
      *
-     * @param \stdClass $json The JSON object. See source code for format.
+     * @param Application $app The Silex application
+     * @param \stdClass   $json The JSON object. See source code for format.
+     *
      * @return RoutingPath A non-compacted RoutingPath instance.
      */
-    public static function fromJSON(\stdClass $json)
+    public static function fromJSON(Application $app, \stdClass $json)
     {
         $path = new RoutingPath(
-            RoutesManager::get_station_by_codename($json->begin),
-            RoutesManager::get_station_by_codename($json->end),
+            $app['zeps.routing']->get_station_by_codename($json->begin),
+            $app['zeps.routing']->get_station_by_codename($json->end),
             $json->travel_time,
             $json->time
         );
@@ -59,7 +62,7 @@ class RoutingPath
 
             $path->addStep(
                 Station::fromJSON($step->station),
-                $has_connection ? RoutesManager::get_station_by_id($step->connection->to) : null,
+                $has_connection ? $app['zeps.routing']->get_station_by_id($step->connection->to) : null,
                 $has_connection ? $step->connection->direction : null,
                 $has_connection ? $step->connection->length : 0,
                 $has_connection ? $step->connection->is_official : true,

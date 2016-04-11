@@ -1,8 +1,10 @@
 <?php
 
+use Doctrine\Common\Cache\FilesystemCache;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use ZePS\Dynmap\DynmapBridgeManager;
+use ZePS\Misc\APIChecksumChecker;
 use ZePS\Misc\NetworkManager;
 use ZePS\Quotes\QuotesManager;
 use ZePS\Routing\RoutesManager;
@@ -32,7 +34,12 @@ $app['config'] = array
     ),
 
     'twig' => array(
-        'cache' => __DIR__ . '/../cache/twig'
+        'cache' => __DIR__ . '/../cache/twig'          // The Twig's cache folder
+    ),
+
+    'cache' => array(
+        'directory' => __DIR__ . '/../cache/data',     // The main cache folder for miscellaneous data.
+        'checksum_cache_key' => 'router_api_checksum'  // The key where the API checksum is stored. If the checksum change, the cache is invalidated.
     )
 );
 
@@ -71,6 +78,11 @@ $app['twig']->addFilter(new Twig_SimpleFilter('time_format', function ($seconds,
 }));
 
 
+// Caching
+
+$app['cache'] = $app->share(function($app) { return new FilesystemCache($app['config']['cache']['directory']); });
+
+
 // Internal services
 
 $app['zeps.routing'] = $app->share(function($app) { return new RoutesManager($app); });
@@ -85,6 +97,37 @@ $app->before(function (Request $request, Application $app)
     if ($app['maintenance'])
         $app->abort(503);
 }, Application::EARLY_EVENT);
+
+
+// Cache is revoked if the checksum changes or the purge parameter is given.
+
+$app->before(function (Request $request, Application $app)
+{
+    $stored_checksum = $app['cache']->fetch($app['config']['cache']['checksum_cache_key']);
+    $remote_checksum = (new APIChecksumChecker($app))->get_checksum();
+
+    if ($request->query->has('purge'))
+    {
+        $clearCache = true;
+    }
+    else
+    {
+        if ($stored_checksum === false || $stored_checksum != $remote_checksum)
+        {
+            $clearCache = true;
+        }
+        else
+        {
+            $clearCache = false;
+        }
+    }
+
+    if ($clearCache)
+    {
+        $app['cache']->flushAll();
+        $app['cache']->save($app['config']['cache']['checksum_cache_key'], $remote_checksum, 0);
+    }
+});
 
 
 // Internal API first due to the genericity of the last URL (search_results).

@@ -18,6 +18,18 @@ class DynmapBridgeManager extends NetworkManager
     const ERROR_NOT_LOGGED_IN              = 4;
     const ERROR_WRONG_WORLD                = 8;
 
+    /**
+     * DynmapBridgeManager constructor.
+     *
+     * @param Application $app The Silex application
+     */
+    public function __construct($app)
+    {
+        parent::__construct($app);
+
+        $this->cached = false;
+    }
+
 
     /**
      * Returns the online players locations.
