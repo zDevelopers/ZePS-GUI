@@ -104,7 +104,7 @@ class RedirectsController
                     $x = $dynmap_player['x'];
                     $z = $dynmap_player['z'];
 
-                    $overworld = ($dynmap_player['world'] != $app['config']['world_name']);
+                    $overworld = ($dynmap_player['world'] != $app['config']['world_name_nether']);
 
                     break;
                 }

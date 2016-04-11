@@ -14,7 +14,8 @@ $app = new Silex\Application();
 
 $app['config'] = array
 (
-    'world_name' => 'V5_nether',               // The name of the world where the netherrail is in
+    'world_name_nether' => 'V5_nether',        // The name of the world where the netherrail is in
+    'world_name_overworld' => 'V5',            // The name of the world above the netherrail world
     'overworld_and_nether_worlds' => array(    // A list of nether & overworld worlds. Any world except 'world_name'
         'V5', 'V5_nether'                      // is considered as overworld.
     ),
@@ -22,7 +23,8 @@ $app['config'] = array
     'dynmap' => array
     (
         'root' => 'http://map.zcraft.fr',      // The root of the dynmap, aka the public URL used to access it.
-        'standalone' => true                   // Non-standalone dynmap installation currently not supported!
+        'standalone' => true,                  // Non-standalone dynmap installation currently not supported!
+        'map_type' => 'flat'                   // The name of the map to use to link to the dynmap.
     ),
 
     'twig' => array(

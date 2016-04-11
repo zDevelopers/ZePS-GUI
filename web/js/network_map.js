@@ -13,6 +13,13 @@
         // will be loaded and used as default from the URL anchor, if available.
         permanent_url_with_anchor: false,
 
+        // The Dynmap base URL, without trailing slash. If undefined, links to the dynmap will not be displayed.
+        // Followed by the config
+        dynmap_root: undefined,
+        dynmap_map_overworld: undefined,
+        dynmap_map_nether: undefined,
+        dynmap_map_type: undefined,
+
         // The layers displayed on the map
         layer_main: undefined,
         layer_intersections: undefined,
@@ -120,9 +127,7 @@
         /**
          * Creates a station.
          *
-         * @param name The station's display name.
-         * @param code_name The station's code name.
-         * @param id The station's internal ID.
+         * @param station The station object retrieved.
          * @param location The station's location (array: first key is X, other is Z coordinate in Minecraft system).
          * @param is_intersection True if this station is an intersection.
          * @param is_terminus True if this station is a terminus.
@@ -130,7 +135,7 @@
          * @returns {*} A Leaflet circleMarker object.
          * @private
          */
-        _create_station: function(name, code_name, id, location, is_intersection, is_terminus, is_main)
+        _create_station: function(station, location, is_intersection, is_terminus, is_main)
         {
             // Station classes (from type)
             var label_classes = [];
@@ -164,7 +169,7 @@
 
 
             // Station object
-            var station = L.circleMarker(NetworkMap._coords_to_latlng(location), {
+            var station_marker = L.circleMarker(NetworkMap._coords_to_latlng(location), {
                 color: outlineColor,
                 fillColor: insideColor,
 
@@ -175,22 +180,23 @@
                 stroke: is_main || is_intersection,
 
                 className: 'network-map-station'
-            }).bindLabel('<div class="station-label' + (is_intersection || is_main ? ' station-label-intersection' : '') + (is_main ? ' station-label-main' : '') + '">' + name + '</div>', {
+            }).bindLabel('<div class="station-label' + (is_intersection || is_main ? ' station-label-intersection' : '') + (is_main ? ' station-label-main' : '') + '">' + station.full_name + '</div>', {
                 noHide: true,
                 className: label_classes.join(' ')
             });
 
 
             // Station metadata
-            station.zeps_station_code_name = code_name;
-            station.zeps_station_id        = id;
+            station_marker.zeps = {
+                station: station,
 
-            station.zeps_station_is_main         = is_main;
-            station.zeps_station_is_terminus     = is_terminus;
-            station.zeps_station_is_intersection = is_intersection;
+                is_main: is_main,
+                is_terminus: is_terminus,
+                is_intersection: is_intersection
+            };
 
 
-            return station;
+            return station_marker;
         },
 
         /**
@@ -277,8 +283,15 @@
                         }
                     });
 
-                    NetworkMap.stations_colors[station_base.code_name]  = color;
-                    NetworkMap.stations_colors[station_other.code_name] = color;
+                    if (!NetworkMap.stations_colors[station_base.code_name])
+                        NetworkMap.stations_colors[station_base.code_name] = [color];
+                    else
+                        NetworkMap.stations_colors[station_base.code_name].push(color);
+
+                    if (!NetworkMap.stations_colors[station_other.code_name])
+                        NetworkMap.stations_colors[station_other.code_name] = [color];
+                    else
+                        NetworkMap.stations_colors[station_other.code_name].push(color);
 
                     lines.push(NetworkMap._create_line(
                         [station_base.x, station_base.y], [station_other.x, station_other.y],
@@ -508,7 +521,7 @@
                             var is_main_station = NetworkMap.main_stations.indexOf(station.code_name) > -1;
 
                             var marker_station = NetworkMap._create_station(
-                                station.full_name, station.code_name, station.id, [station.x, station.y],
+                                station, [station.x, station.y],
                                 neighborhood.is_intersection, neighborhood.is_terminus, is_main_station
                             );
 
@@ -530,7 +543,9 @@
                     // Attributes the colors of the dots, for basic stations
                     markers_others.forEach(function (station)
                     {
-                        var color = NetworkMap.stations_colors[station.zeps_station_code_name];
+                        // All the colors of the stations are stored, but these simple stations will always have
+                        // only one color, the first of the array.
+                        var color = NetworkMap.stations_colors[station.zeps.station.code_name][0];
                         station.setStyle({ color: color, fillColor: color });
                     });
 
@@ -582,7 +597,7 @@
                     var mouse_in = function (e) {
                         var $label = $(e.target.getLabel()._container);
 
-                        // Z-index update, so the label il always above others when pointed
+                        // Z-index update, so the label is always above others when pointed
                         $label.data('zeps-network-map-old-zindex', $label.css('z-index'));
                         $label.css('z-index', 9001);
 
@@ -623,6 +638,7 @@
                         }
                     };
 
+
                     var groups = [
                         NetworkMap.layer_others, NetworkMap.layer_terminus,
                         NetworkMap.layer_intersections, NetworkMap.layer_main
@@ -634,6 +650,49 @@
                                 mouseover: mouse_in,
                                 mouseout: mouse_out
                             });
+
+                            // Adds pop-up on stations, with name, lines and dynmap links.
+                            var unique_lines = NetworkMap.stations_colors[marker.zeps.station.code_name]
+                                .sort()
+                                .filter(function(el,i,a) { return i == a.indexOf(el); });
+
+                            var popup = '<h4>';
+                            unique_lines.forEach(function (color) {
+                                popup += '<div class="square-line" style="background-color: ' + color + ';"></div>';
+                            });
+                            popup += '<span>' + marker.zeps.station.full_name + '</span></h4>';
+
+                            popup += '<p class="station-popup-subtitle">';
+                            if (marker.zeps.station.is_portal)
+                                if (marker.zeps.is_intersection)
+                                    popup += '<strong>Portail et intersection</strong>';
+                                else
+                                    popup += '<strong>Portail de sortie</strong>';
+                            else
+                                popup += '<strong>Intersection</strong>';
+
+                            if (!marker.zeps.station.is_intersection)
+                                popup += ' (sans arrêt)';
+
+                            popup += '</p><p class="station-popup-content">';
+
+                            popup += '<strong>Coordonnées : </strong>' + marker.zeps.station.x + ' ; ' + marker.zeps.station.y + '<br />';
+                            if (NetworkMap.dynmap_root && (NetworkMap.dynmap_map_overworld || NetworkMap.dynmap_map_nether))
+                            {
+                                popup += '<strong>Voir sur la Dynmap : </strong>';
+
+                                var links = [];
+                                if (NetworkMap.dynmap_map_overworld)
+                                    links.push('<a href="' + NetworkMap.dynmap_root + '/' + '?worldname=' + NetworkMap.dynmap_map_overworld + '&mapname=' + NetworkMap.dynmap_map_type + '&x=' + (marker.zeps.station.x * 8) + '&y=64&z=' + (marker.zeps.station.y * 8) + '" target="_blank">surface</a>');
+                                if (NetworkMap.dynmap_map_nether)
+                                    links.push('<a href="' + NetworkMap.dynmap_root + '/' + '?worldname=' + NetworkMap.dynmap_map_nether + '&mapname=' + NetworkMap.dynmap_map_type + '&x=' + marker.zeps.station.x + '&y=64&z=' + marker.zeps.station.y + '" target="_blank">nether</a>');
+
+                                popup += links.join(', ');
+                            }
+
+                            popup += '</p>';
+
+                            marker.bindPopup(popup);
                         });
                     });
 

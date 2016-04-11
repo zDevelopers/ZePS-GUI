@@ -24,10 +24,14 @@
 
             NetworkMap.network_api        = '{{ path('zeps.api.stations_network') }}';
             NetworkMap.network_colors_api = '{{ path('zeps.api.stations_network_colors') }}';
+            NetworkMap.dynmap_root        = '{{ app.config.dynmap.root }}';
             NetworkMap.main_stations      = '{{ main_stations }}'.split(',');
             NetworkMap.map_container_id   = 'network_map';
 
             NetworkMap.permanent_url_with_anchor = true;
+            NetworkMap.dynmap_map_overworld      = '{{ app.config.world_name_overworld }}';
+            NetworkMap.dynmap_map_nether         = '{{ app.config.world_name_nether }}';
+            NetworkMap.dynmap_map_type           = '{{ app.config.dynmap.map_type }}';
 
             NetworkMap.init($('#still_nothing_loader'));
         });

@@ -30,7 +30,7 @@ class DynmapBridgeManager extends NetworkManager
     public static function get_logged_in_players(Application $app)
     {
         $dynmap_infos_path = self::DYNMAP_STANDALONE_INFO_PATH;
-        $dynmap_infos_path = str_replace('{worldname}', $app['config']['world_name'], $dynmap_infos_path);
+        $dynmap_infos_path = str_replace('{worldname}', $app['config']['world_name_nether'], $dynmap_infos_path);
         $dynmap_infos_path = str_replace('{timestamp}', time(), $dynmap_infos_path);
 
         $dynmap_infos = self::get_json($app['config']['dynmap']['root'] . $dynmap_infos_path);
@@ -106,7 +106,7 @@ class DynmapBridgeManager extends NetworkManager
         $player_x = $player['x'];
         $player_z = $player['z'];
 
-        $from_overworld = ($player['world'] != $app['config']['world_name']);
+        $from_overworld = ($player['world'] != $app['config']['world_name_nether']);
 
         return RoutesManager::get_closest_station($player_x, $player_z, $from_overworld);
     }

@@ -250,6 +250,44 @@ footer.footer, footer.footer a {
     display: block !important;
 }
 
+.square-line {
+    display: inline-block;
+
+    width: 22px;
+    height: 20px;
+    margin-right: 3px;
+
+    vertical-align: sub;
+}
+
+.leaflet-popup-content h4 span {
+    padding-left: 6px;
+}
+
+.leaflet-popup-content p.station-popup-subtitle {
+    margin-top: -5px;
+    font-size: 1.1em;
+}
+
+.leaflet-popup-content p.station-popup-content {
+    margin-top: 15px;
+    color: #666;
+}
+
+.leaflet-popup-content p.station-popup-content a {
+    color: #4b4b4b;
+    text-decoration: none;
+}
+
+.leaflet-popup-content p.station-popup-content a:hover {
+    text-decoration: underline;
+}
+
+.leaflet-popup {
+    /* Fix for leaflet popups displayed under the stations labels */
+    z-index: 9111 !important;
+}
+
 
 /* Error pages */
 
