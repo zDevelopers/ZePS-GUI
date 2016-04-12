@@ -9,7 +9,6 @@ use ZePS\Quotes\QuotesManager;
 use ZePS\Routing\RoutesManager;
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/autoload.php';
 
 
 $app = new Silex\Application();
