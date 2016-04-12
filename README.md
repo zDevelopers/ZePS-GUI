@@ -18,15 +18,12 @@ git clone https://github.com/zDevelopers/ZePS-GUI.git
 cd ZePS-GUI
 
 # Installs Composer
-php -r "readfile('https://getcomposer.org/installer');" > composer-setup.php
-php -r "if (hash('SHA384', file_get_contents('composer-setup.php')) === '7228c001f88bee97506740ef0888240bd8a760b046ee16db8f4095c0d8d525f2367663f22a46b48d072c816e7fe19959') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-php composer-setup.php
-php -r "unlink('composer-setup.php');"
+# Check the installation instructions here: https://getcomposer.org/download/ (link below).
 
 # Updates the dependencies
 php composer.phar install
 ```
-*[Up-to-date Composer installation documentation is available here](https://getcomposer.org/download/).*
+*[Composer installation documentation is available here](https://getcomposer.org/download/).*
 
 ### Update
 
@@ -51,7 +48,7 @@ php -S 0.0.0.0:8080 -t ./web/
 ```
 The app should be accessible at [127.0.0.1:8080](http://127.0.0.1:8080), or at the same port using your local IP address from other devices (e.g. phones).
 
-### Real server
+### Production server
 
 The server serving the application must serve the `/web/` directory only.  
 By default, the service will be available through `https://root/index.php`, `https://root/index.php/plan`, etc. To remove the filename part, use a rewrite rule, like this one for Apache:
@@ -68,3 +65,8 @@ By default, the service will be available through `https://root/index.php`, `htt
 </IfModule>
 ```
 (with all usual security features too, like no indexing, etc.).
+
+To enhance application performances, you can use the optimized autoloader—but if you do so, you'll have to re-update it for every release.
+```bash
+php composer.phar dump-autoload -a
+```
