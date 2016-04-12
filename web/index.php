@@ -154,6 +154,13 @@ $app
     ->bind('zeps.api.stations_network_colors');
 
 
+// Statistics
+
+$app
+    ->get('/statistiques', 'ZePS\\Controllers\\StatisticsController::statistics')
+    ->bind('zeps.stats');
+
+
 // Redirect pages
 
 $app

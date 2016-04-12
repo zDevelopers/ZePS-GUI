@@ -12,6 +12,10 @@ body {
     padding-top: 10px !important;
 }
 
+h3 {
+    margin-bottom: 25px;
+}
+
 .header, .footer {
     padding-right: 15px;
     padding-left: 15px;
@@ -286,6 +290,21 @@ footer.footer, footer.footer a {
 .leaflet-popup {
     /* Fix for leaflet popups displayed under the stations labels */
     z-index: 9111 !important;
+}
+
+
+/* Statistics */
+
+.statistic .number {
+    display: inline-block;
+    width: 65px;
+
+    padding-right: 10px;
+
+    vertical-align: -0.2em;
+    text-align: right;
+
+    font-size: 1.6em;
 }
 
 

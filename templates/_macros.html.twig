@@ -17,3 +17,24 @@
         {% endfor %}
     </optgroup>
 {% endmacro %}
+
+{% macro bytesToSize(bytes) %}
+    {% spaceless %}
+        {% set kilobyte = 1024 %}
+        {% set megabyte = kilobyte * 1024 %}
+        {% set gigabyte = megabyte * 1024 %}
+        {% set terabyte = gigabyte * 1024 %}
+
+        {% if bytes < kilobyte %}
+            {{ bytes ~ ' octets' }}
+        {% elseif bytes < megabyte %}
+            {{ (bytes / kilobyte)|number_format(2, ',') ~ ' Kio' }}
+        {% elseif bytes < gigabyte %}
+            {{ (bytes / megabyte)|number_format(2, ',') ~ ' Mio' }}
+        {% elseif bytes < terabyte %}
+            {{ (bytes / gigabyte)|number_format(2, ',') ~ ' Gio' }}
+        {% else %}
+            {{ (bytes / terabyte)|number_format(2, ',') ~ ' Tio' }}
+        {% endif %}
+    {% endspaceless %}
+{% endmacro %}

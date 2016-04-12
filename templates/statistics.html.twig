@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% import "_macros.html.twig" as macros %}
+
+{% block main_title %}Statistiques{% endblock %}
+
+{% block content %}
+    <div class="well">
+        <h2>Statistiques du Z<em>é</em>PS</h2>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-7">
+                    <h3>Réseau du Netherrail</h3>
+                    <p>Le Netherrail comporte <strong>{{ stations.all - stations.hidden }} stations</strong> en tout. Il y a plus précisément :</p>
+                    <p class="statistic">
+                        <span class="number">{{ stations.main }}</span>
+                        <span class="description">arrêts aux <strong>capitales</strong> ; </span>
+                    </p>
+                    <p class="statistic">
+                        <span class="number">{{ stations.portal }}</span>
+                        <span class="description">stations disposant d'un <strong>portail de sortie</strong> ; </span>
+                    </p>
+                    <p class="statistic">
+                        <span class="number">{{ stations.no_stop }}</span>
+                        <span class="description">stations <strong>sans arrêt</strong> ; </span>
+                    </p>
+                    <p class="statistic">
+                        <span class="number">{{ stations.dangerous }}</span>
+                        <span class="description">stations jugées <strong>dangereuses</strong> ; </span>
+                    </p>
+                    <p class="statistic">
+                        <span class="number">{{ stations.hidden }}</span>
+                        <span class="description">stations <strong>masquées</strong> <span class="text-muted">(techniques, sans réelle existance en tant qu'arrêt)</span>.</span>
+                    </p>
+
+                    <hr />
+
+                    <p>Le réseau est constitué de <strong>{{ network.lines }} lignes</strong>, qui mesurent ensemble <strong>{{ (network.all / 1000)|number_format(2, ',') }} kilomètres</strong>, dont : </p>
+                    <p class="statistic">
+                        <span class="number">{{ (network.rail / 1000)|number_format(2, ',') }}</span>
+                        <span class="description">kilomètres <strong>en train</strong> ; </span>
+                    </p>
+                    <p class="statistic">
+                        <span class="number">{{ (network.walk / 1000)|number_format(2, ',') }}</span>
+                        <span class="description">kilomètres <strong>à pieds</strong>.</span>
+                    </p>
+                </div>
+                <div class="col-md-5">
+                    <h3>Données en cache</h3>
+                    <p>Pour optimiser le site, lorsqu'une requête d'itinéraire est faite pour la première fois, l'itinéraire est stocké et la copie, accessible quasi instantanément, est utilisée par la suite.</p>
+                    <p>Le cache des requêtes d'itinéraire occupe <strong>{{ macros.bytesToSize(cache.space_used) }}</strong>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
