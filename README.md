@@ -35,7 +35,7 @@ php composer.phar install
 git pull
 
 # Updates the dependencies (if needed)
-php composer.phar update
+php composer.phar install
 
 # Clears the cache (always)
 rm -rf cache/*
