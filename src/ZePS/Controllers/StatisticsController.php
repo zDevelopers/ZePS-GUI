@@ -100,6 +100,7 @@ class StatisticsController
 
 
         return new Response($app['twig']->render('statistics.html.twig', array(
+            'section' => 'statistics',
             'stations' => array(
                 'all' => $stations_count_all,
                 'main' => $stations_count_main,
