@@ -35,6 +35,8 @@ git pull
 php composer.phar install
 
 # Clears the cache (always)
+# If you don't want to remove all the cache for the routing API (because it auto-clears when needed),
+# you should delete the cache/twig/ directory only (but, delete it!): rm -rf cache/twig/*
 rm -rf cache/*
 ```
 
