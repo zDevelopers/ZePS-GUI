@@ -43,13 +43,13 @@ abstract class NetworkManager
         if (!$this->cached)
             return $this->load_from_url($url);
 
-        $data = $this->app['cache']->fetch($url);
+        $data = $this->app['cache.routing']->fetch($url);
 
         // No data available?
         if ($data === false)
         {
             $data = $this->load_from_url($url);
-            $this->app['cache']->save($url, $data, $this->cache_lifetime);
+            $this->app['cache.routing']->save($url, $data, $this->cache_lifetime);
         }
 
         return $data;

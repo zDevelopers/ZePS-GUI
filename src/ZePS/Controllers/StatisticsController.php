@@ -96,7 +96,7 @@ class StatisticsController
 
         // Cache statistics
 
-        $cache_stats = $app['cache']->getStats();
+        $cache_stats = $app['cache.routing']->getStats();
 
 
         return new Response($app['twig']->render('statistics.html.twig', array(

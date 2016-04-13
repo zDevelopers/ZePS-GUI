@@ -37,7 +37,10 @@ $app['config'] = array
 
     'cache' => array(
         'directory' => __DIR__ . '/../cache/data',     // The main cache folder for miscellaneous data.
-        'checksum_cache_key' => 'router_api_checksum'  // The key where the API checksum is stored. If the checksum change, the cache is invalidated.
+        'checksum_cache_key' => 'router_api_checksum', // The key where the API checksum is stored. If the checksum change, the cache is invalidated.
+
+        'cache_suffix_routing'  => 'routingcache',    // The suffix of the routing API cache
+        'cache_suffix_uuid' => 'uuidcache',           // The suffix of the player<>UUID cache
     )
 );
 
@@ -78,7 +81,8 @@ $app['twig']->addFilter(new Twig_SimpleFilter('time_format', function ($seconds,
 
 // Caching
 
-$app['cache'] = $app->share(function($app) { return new FilesystemCache($app['config']['cache']['directory']); });
+$app['cache.routing'] = $app->share(function($app) { return new FilesystemCache($app['config']['cache']['directory'], '.' . $app['config']['cache']['cache_suffix_routing'] . '.data'); });
+$app['cache.uuid']    = $app->share(function($app) { return new FilesystemCache($app['config']['cache']['directory'], '.' . $app['config']['cache']['cache_suffix_uuid'] . '.data'); });
 
 
 // Internal services
@@ -101,7 +105,7 @@ $app->before(function (Request $request, Application $app)
 
 $app->before(function (Request $request, Application $app)
 {
-    $stored_checksum = $app['cache']->fetch($app['config']['cache']['checksum_cache_key']);
+    $stored_checksum = $app['cache.routing']->fetch($app['config']['cache']['checksum_cache_key']);
     $remote_checksum = (new APIChecksumChecker($app))->get_checksum();
 
     if ($request->query->has('purge'))
@@ -122,8 +126,8 @@ $app->before(function (Request $request, Application $app)
 
     if ($clearCache)
     {
-        $app['cache']->flushAll();
-        $app['cache']->save($app['config']['cache']['checksum_cache_key'], $remote_checksum, 0);
+        $app['cache.routing']->flushAll();
+        $app['cache.routing']->save($app['config']['cache']['checksum_cache_key'], $remote_checksum, 0);
     }
 });
 
