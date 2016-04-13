@@ -29,8 +29,9 @@ class RouteSearchController
                 'from'    => htmlspecialchars(trim($app['request']->query->get('from'))),
                 'to'      => htmlspecialchars(trim($app['request']->query->get('to'))),
                 'options' => $options
-            )), 301);
+            )), Response::HTTP_MOVED_PERMANENTLY);
         }
+
 
         $stations = $app['zeps.routing']->get_netherrail_stations();
 
@@ -39,25 +40,9 @@ class RouteSearchController
             $error = 'unreachable';
 
         return new Response($app['twig']->render('index.html.twig', array(
-            'submitted' => false,
-            'valid' => false,
-            'error' => $error,
-            'raw_error' => null,
-            'from' => -1,
-            'to' => -1,
-            'options' => array('official' => false, 'accessible' => false),
-            'raw_options' => '',
+            'error'    => $error,
             'stations' => $stations,
-            'route' => array(),
-            'travel_time' => '',
-            'travel_time_seconds' => 0,
-            'compute_time' => 0,
-            'stations_count' => 0,
-            'changes_count' => 0,
-            'directions_translations' => array(),
-            'spawn_station' => RoutesManager::SPAWN_STATION,
-            'image' => '',
-            'quote' => $app['zeps.quotes']->get_random_quote()
+            'quote'    => $app['zeps.quotes']->get_random_quote()
         )));
     }
 
@@ -160,27 +145,26 @@ class RouteSearchController
             }
         }
 
-        return new Response($app['twig']->render('index.html.twig', array(
-            'submitted' => true,
-            'valid' => $valid,
-            'error' => $error,
-            'raw_error' => $raw_error,
-            'from' => $from,
-            'to' => $to,
-            'options' => array('official' => $official, 'accessible' => $accessible),
+        return new Response($app['twig']->render('search.html.twig', array(
+            'valid'       => $valid,
+            'error'       => $error,
+            'raw_error'   => $raw_error,
+            'from'        => $from,
+            'to'          => $to,
+            'options'     => array('official' => $official, 'accessible' => $accessible),
             'raw_options' => $options,
-            'stations' => $stations,
+            'stations'    => $stations,
 
-            'route' => $route,
+            'route'       => $route,
 
             'from_overworld' => $from_overworld,
-            'nether_portal' => $nether_portal,
+            'nether_portal'  => $nether_portal,
 
-            'through_spawn' => $through_spawn,
+            'through_spawn'  => $through_spawn,
 
             'directions_translations' => $directions_translations,
 
-            'spawn_station' => RoutesManager::SPAWN_STATION,
+            'spawn_station'    => RoutesManager::SPAWN_STATION,
             'spawn_station_id' => $app['zeps.routing']->station_name_to_id(RoutesManager::SPAWN_STATION),
 
             'image' => $error === null ? $app['zeps.routing']->get_netherrail_route_image($route) : ''

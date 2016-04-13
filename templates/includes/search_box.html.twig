@@ -1,0 +1,90 @@
+{% import "_macros.html.twig" as macros %}
+
+<div class="well well-large">
+    <form action="{{ path('zeps.homepage') }}">
+
+        <input type="hidden" name="from_overworld" id="from_overworld" value="false" />
+
+        <div class="row">
+            <div class="col-xs-12 col-md-9 form-inline">
+                <div class="form-group" id="route-form-part">
+                    <label class="sr-only" for="from">Sélectionnez les points de départ et d'arrivée</label>
+                    <div class="input-group">
+                        <div class="input-group-addon station-selector-between cliquable-icon cliquable-icon-nojs open-geolocation-dialog">
+                            <span class="glyphicon glyphicon-globe" id="open-geolocation-icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Me localiser"></span>
+                            <span class="sr-only">Me localiser</span>
+                        </div>
+
+                        <select class="form-control selectpicker-disabled station-selector" id="from" name="from" data-live-search="true">
+                            {{ macros.stations_list(stations, from, true, "Point de départ") }}
+                        </select>
+
+                        <div class="input-group-addon station-selector-between cliquable-icon cliquable-icon-nojs" id="invert-from-to" >
+                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Inverser origine et destination"></span>
+                            <span class="sr-only">(Inverser origine et destination)</span>
+                        </div>
+
+                        <select class="form-control selectpicker-disabled station-selector" id="to" name="to" data-live-search="true" title="Destination">
+                            {{ macros.stations_list(stations, to, false, "Destination") }}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group route-options">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" id="route_option_official" name="official" value="official"{% if official %} checked{% endif %}> Lignes officielles uniquement
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" id="route_option_accessible" name="accessible" value="accessible"{% if accessible %} checked{% endif %}> Stations sécurisées uniquement
+                    </label>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-3 text-right">
+                <input class="btn btn-primary" type="submit" value="Calculer l'itinéraire">
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="geo-geolocation-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="geolocation-modal-title">Chargement...</h4>
+            </div>
+            <div class="modal-body">
+                <div id="geolocation-modal-loading">
+                    <img src="{{ app.request.basePath }}/img/loading.gif" alt="Chargement en cours, patientez une seconde..." />
+                </div>
+
+                <div id="geolocation-modal-selector">
+                    <select id="geolocation-modal-selector-select" class="selectpicker" data-width="70%" title="Sélectionnez-vous dans la liste"></select>
+                </div>
+
+                <div id="geolocation-modal-error-nether-empty">
+                    <p>
+                        <strong>Il n'y a personne dans un monde survie.</strong><br />
+                        Allez au préalable dans l'un d'entre eux puis <a href="#" class="geolocation-modal-retry">réessayez</a>.
+                    </p>
+                </div>
+                <div id="geolocation-modal-error-cannot-retrieve">
+                    <p>
+                        <strong>Impossible de récupérer la station.</strong><br />
+                        Le serveur a retourné une erreur.
+                    </p>
+                    <p class="text-muted">
+                        Erreur <span id="geolocation-modal-error-cannot-retrieve-error-id"></span> : «&nbsp;<span id="geolocation-modal-error-cannot-retrieve-error-message"></span>&nbsp;»
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-left">
+                    <p class="text-muted" id="geolocation-modal-footer-message">
+                        <a href="#" class="geolocation-modal-retry" data-toggle="tooltip" data-placement="top" title="Cliquez pour réessayer">Pas dans la liste ?</a> Vérifiez que vous êtes dans un monde survie (et hors de l'End).
+                    </p>
+                </div>
+                <button type="button" class="btn btn-primary" id="geolocation-modal-button" disabled>Localiser la station la plus proche</button>
+            </div>
+        </div>
+    </div>
+</div>

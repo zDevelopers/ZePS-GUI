@@ -1,0 +1,240 @@
+{%  extends 'base.html.twig' %}
+
+{% import "_macros.html.twig" as macros %}
+
+{% block main_title %}
+    {%  if submitted and valid %}
+        {{ attribute(stations.stations, from).displayName }} → {{ attribute(stations.stations, to).displayName }} ⋅
+    {% endif %}
+    Itinéraire
+{% endblock %}
+
+{% block title %}
+    <h1>Z<em>é</em>PS</h1>
+    {% if valid %}
+        <p>De {{ attribute(stations.stations, from).displayName }} à {{ attribute(stations.stations, to).displayName }}</p>
+    {% endif %}
+{% endblock %}
+
+{% block stylesheets %}
+    {% include 'includes/search_box_css.html.twig' %}
+
+    <link href="{{ app.request.basePath }}/css/leaflet/leaflet.css" rel="stylesheet" />
+    <link href="{{ app.request.basePath }}/css/leaflet/leaflet.label.css" rel="stylesheet" />
+    <link href="{{ app.request.basePath }}/css/leaflet/easy-button.css" rel="stylesheet" />
+{% endblock %}
+
+{% block javascripts %}
+    {% include 'includes/search_box_js.html.twig' %}
+
+    {# There's no point calculating this if we are already displaying a quickest path. #}
+    {% if valid and not error and not through_spawn %}
+        <script type="text/javascript">
+            route_infos = {
+                'from_id': {{ from }},
+                'to_id': {{ to }},
+                'official': {{ options.official ? 'true' : 'false' }},
+                'accessible': {{ options.accessible ? 'true' : 'false' }},
+                'raw_options': '{{ raw_options }}',
+                'travel_time': {{ route.travelTime }}
+            };
+
+            alternative_starts = [{% for station in stations.main_stations %}{{ station.id }}, {% endfor %}];
+        </script>
+
+        <script type="text/javascript" src="{{ app.request.basePath }}/js/jquery/whenall.jquery.js"></script>
+        <script type="text/javascript" src="{{ app.request.basePath }}/js/datetime.js"></script>
+        <script type="text/javascript" src="{{ app.request.basePath }}/js/quickest_path.js"></script>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <noscript>
+        <div class="alert alert-warning">
+            <strong>Javascript est désactivé.</strong>
+            Certaines fonctionnalités secondaires (géolocalisation...) ne marcheront pas.
+            <a href="http://www.enable-javascript.com/fr/">Cliquez ici pour apprendre comment activer Javascript</a>.
+        </div>
+    </noscript>
+
+    {% if error == 'unreachable' %}
+        <div class="alert alert-danger">
+            <strong>L'API de recherche est injoignable.</strong>
+            Il s'agit certainement d'un problème temporaire. Réessayez dans quelques minutes.
+        </div>
+    {% endif %}
+
+    {% if error != 'unreachable' and (not valid or error) %}
+        <div class="alert alert-danger">
+            <strong>Erreur.</strong>
+            Impossible de récupérer l'itinéraire.
+            {% if error == 'no_path' %}
+                Aucun chemin trouvé.
+            {% elseif error  is not empty %}
+                Une erreur inconnue est survenue : {{ raw_error }}.
+            {% endif %}
+
+            <br /><em>N'hésitez pas à signaler ce problème en spécifiant l'URL de la page ! Merci.</em>
+        </div>
+    {% endif %}
+
+    {% if not (not valid and error == 'unreachable') %}
+        {% include 'includes/search_box.html.twig' with
+            {
+                'stations': stations,
+                'from': from,
+                'to': to,
+                'official' : options.official,
+                'accessible': options.accessible
+            }
+        %}
+    {% endif %}
+
+    {% if valid and not error %}
+        <div class="alert alert-info" id="quickest-path">
+            <div class="pull-right">
+                <p>
+                    <a id="quickest-path-link" href="">Afficher cet itinéraire</a>
+                </p>
+            </div>
+
+            <p>
+                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>&nbsp;
+                Vous économisez <span id="quickest-path-saved-time"></span> en passant par <span id="quickest-path-station"></span>.
+            </p>
+        </div>
+
+        <div class="well">
+            <div class="pull-right">
+                <a href="http://florian.cassayre.me/netherrail?from={{ from }}&amp;to={{ to }}">Voir sur le site original</a>
+            </div>
+            <h2>Informations pratiques</h2>
+
+            <div class="row">
+                <div class="col-xs-12 col-md-6">
+                    <h4 class="muted small-title">Temps de trajet</h4>
+                    <p class="lead">{{ route.travelTime|time_format }}</p>
+
+                    <h4 class="muted small-title">Distance totale</h4>
+                    <p class="lead">{{ route.length|number_format }} bloc{% if route.length > 1 %}s{% endif %}</p>
+                </div>
+                <div class="col-xs-12 col-md-6">
+                    <h4 class="muted small-title">Nombre d'étapes</h4>
+                    <p class="lead">{{ route.compactStepCount|number_format }}</p>
+
+                    <h4 class="muted small-title">Nombre de stations</h4>
+                    <p class="lead">{{ route.stationsCount|number_format }}</p>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="well">
+            <h2>Itinéraire</h2>
+
+            <table class="table table-bordered">
+                {% if through_spawn %}
+                    <tr>
+                        <td>
+                            <p class="route_main_consign">Rejoignez <strong>la capitale</strong> ({{ macros.station(attribute(stations.stations, spawn_station_id)) }}).</p>
+                            <p class="route_intermediate_stations">
+                                Vous pouvez utiliser <code>/spawn</code>.
+                            </p>
+                        </td>
+                    </tr>
+                    {% if from != spawn_station_id %}
+                        <tr>
+                            <td>
+                                <p class="route_main_consign">Rendez-vous à <strong>{{ macros.station(attribute(stations.stations, from)) }}</strong> via le portail de la capitale.</p>
+                                <p class="route_intermediate_stations">
+                                    Les portails sont situés au sous-sol de la mairie.
+                                </p>
+                            </td>
+                        </tr>
+                        {% if from != to %}
+                            <tr>
+                                <td>
+                                    <p class="route_main_consign">Entrez dans <strong>le Nether</strong>.</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% elseif from != to %}
+                        <tr>
+                            <td>
+                                <p class="route_main_consign">Entrez dans <strong>le Nether</strong>.</p>
+                                <p class="route_intermediate_stations">
+                                    Le portails est situé au sous-sol de la mairie.
+                                </p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endif %}
+
+                {% if from != to %}
+                    {%  if from_overworld and not through_spawn %}
+                        <tr>
+                            <td>
+                                <p class="route_main_consign">Rejoignez <strong>le Nether</strong>.</p>
+                                <p class="route_intermediate_stations">
+                                    Le portail est probablement situé vers ({{ nether_portal.x }}&nbsp;; {{ nether_portal.z }}).
+                                </p>
+                            </td>
+                        </tr>
+                    {% endif %}
+
+                    {% for step in route.compactPath %}
+                        <tr>
+                            <td>
+                                <div class="pull-right">
+                                    {{ step.length|number_format }} bloc{% if step.length > 1 %}s{% endif %}
+                                </div>
+
+                                <p class="route_main_consign">
+                                    {% if step.stationFrom.isVisible %}
+                                        À <strong>{{ macros.station(step.stationFrom) }}</strong>,
+                                    {% else %}
+                                        Vers <strong>({{ step.stationFrom.locationX }} ; {{ step.stationFrom.locationZ }})</strong>,
+                                    {% endif %}
+                                    prenez la direction <strong>{{ attribute(directions_translations, step.direction) }}</strong>.
+                                </p>
+                                {% if step.steps|length >= 2 %}
+                                    <p class="route_intermediate_stations">
+                                        {% if step.steps|length == 2 and step.steps[1].station.isVisible %}
+                                            Vous passez par la station {{ macros.station(step.steps[1].station) }}.
+                                        {% else %}
+                                            Vous passez par les stations
+                                            {% set first = true %}
+                                            {% for substep in step.steps %}{% if substep.station.id != step.stationFrom.id and substep.station.isVisible %}{% if not first and substep.station.id != step.stationTo.id %}, {% elseif substep.station.id == step.stationTo.id %} et {% endif %}{{ macros.station(substep.station) }}{% set first = false %}{% endif %}{% endfor %}.
+                                        {% endif %}
+                                    </p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td>Vous arrivez à {{ macros.station(attribute(stations.stations, to)) }}.</td>
+                    </tr>
+                {% elseif through_spawn %}
+                    <tr>
+                        <td>Vous arrivez à {{ macros.station(attribute(stations.stations, to)) }}.</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>Ne bougez pas. Vous êtes déjà à {{ macros.station(attribute(stations.stations, to)) }}.</td>
+                    </tr>
+                {% endif %}
+            </table>
+        </div>
+
+        <div class="well" id="route_map">
+            <p class="text-center">Chargement du plan du trajet...</p>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block footer_in_line %}
+    {% if submitted and valid %}
+        — <span title="Temps nécessaire pour calculer l'itinéraire : {{ route.computeTime }} ms">{{ route.computeTime }} ms</span>
+    {% endif %}
+{% endblock %}
