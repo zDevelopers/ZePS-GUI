@@ -35,12 +35,21 @@ $app['config'] = array
         'cache' => __DIR__ . '/../cache/twig'          // The Twig's cache folder
     ),
 
+    'web_root' => __DIR__,
+
     'cache' => array(
         'directory' => __DIR__ . '/../cache/data',     // The main cache folder for miscellaneous data.
         'checksum_cache_key' => 'router_api_checksum', // The key where the API checksum is stored. If the checksum change, the cache is invalidated.
 
         'cache_suffix_routing'  => 'routingcache',    // The suffix of the routing API cache
         'cache_suffix_uuid' => 'uuidcache',           // The suffix of the player<>UUID cache
+
+        'cache_uuid_lifetime' => 604800,              // The UUID cache lifetime in seconds. 604800 = a week.
+
+        'players_heads' => array(
+            'directory' => __DIR__ . '/assets/heads/',// The storage location of the players heads. Must be in the web folder!
+            'lifetime'  => 604800                     // The lifetime of a head locally cached. It is downloaded again past this delay.
+        )
     )
 );
 
@@ -156,6 +165,13 @@ $app
 $app
     ->get('/api/stations_network_colors', 'ZePS\\Controllers\\NetworkMapController::network_colors_json')
     ->bind('zeps.api.stations_network_colors');
+
+
+// Players heads
+
+$app
+    ->get('/heads/{name}', 'ZePS\\Controllers\\PlayerHeadsController::get_head')
+    ->bind('zeps.player_head');
 
 
 // Statistics
