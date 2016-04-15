@@ -33,9 +33,7 @@
             <strong>L'API de recherche est injoignable.</strong>
             Il s'agit certainement d'un problème temporaire. Réessayez dans quelques minutes.
         </div>
-    {% endif %}
-
-    {% if not (error == 'unreachable') %}
+    {% else %}
         {% include 'includes/search_box.html.twig' with
             {
                 'stations': stations,

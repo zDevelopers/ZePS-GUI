@@ -217,6 +217,10 @@ footer.footer, footer.footer a {
 
 /* Network map */
 
+.leaflet-container.network_map {
+    background-color: whitesmoke;
+}
+
 #network_map {
     position: absolute;
     top: 60px;
@@ -227,8 +231,6 @@ footer.footer, footer.footer a {
 
     border-radius: 0;
     border: medium none;
-
-    background-color: whitesmoke;
 }
 
 #route_map {

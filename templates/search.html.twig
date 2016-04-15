@@ -27,6 +27,31 @@
 {% block javascripts %}
     {% include 'includes/search_box_js.html.twig' %}
 
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.js"></script>
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.label.js"></script>
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/easy-button.js"></script>
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/network_map.js"></script>
+
+    <script type="text/javascript">
+        NetworkMap.network_api        = '{{ path('zeps.api.stations_network') }}';
+        NetworkMap.network_colors_api = '{{ path('zeps.api.stations_network_colors') }}';
+        NetworkMap.dynmap_root        = '{{ app.config.dynmap.root }}';
+        NetworkMap.main_stations      = [{% for station in stations.main_stations %}'{{ station.name }}', {% endfor %}];
+        NetworkMap.map_container_id   = 'route_map';
+
+        NetworkMap.permanent_url_with_anchor = false;
+
+        NetworkMap.dynmap_map_overworld      = '{{ app.config.world_name_overworld }}';
+        NetworkMap.dynmap_map_nether         = '{{ app.config.world_name_nether }}';
+        NetworkMap.dynmap_map_type           = '{{ app.config.dynmap.map_type }}';
+
+        NetworkMap.shading_default = 0.8;
+
+        NetworkMap.highlight_path([{% for step in route.path %}'{{ step.station.name}}',{% endfor %}], 0);
+
+        NetworkMap.init();
+    </script>
+
     {# There's no point calculating this if we are already displaying a quickest path. #}
     {% if valid and not error and not through_spawn %}
         <script type="text/javascript">
@@ -227,7 +252,7 @@
             </table>
         </div>
 
-        <div class="well" id="route_map">
+        <div class="well network_map" id="route_map">
             <p class="text-center">Chargement du plan du trajet...</p>
         </div>
     {% endif %}

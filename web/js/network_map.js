@@ -30,12 +30,12 @@
         // The stations colors
         lines_colors: {},
         stations_colors: {},
-        stations_default_color_dot: 'purple',
-        stations_color_dot_intersection: 'white',
-        stations_color_dot_intersection_outline: 'black',
-        stations_color_dot_terminus: 'black',
+        stations_default_color_dot: '#800080',
+        stations_color_dot_intersection: '#ffffff',
+        stations_color_dot_intersection_outline: '#000000',
+        stations_color_dot_terminus: '#000000',
         stations_color_dot_main: '#cd0000',
-        stations_default_color_lines: 'purple',
+        stations_default_color_lines: '#800080',
 
         // The stations sizes
         stations_size_outline_normal: 2,
@@ -44,6 +44,12 @@
 
         // The main stations (array)
         main_stations: [],
+
+        // The map color shading (to enhance a path).
+        shading_default: 0,
+
+        // The paths to highlight.
+        highlighted: [],
 
         // The API to call to retrieve the JSON network
         network_api: undefined,
@@ -54,6 +60,9 @@
 
         // The links already drawn, avoiding duplicated lines (better performances, plus visible in the dashed lines).
         lines_drawn: [],
+
+        // The labels colors to update when the map is loaded.
+        label_colors_waiting_for_update: [],
 
 
         // -------------------- Utilities
@@ -120,6 +129,53 @@
             };
         },
 
+        /**
+         * Shades a color.
+         *
+         * Thanks: http://stackoverflow.com/a/13542669/5599794
+         *
+         * @param percentage The shading percentage.
+         * @param css_color The base CSS color.
+         * @param target_color The target CSS color, to shade to this color instead of white (if percentage positive) or
+         *                     black (else).
+         *
+         * @private
+         */
+        __shade_color: function(percentage, css_color, target_color)
+        {
+            var n = percentage < 0 ? percentage * -1 : percentage;
+            var from, to;
+
+            if (css_color.length > 7)
+            {
+                from = css_color.split(",");
+                to   = (target_color ? target_color : percentage < 0 ? "rgb(0,0,0)" : "rgb(255,255,255)").split(",");
+
+                var R = parseInt(from[0].slice(4));
+                var G = parseInt(from[1]);
+                var B = parseInt(from[2]);
+
+                return "rgb("
+                    + (Math.round((parseInt(to[0].slice(4)) - R) * n) + R) + ","
+                    + (Math.round((parseInt(to[1]) - G) * n) + G) + ","
+                    + (Math.round((parseInt(to[2]) - B) * n) + B) +")";
+            }
+            else
+            {
+                from = parseInt(css_color.slice(1), 16);
+                to   = parseInt((target_color ? target_color : percentage < 0 ? "#000000" : "#FFFFFF").slice(1), 16);
+
+                var R1 = from >> 16;
+                var G1 = from >> 8 & 0x00FF;
+                var B1 = from & 0x0000FF;
+
+                return "#" + (0x1000000
+                        + (Math.round(((to >> 16) - R1) * n) + R1) * 0x10000
+                        + (Math.round(((to >> 8 & 0x00FF) - G1) * n) + G1) * 0x100
+                        + (Math.round(((to & 0x0000FF) - B1) * n) + B1)).toString(16).slice(1);
+            }
+        },
+
 
         // -------------------- Map creation
 
@@ -170,7 +226,7 @@
 
             // Station object
             var station_marker = L.circleMarker(NetworkMap._coords_to_latlng(location), {
-                color: outlineColor,
+                color:     outlineColor,
                 fillColor: insideColor,
 
                 opacity: 0.76,
@@ -180,7 +236,7 @@
                 stroke: is_main || is_intersection,
 
                 className: 'network-map-station'
-            }).bindLabel('<div class="station-label' + (is_intersection || is_main ? ' station-label-intersection' : '') + (is_main ? ' station-label-main' : '') + '">' + station.full_name + '</div>', {
+            }).bindLabel('<div class="station-label' + (is_intersection || is_main ? ' station-label-intersection' : '') + (is_main ? ' station-label-main' : '') + '" id="station-label-for-' + station.code_name + '">' + station.full_name + '</div>', {
                 noHide: true,
                 className: label_classes.join(' ')
             });
@@ -192,8 +248,15 @@
 
                 is_main: is_main,
                 is_terminus: is_terminus,
-                is_intersection: is_intersection
+                is_intersection: is_intersection,
+
+                base_color: outlineColor,
+                base_fill_color: insideColor
             };
+
+
+            // Updates the shading of the label (important: after metadata!)
+            NetworkMap._colorize_marker(station_marker, undefined, NetworkMap._get_real_shading(station_marker));
 
 
             return station_marker;
@@ -202,17 +265,16 @@
         /**
          * Creates a line.
          *
-         * @param from The line's first point (array: first key is X, other is Z coordinate in Minecraft system).
-         * @param to The line's last point.
+         * @param station_from The line's departure station.
+         * @param station_to The line's destination station.
          * @param color The line's color.
          * @param is_rail True if this is a railway segment.
          * @return {*} A Leaflet polyline object.
          * @private
          */
-        _create_line: function(from, to, color, is_rail)
+        _create_line: function(station_from, station_to, color, is_rail)
         {
-            return L.polyline([NetworkMap._coords_to_latlng(from), NetworkMap._coords_to_latlng(to)], {
-                color: color,
+            var line =  L.polyline([NetworkMap._coords_to_latlng([station_from.x, station_from.y]), NetworkMap._coords_to_latlng([station_to.x, station_to.y])], {
                 opacity: 1,
                 clickable: false,
 
@@ -220,6 +282,17 @@
 
                 className: 'network-map-line'
             });
+
+            line.zeps = {
+                station_from: station_from,
+                station_to: station_to,
+                base_color: color
+            };
+
+            // Important: after metadata
+            NetworkMap._colorize_marker(line, color, NetworkMap._get_real_shading(line));
+
+            return line;
         },
 
         __encode_link: function(station1, station2)
@@ -294,8 +367,7 @@
                         NetworkMap.stations_colors[station_other.code_name].push(color);
 
                     lines.push(NetworkMap._create_line(
-                        [station_base.x, station_base.y], [station_other.x, station_other.y],
-                        color, link.is_rail
+                        station_base, station_other, color, link.is_rail
                     ));
 
                     NetworkMap.lines_drawn.push(NetworkMap.__encode_link(station_base, station_other));
@@ -328,6 +400,151 @@
             {
                 NetworkMap._update_station_dot_size(marker, size);
             });
+        },
+
+        /**
+         * Colorizes a station or a line.
+         *
+         * @param marker The marker to colorize.
+         * @param color The color. If undefined, the previous color is kept.
+         *              The color can be a single value, or an array with (ordered) the outline and inside color,
+         *              or an object with the keys `outline` and `inside`.
+         * @param shading The shading to apply. If undefined, the default shading is used.
+         *                0 = no color change, -1 = black, 1 = white;
+         *                ]0;1[ = lighten, ]-1;0[ = darken.
+         * @private
+         */
+        _colorize_marker: function(marker, color, shading)
+        {
+            shading = shading !== undefined ? shading : NetworkMap.shading_default;
+
+            // Anything to do?
+            if (!color && !shading)
+                return;
+
+            var outlineColor, insideColor;
+
+            if (color)
+            {
+                if (typeof color === 'string' || color instanceof String) {
+                    outlineColor = insideColor = color;
+                }
+                else if (color instanceof Array) {
+                    outlineColor = color[0];
+                    insideColor = color[1];
+                }
+                else if (color.outline && color.inside) {
+                    outlineColor = color.outline;
+                    insideColor = color.inside;
+                }
+            }
+
+            // Stations dots
+            if (marker instanceof L.CircleMarker)
+            {
+                // Updates the color of the dot itself
+                if (!color)
+                {
+                    outlineColor = marker.zeps.base_color ? marker.zeps.base_color : marker.options.color;
+                    insideColor = marker.zeps.base_fill_color ? marker.zeps.base_fill_color : marker.options.fillColor;
+                }
+
+                marker.setStyle({
+                    color: NetworkMap.__shade_color(shading, outlineColor),
+                    fillColor: NetworkMap.__shade_color(shading, insideColor)
+                });
+
+
+                // Updates the color of the label
+                var label_id = 'station-label-for-' + marker.zeps.station.code_name;
+                var label_color = NetworkMap.__shade_color(shading, '#111111');
+                var label = document.getElementById(label_id);
+
+                if (label)
+                {
+                    label.style.color = label_color;
+                }
+                else
+                {
+                    // If the label is not already drawn, the color must be updated later, when the map is fully loaded.
+                    // This only happens before the map is drawn. The colors are updated a few milliseconds after the
+                    // initialization of the map, in the init method.
+                    NetworkMap.label_colors_waiting_for_update.push({
+                        id: label_id,
+                        color: label_color
+                    });
+                }
+            }
+
+            // Links between the stations
+            else if (marker instanceof L.Polyline)
+            {
+                marker.setStyle({
+                    color: NetworkMap.__shade_color(shading, color ? insideColor : marker.zeps.base_color ? marker.zeps.base_color : marker.options.color)
+                });
+            }
+
+            // Else, unsupported marker, no action.
+        },
+
+        /**
+         * Returns the real color to use for this marker, taking into account the highlighted path.
+         *
+         * @param marker The marker.
+         * @return number|boolean The shading to use, or FALSE if the given marker is not a ZePS link or station.
+         * @private
+         */
+        _get_real_shading: function(marker)
+        {
+            if (!marker.zeps)
+                return false;
+
+            var shading;
+
+            // Stations dots
+            if (marker instanceof L.CircleMarker)
+            {
+                shading = NetworkMap.shading_default;
+
+                NetworkMap.highlighted.forEach(function (highlight_map)
+                {
+                    for (var j = 0; j < highlight_map.path.length; j++)
+                    {
+                        if (marker.zeps.station.code_name == highlight_map.path[j])
+                        {
+                            shading = highlight_map.shading;
+                            break;
+                        }
+                    }
+                });
+
+                return shading;
+            }
+
+            // Links between the stations
+            else if (marker instanceof L.Polyline)
+            {
+                shading = NetworkMap.shading_default;
+
+                NetworkMap.highlighted.forEach(function (highlight_map)
+                {
+                    for (var j = 0; j < highlight_map.path.length; j++)
+                    {
+                        var current_station = highlight_map.path[j];
+                        var next_station = highlight_map.path[j+1];
+                        var from_station = marker.zeps.station_from.code_name;
+                        var to_station = marker.zeps.station_to.code_name;
+
+                        if ((current_station == from_station && next_station == to_station) || (next_station == from_station && current_station == to_station))
+                        {
+                            shading = highlight_map.shading;
+                            break;
+                        }
+                    }
+                });
+
+                return shading;
+            }
         },
 
         /**
@@ -457,6 +674,23 @@
         },
 
 
+        // -------------------- Configuration methods
+
+
+        /**
+         * Highlights a path in the map.
+         *
+         * Must be called before the init method.
+         *
+         * @param path The path to highlight (ordered list of stations code names)
+         * @param shading The shading to apply to this path (default: 0, i.e. the normal color).
+         */
+        highlight_path: function(path, shading)
+        {
+            NetworkMap.highlighted.push({ path: path, shading: shading});
+        },
+
+
         // -------------------- Initialization
 
 
@@ -546,7 +780,12 @@
                         // All the colors of the stations are stored, but these simple stations will always have
                         // only one color, the first of the array.
                         var color = NetworkMap.stations_colors[station.zeps.station.code_name][0];
-                        station.setStyle({ color: color, fillColor: color });
+
+                        // We also update the base color of the station (color unshaded).
+                        station.zeps.base_color      = color;
+                        station.zeps.base_fill_color = color;
+
+                        NetworkMap._colorize_marker(station, color, NetworkMap._get_real_shading(station));
                     });
 
 
@@ -712,6 +951,15 @@
                     $('.leaflet-bar-part').tooltip({
                         placement: 'right'
                     });
+
+
+                    // Updates labels colors
+                    NetworkMap.label_colors_waiting_for_update.forEach(function(update)
+                    {
+                        document.getElementById(update.id).style.color = update.color;
+                    });
+
+                    NetworkMap.label_colors_waiting_for_update = [];
 
 
                     // Callback

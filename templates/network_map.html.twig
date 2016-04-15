@@ -29,6 +29,7 @@
             NetworkMap.map_container_id   = 'network_map';
 
             NetworkMap.permanent_url_with_anchor = true;
+
             NetworkMap.dynmap_map_overworld      = '{{ app.config.world_name_overworld }}';
             NetworkMap.dynmap_map_nether         = '{{ app.config.world_name_nether }}';
             NetworkMap.dynmap_map_type           = '{{ app.config.dynmap.map_type }}';
@@ -46,7 +47,7 @@
         </div>
     </noscript>
 
-    <div class="well well-large" id="network_map" style="display: none;">
+    <div class="well well-large network_map" id="network_map" style="display: none;">
         <h4 class="text-center">Chargement de la carte en cours...</h4>
         <p class="text-center" id="still_nothing_loader">
             Toujours rien ? Vérifiez que vous n'avez pas perdu votre accès internet entre temps.
