@@ -51,7 +51,10 @@
         NetworkMap.highlight_path_start('{{ route.firstStation.name }}');
         NetworkMap.highlight_path_end('{{ route.lastStation.name }}');
 
-        NetworkMap.init();
+        NetworkMap.init(undefined, function()
+        {
+            NetworkMap.center_on_highlighted_path(0);
+        });
     </script>
 
     {# There's no point calculating this if we are already displaying a quickest path. #}

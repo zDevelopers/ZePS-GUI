@@ -706,10 +706,12 @@
          *
          * @param path The path to highlight (ordered list of stations code names)
          * @param shading The shading to apply to this path (default: 0, i.e. the normal color).
+         *
+         * @return {Number} The highlighted path ID.
          */
         highlight_path: function(path, shading)
         {
-            NetworkMap.highlighted_paths.push({ path: path, shading: shading});
+            return NetworkMap.highlighted_paths.push({ path: path, shading: shading}) - 1;
         },
 
         /**
@@ -773,6 +775,62 @@
                 {},
                 'main_station'
             );
+        },
+
+
+        // -------------------- Centering methods
+
+
+        /**
+         * Centers & adjust the map on an highlighted path.
+         *
+         * @param path_id The highlighted path ID. The first added is 0, then 1, 2, etc.
+         *                This ID is returned by the highlight_path method.
+         */
+        center_on_highlighted_path: function(path_id)
+        {
+            if (!NetworkMap.map)
+            {
+                console.error('Cannot call NetworkMap.center_on_highlighted_path before the init method. Use it in the init callback.');
+                return;
+            }
+
+            var path = NetworkMap.highlighted_paths[path_id];
+            if (!path) return;
+
+            var min_x, min_z, max_x, max_z;
+
+            // Comparison functions returning the other value if one is undefined
+            var comparison = function(comparison_function) {
+                return function (a, b) {
+                    if (a === undefined && b === undefined)
+                        return NaN;
+                    else if (a === undefined)
+                        return b;
+                    else if (b === undefined)
+                        return a;
+                    else
+                        return comparison_function(a, b);
+                }
+            };
+
+            var min = comparison(Math.min), max = comparison(Math.max);
+
+            path.path.forEach(function (station_code_name) {
+                var station = NetworkMap.stations[station_code_name];
+                if (station && station.zeps)
+                {
+                    min_x = min(min_x, station.zeps.station.x);
+                    min_z = min(min_z, station.zeps.station.y);
+                    max_x = max(max_x, station.zeps.station.x);
+                    max_z = max(max_z, station.zeps.station.y);
+                }
+            });
+
+            if (min_x === undefined || min_z === undefined || max_x === undefined || max_z === undefined)
+                return;
+
+            NetworkMap.map.fitBounds([NetworkMap._coords_to_latlng([min_x, min_z]), NetworkMap._coords_to_latlng([max_x, max_z])]);
         },
 
 
