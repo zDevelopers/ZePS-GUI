@@ -1145,7 +1145,7 @@
 
                     // Callback
                     if (callback)
-                        callback(NetworkMap);
+                        NetworkMap.map.whenReady(function() { callback(NetworkMap) });
                 });
             });
         }
