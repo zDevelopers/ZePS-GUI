@@ -299,11 +299,28 @@
             return line;
         },
 
+        /**
+         * Encodes a stations link in a string. Th string depends on the origin, destination and order.
+         * This is used to draw each connection once.
+         *
+         * @param station1 The first station.
+         * @param station2 The other station.
+         * @returns {string} A string identifier of the link.
+         * @private
+         */
         __encode_link: function(station1, station2)
         {
             return station1.x + ',' + station1.y + ';' + station2.x + ',' + station2.y;
         },
 
+        /**
+         * Checks if a link exists between the given station (regardless of the order).
+         *
+         * @param station1 A station.
+         * @param station2 The other station.
+         * @returns {boolean} True if a link was already drawn.
+         * @private
+         */
         __link_exists: function(station1, station2)
         {
             return NetworkMap.lines_drawn.indexOf(NetworkMap.__encode_link(station1, station2)) > -1
