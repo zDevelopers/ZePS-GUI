@@ -48,6 +48,8 @@
         NetworkMap.shading_default = 0.8;
 
         NetworkMap.highlight_path([{% for step in route.path %}'{{ step.station.name}}',{% endfor %}], 0);
+        NetworkMap.highlight_path_start('{{ route.firstStation.name }}');
+        NetworkMap.highlight_path_end('{{ route.lastStation.name }}');
 
         NetworkMap.init();
     </script>

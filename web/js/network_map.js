@@ -45,11 +45,15 @@
         // The main stations (array)
         main_stations: [],
 
+        // An object containing the station marker indexed by station's code name.
+        stations: [],
+
         // The map color shading (to enhance a path).
         shading_default: 0,
 
         // The paths to highlight.
-        highlighted: [],
+        highlighted_paths: [],
+        highlighted_stations: [],
 
         // The API to call to retrieve the JSON network
         network_api: undefined,
@@ -506,7 +510,7 @@
             {
                 shading = NetworkMap.shading_default;
 
-                NetworkMap.highlighted.forEach(function (highlight_map)
+                NetworkMap.highlighted_paths.forEach(function (highlight_map)
                 {
                     for (var j = 0; j < highlight_map.path.length; j++)
                     {
@@ -526,7 +530,7 @@
             {
                 shading = NetworkMap.shading_default;
 
-                NetworkMap.highlighted.forEach(function (highlight_map)
+                NetworkMap.highlighted_paths.forEach(function (highlight_map)
                 {
                     for (var j = 0; j < highlight_map.path.length; j++)
                     {
@@ -606,6 +610,7 @@
                 $labels.hide();
                 $labels_major.show();
                 $label_terminus.hide();
+                $label_main.show();
             }
             else if (zoom_level == 9)
             {
@@ -687,7 +692,70 @@
          */
         highlight_path: function(path, shading)
         {
-            NetworkMap.highlighted.push({ path: path, shading: shading});
+            NetworkMap.highlighted_paths.push({ path: path, shading: shading});
+        },
+
+        /**
+         * Highlights a station, giving another style.
+         *
+         * These stations will be added to the main stations layer, so they will always be displayed, at every zoom
+         * levels. They will also by default inherits their styles from the main stations one (for both station dot
+         * and label).
+         *
+         * @param station_code_name The station's code name.
+         * @param dot_style The special style to give.
+         * @param label_style An object containing CSS properties to add to the label.
+         * @param label_classes A string containing space-separated classes to add to the label.
+         */
+        highlight_station: function(station_code_name, dot_style, label_style, label_classes)
+        {
+            NetworkMap.highlighted_stations.push({
+                station_code: station_code_name,
+                style: {
+                    dot: dot_style,
+                    label: {
+                        css: label_style,
+                        classes: label_classes
+                    }
+                }
+            });
+        },
+
+        /**
+         * Highlights a startup station, using a pre-determined style.
+         *
+         * @param station_code_name The station's code name.
+         */
+        highlight_path_start: function(station_code_name)
+        {
+            NetworkMap.highlight_station(
+                station_code_name,
+                {
+                    color: '#00BB00',
+                    fillColor: '#00FF00'
+                },
+                {},
+                'main_station'
+            );
+        },
+
+
+        /**
+         * Highlights a startup station, using a pre-determined style.
+         *
+         * @param station_code_name The station's code name.
+         */
+        highlight_path_end: function(station_code_name)
+        {
+            NetworkMap.highlight_station(
+                station_code_name,
+                {
+                    color: NetworkMap.stations_color_dot_main,
+                    fillColor: '#FF0000'
+                },
+                {},
+                'main_station'
+            );
         },
 
 
@@ -754,15 +822,27 @@
                             var neighborhood = NetworkMap._get_neighborhood_infos(station);
                             var is_main_station = NetworkMap.main_stations.indexOf(station.code_name) > -1;
 
+                            // We check if the station is highlighted
+                            if (!is_main_station) {
+                                for (var i = 0; i < NetworkMap.highlighted_stations.length; i++) {
+                                    if (station.code_name == NetworkMap.highlighted_stations[i].station_code) {
+                                        is_main_station = true;
+                                        break;
+                                    }
+                                }
+                            }
+
                             var marker_station = NetworkMap._create_station(
                                 station, [station.x, station.y],
                                 neighborhood.is_intersection, neighborhood.is_terminus, is_main_station
                             );
 
-                            if (is_main_station)              markers_main.push(marker_station);
+                            if      (is_main_station)              markers_main.push(marker_station);
                             else if (neighborhood.is_intersection) markers_intersections.push(marker_station);
                             else if (neighborhood.is_terminus)     markers_terminus.push(marker_station);
                             else                                   markers_others.push(marker_station);
+
+                            NetworkMap.stations[station.code_name] = marker_station;
                         }
 
                         if (station.network) {
@@ -933,6 +1013,32 @@
 
                             marker.bindPopup(popup);
                         });
+                    });
+
+
+                    // Updates the highlighted stations
+                    NetworkMap.highlighted_stations.forEach(function(highlight)
+                    {
+                        if (highlight.style)
+                        {
+                            var marker = NetworkMap.stations[highlight.station_code];
+                            if (marker)
+                            {
+                                if (highlight.style.dot)
+                                    marker.setStyle(highlight.style.dot);
+
+                                if (highlight.style.label)
+                                {
+                                    var $label = $('#station-label-for-' + highlight.station_code);
+
+                                    if (highlight.style.label.classes)
+                                        $label.addClass(highlight.style.label.classes);
+
+                                    if (highlight.style.label.css)
+                                        $label.css(highlight.style.label.css);
+                                }
+                            }
+                        }
                     });
 
 
