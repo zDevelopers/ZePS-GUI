@@ -27,12 +27,6 @@ class PlayersHeadsRetriever extends FileCache
     private $app;
 
     /**
-     * The public path to access the images. E.g. "/assets/heads/".
-     * @var string
-     */
-    private $public_path;
-
-    /**
      * The lifetime of a stored head (seconds).
      * @var int
      */
@@ -49,7 +43,6 @@ class PlayersHeadsRetriever extends FileCache
         parent::__construct($app['config']['cache']['players_heads']['directory'], '.png');
 
         $this->app = $app;
-        $this->public_path = str_replace($app['config']['web_root'], '', $app['config']['cache']['players_heads']['directory']);
         $this->head_lifetime = $app['config']['cache']['players_heads']['lifetime'];
     }
 
