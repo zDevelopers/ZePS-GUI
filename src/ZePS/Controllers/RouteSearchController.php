@@ -13,6 +13,12 @@ class RouteSearchController
     {
         if ($app['request']->query->has('from') && $app['request']->query->has('to'))
         {
+            $from = htmlspecialchars(trim($app['request']->query->get('from')));
+            $to = htmlspecialchars(trim($app['request']->query->get('to')));
+
+            if (empty($from) || empty($to))
+                return $app->redirect($app['url_generator']->generate('zeps.homepage'));
+
             $options = '';
             if ($app['request']->query->has('official'))
                 $options .= 'official-';
@@ -26,8 +32,8 @@ class RouteSearchController
             $options = trim($options, '-');
 
             return $app->redirect($app['url_generator']->generate('zeps.search_results', array(
-                'from'    => htmlspecialchars(trim($app['request']->query->get('from'))),
-                'to'      => htmlspecialchars(trim($app['request']->query->get('to'))),
+                'from'    => $from,
+                'to'      => $to,
                 'options' => $options
             )), Response::HTTP_MOVED_PERMANENTLY);
         }
