@@ -1,0 +1,30 @@
+<!-- Account management -->
+<script src="{{ app.request.basePath }}/js/account.js"></script>
+<script type="text/javascript">
+    Account.avatarsURL = "{{ path('zeps.player_head', {'name': 'playerNamePlaceholder'}) }}";
+    Account.accountsCheckURL = "{{ path('zeps.accounts.check', {'name': 'playerNamePlaceholder'}) }}";
+
+    Account.init();
+</script>
+
+<div class="modal" tabindex="-1" role="dialog" id="account-login-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Qui êtes-vous ?</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" id="account-login-modal-form">
+                    <label class="sr-only" for="account-login-modal-input-name">Entrez votre pseudonyme sur Minecraft</label>
+                    <span class="glyphicon form-control-feedback" id="account-login-modal-input-name-feedback" aria-hidden="true" style="display: none;"></span>
+                    <input type="text" class="form-control" id="account-login-modal-input-name" placeholder="Entrez votre pseudonyme sur Minecraft..." required />
+                    <p class="help-block" id="account-login-modal-error">&nbsp;</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="account-login-modal-button" disabled>Connexion</button>
+            </div>
+        </div>
+    </div>
+</div>

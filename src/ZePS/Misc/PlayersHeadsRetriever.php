@@ -16,7 +16,6 @@ use Silex\Application;
  */
 class PlayersHeadsRetriever extends FileCache
 {
-    const MOJANG_API_NAME_TO_UUID = 'https://api.mojang.com/users/profiles/minecraft/{username}';
     const AVATAR_API = 'https://crafatar.com/avatars/{uuid}?overlay&size=32';
 
 
@@ -121,7 +120,7 @@ class PlayersHeadsRetriever extends FileCache
     {
         return
             is_file($this->getFilename($id))
-            && $this->app['cache.uuid']->contains('head_file.' . $this->retrieveUUID($id));
+            && $this->app['cache.uuid']->contains('head_file.' . $this->app['zeps.uuid']->retrieveUUID($id));
     }
 
     /**
@@ -136,7 +135,7 @@ class PlayersHeadsRetriever extends FileCache
      */
     protected function doSave($id, $data, $lifeTime = 0)
     {
-        $uuid = $this->retrieveUUID($id);
+        $uuid = $this->app['zeps.uuid']->retrieveUUID($id);
 
         $ch = \curl_init();
         \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -157,7 +156,7 @@ class PlayersHeadsRetriever extends FileCache
 
     protected function getFilename($id)
     {
-        $uuid = $this->retrieveUUID($id);
+        $uuid = $this->app['zeps.uuid']->retrieveUUID($id);
 
         return $this->directory
             . DIRECTORY_SEPARATOR
@@ -170,68 +169,5 @@ class PlayersHeadsRetriever extends FileCache
     protected function getPublicPath($id)
     {
         return str_replace($this->app['config']['web_root'], '', $this->getFilename($id));
-    }
-
-
-
-    /**
-     * Retrieves an UUID from a player name or an UUID.
-     *
-     * If an UUID is given (string of 32 characters or more), a standardized UUID is returned (all-lowercase without
-     * dashes). Else, this method tries to use the UUID cache, and make a request to the Mojang API if the UUID is not
-     * stored locally.
-     *
-     * @param string $player The player name or uuid.
-     *
-     * @return string A non-dashed lowercased UUID, or FALSE if the player name does not exists or the API call fails.
-     */
-    private function retrieveUUID($player)
-    {
-        // It's an UUID
-        if (strlen($player) >= 32)
-        {
-            return $this->standardizeUUID($player);
-        }
-        else
-        {
-            $player = strtolower($player);
-            $uuid = $this->app['cache.uuid']->fetch($player);
-
-            if ($uuid === false)
-            {
-                $ch = \curl_init();
-                \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                \curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                \curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                \curl_setopt($ch, CURLOPT_URL, str_replace('{username}', $player, self::MOJANG_API_NAME_TO_UUID));
-                $result = \curl_exec($ch);
-                \curl_close($ch);
-
-                if ($result === false)
-                    return false;
-
-                $mojangAnswer = \json_decode($result);
-
-                if (!isset($mojangAnswer->id))
-                    return false;
-
-                $uuid = $this->standardizeUUID($mojangAnswer->id);
-
-                $this->app['cache.uuid']->save($player, $uuid, $this->app['config']['cache']['cache_uuid_lifetime']);
-            }
-
-            return $uuid;
-        }
-    }
-
-    /**
-     * Removes the dashes and puts the UUID all-lowercase.
-     *
-     * @param string $uuid The UUID.
-     * @return string A non-dashed lowercased UUID.
-     */
-    private function standardizeUUID($uuid)
-    {
-        return str_replace('-', '', strtolower($uuid));
     }
 }

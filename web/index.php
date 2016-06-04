@@ -5,6 +5,7 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use ZePS\Dynmap\DynmapBridgeManager;
 use ZePS\Misc\APIChecksumChecker;
+use ZePS\Misc\UUIDRetriever;
 use ZePS\Quotes\QuotesManager;
 use ZePS\Routing\RoutesManager;
 
@@ -98,6 +99,7 @@ $app['cache.uuid']    = $app->share(function($app) { return new FilesystemCache(
 
 $app['zeps.routing'] = $app->share(function($app) { return new RoutesManager($app); });
 $app['zeps.dynmap']  = $app->share(function($app) { return new DynmapBridgeManager($app); });
+$app['zeps.uuid']    = $app->share(function($app) { return new UUIDRetriever($app); });
 $app['zeps.quotes']  = $app->share(function($app) { return new QuotesManager(); });
 
 
@@ -165,6 +167,13 @@ $app
 $app
     ->get('/api/stations_network_colors', 'ZePS\\Controllers\\NetworkMapController::network_colors_json')
     ->bind('zeps.api.stations_network_colors');
+
+
+// UUIDs
+
+$app
+    ->get('accounts/check/{name}', 'ZePS\\Controllers\\AccountsController::check_account')
+    ->bind('zeps.accounts.check');
 
 
 // Players heads

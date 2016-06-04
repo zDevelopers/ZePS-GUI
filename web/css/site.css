@@ -34,16 +34,16 @@ h3 {
     color: white;
 }
 
-.nav-pills li a {
+.nav-pills > li > a {
     color: white !important;
 }
 
-.nav-pills li:hover a {
+.nav-pills > li:hover > a {
     color: #0f0f0f !important;
 }
 
 .header .nav-pills li.active a, .header .nav-pills li.active:hover a {
-    background-color: #0f0f0f;
+    background-color: #0f0f0f !important;
     color: white !important;
 }
 
@@ -112,6 +112,41 @@ footer.footer, footer.footer a {
 
 .input-group-addon {
     cursor: default;
+}
+
+
+/* Account */
+
+#account-menu, #account-image-authenticated, .authenticated {
+    display: none;
+}
+
+#account-menu a {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.account-image {
+    height: 30px;
+    border-radius: 4px;
+}
+
+.account-loggedInAs {
+    cursor: default;
+    display: list-item;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: 400;
+    white-space: nowrap;
+    color: #555 !important;
+}
+
+#account-loggedInAs-player-name {
+    font-weight: bold;
+}
+
+#account-login-modal-error {
+    text-align: left;
 }
 
 

@@ -23,9 +23,21 @@
         <div class="container">
             <div class="header clearfix">
                 <nav>
-                    <ul class="nav nav-pills pull-right">
+                    <ul class="nav nav-pills pull-right navbar-right">
                         <li role="presentation"{% if not section %} class="active"{% endif %}><a href="{{ path('zeps.homepage') }}">Itinéraire</a></li>
                         <li role="presentation"{% if section and section == 'network_map' %} class="active"{% endif %}><a href="{{ path('zeps.network_map') }}">Carte du réseau</a></li>
+
+                        <li role="presentation" class="dropdown hidden-xs" id="account-menu">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                <img src="{{ app.request.basePath }}/img/unauthenticated.png" alt="You" class="account-image" id="account-image-unauthenticated" /><img src="" alt="You" class="account-image" id="account-image-authenticated" /> <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="authenticated account-loggedInAs">Connecté(e) en tant que<br /><span id="account-loggedInAs-player-name"></span></li>
+                                <li class="divider authenticated"></li>
+                                <li class="authenticated"><a href="#" class="account-link-logout">Déconnexion</a></li>
+                                <li class="unauthenticated"><a href="#" class="account-link-login">Connexion</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </nav>
                 <h3>{% block nav_title %}Z<em>é</em>PS{% endblock %}</h3>
@@ -46,9 +58,11 @@
 
         </div> <!-- /container -->
 
-
+        <!-- Base scripts -->
         <script src="{{ app.request.basePath }}/js/jquery/jquery.min.js"></script>
         <script src="{{ app.request.basePath }}/js/bootstrap/bootstrap.min.js"></script>
+
+        {% include('includes/account_part.html.twig') %}
 
         <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
         <script src="{{ app.request.basePath }}/js/workarounds/ie10-viewport-bug-workaround.js"></script>
