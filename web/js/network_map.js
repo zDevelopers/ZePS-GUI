@@ -48,6 +48,10 @@
         // An object containing the station marker indexed by station's code name.
         stations: [],
 
+        // The default view of the map
+        default_center: [-80, -1306],
+        default_zoom: 10,
+
         // The map color shading (to enhance a path).
         shading_default: 0,
 
@@ -958,8 +962,8 @@
 
                     // Loads the map
                     NetworkMap.map = L.map(NetworkMap.map_container_id, {
-                        center: [0, 0],
-                        zoom: 10,
+                        center: NetworkMap._coords_to_latlng(NetworkMap.default_center),
+                        zoom: NetworkMap.default_zoom,
 
                         minZoom: 8,
                         maxZoom: 14,
