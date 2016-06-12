@@ -96,8 +96,8 @@ class RouteSearchController
 
                 return $app->redirect($app['url_generator']->generate('zeps.search_results', array
                 (
-                    'from' => $from_is_id ? $stations['stations'][$from]->code_name : $from,
-                    'to' => $to_is_id ? $stations['stations'][$to]->code_name : $to,
+                    'from' => $from_is_id ? $stations['stations'][$from]->getName() : $from,
+                    'to' => $to_is_id ? $stations['stations'][$to]->getName() : $to,
                     'options' => $options
                 )), 301);
             }
