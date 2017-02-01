@@ -25,10 +25,16 @@ abstract class NetworkManager
      */
     protected $cache_lifetime = 86400;
 
+    /**
+     * The user-agent sent with every request.
+     */
+    protected $user_agent = '';
+
 
     public function __construct(Application $app)
     {
         $this->app = $app;
+        $this->user_agent = 'ZepsGUI/' . $app['version'] . ' (compatible; +https://amaury.carrade.eu/contact)';
     }
 
     /**
@@ -58,9 +64,11 @@ abstract class NetworkManager
     private function load_from_url($url)
     {
         $ch = \curl_init();
-        \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         \curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         \curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        \curl_setopt($ch, CURLOPT_HTTPHEADER, ['User-Agent: ' . $this->user_agent]);
+        \curl_setopt($ch, CURLINFO_HEADER_OUT, true);
         \curl_setopt($ch, CURLOPT_URL, $url);
         $result = \curl_exec($ch);
         \curl_close($ch);

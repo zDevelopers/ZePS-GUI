@@ -8,10 +8,10 @@ use ZePS\Misc\NetworkManager;
 
 class RoutesManager extends NetworkManager
 {
-    const API_LIST = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/list';
-    const API_NETWORK = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/list?withNetwork=true';
-    const API_NETWORK_COLORS = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/colors';
-    const API_ROUTE = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/path';
+    const API_LIST = 'https://api.cassayre.me/minecraft/zeps/list';
+    const API_NETWORK = 'https://api.cassayre.me/minecraft/zeps/list/network';
+    const API_NETWORK_COLORS = 'https://api.cassayre.me/minecraft/zeps/colors';
+    const API_ROUTE = 'https://api.cassayre.me/minecraft/zeps/path/{from}/{to}';
     const API_ROUTE_IMAGE = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/map';
 
     const SPAWN_STATION = 'tentacles';
@@ -130,7 +130,11 @@ class RoutesManager extends NetworkManager
      */
     public function get_netherrail_route($from, $to, $official = false, $accessible = false)
     {
-        $json = $this->get_json(self::API_ROUTE . '?begin=' . $from . '&end=' . $to . '&official=' . ($official ? 'true' : 'false') . '&accessible=' . ($accessible ? 'true' : 'false'));
+        $parameters = [];
+        if ($official) $parameters[] = 'official';
+        if ($accessible) $parameters[] = 'accessible';
+
+        $json = $this->get_json(str_replace(['{from}', '{to}'], [$from, $to], self::API_ROUTE) . '?' . implode('&', $parameters));
 
         if (!isset($json->result) || $json->result != 'success')
             throw new \RuntimeException($json->cause, $json->result);

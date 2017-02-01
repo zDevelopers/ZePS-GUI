@@ -7,7 +7,7 @@ use Silex\Application;
 
 class APIChecksumChecker extends NetworkManager
 {
-    const API_CHECK = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/checksum';
+    const API_CHECK = 'https://api.cassayre.me/minecraft/zeps/version';
 
 
     public function __construct(Application $app)

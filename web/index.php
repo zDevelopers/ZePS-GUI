@@ -16,6 +16,8 @@ $app = new Silex\Application();
 
 // Application configuration
 
+$app['version'] = '1.2';
+
 $app['config'] = array
 (
     'world_name_nether' => 'V5_nether',        // The name of the world where the netherrail is in
