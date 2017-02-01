@@ -45,6 +45,11 @@ $(function()
 
         var saved_time = route_infos.travel_time - quickest.travel_time;
 
+        // If the saved time is too low, it's not really a good option, as the time to go to the
+        // main cities (and the loading time of the chunks) is not taken into account.
+        if (saved_time < 30)
+            return;
+
 
         // We generate the link to this new result.
         var options = (route_infos.raw_options.length > 0 ? route_infos.raw_options + '-' : '') + 'spawn';
