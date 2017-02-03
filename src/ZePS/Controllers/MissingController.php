@@ -41,7 +41,7 @@ class MissingController
         $pos_x      = $r->get('station_coords_x');
         $pos_z      = $r->get('station_coords_z');
         $neighbor_1 = !empty(trim($r->get('station_neighbor_1_raw'))) ? $r->get('station_neighbor_1_raw') : $r->get('station_neighbor_1');
-        $neighbor_2 = !empty(trim($r->get('station_neighbor_1_raw'))) ? $r->get('station_neighbor_1_raw') : $r->get('station_neighbor_2');
+        $neighbor_2 = !empty(trim($r->get('station_neighbor_2_raw'))) ? $r->get('station_neighbor_2_raw') : $r->get('station_neighbor_2');
         $link       = $r->get('station_link');
         $notes      = $r->get('station_notes');
 

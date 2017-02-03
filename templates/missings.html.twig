@@ -105,7 +105,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for missing in missings %}
+                {% for missing in missings if not missing.hide %}
                     <tr>
                         <td style="width: 25%">{{ missing.name }}</td>
                         <td style="width: 15%">{{ missing.location.x }} ; {{ missing.location.z }}</td>
