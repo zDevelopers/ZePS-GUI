@@ -33,6 +33,10 @@ $app['config'] = array
         'map_type' => 'flat'                   // The name of the map to use to link to the dynmap.
     ),
 
+    'missing_stations' => array(
+        'json_file' => __DIR__ . '/../missing_stations.json'
+    ),
+
     'twig' => array(
         'cache' => __DIR__ . '/../cache/twig'          // The Twig's cache folder
     ),
@@ -70,6 +74,7 @@ if (file_exists(__DIR__.'/../maintenance'))
 }
 
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
+$app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path'    => __DIR__.'/../templates',
     'twig.options' => array(
@@ -195,6 +200,17 @@ $app
 $app
     ->get('/plan', 'ZePS\\Controllers\\NetworkMapController::network_map')
     ->bind('zeps.network_map');
+
+
+// Missing stations
+
+$app
+    ->get('/oublis', 'ZePS\\Controllers\\MissingController::missings')
+    ->bind('zeps.missing');
+
+$app
+    ->post('/oublis', 'ZePS\\Controllers\\MissingController::submit_missings')
+    ->bind('zeps.missing.submit');
 
 
 // Route search pages

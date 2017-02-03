@@ -3,7 +3,7 @@
 {% endspaceless %}{% endmacro %}
 
 {% macro stations_list(stations, selected_id, geolocation_enabled, placeholder) %}
-    <option value=""{% if geolocation_enabled %} id="starting-point-placeholder"{% endif %} disabled{% if not selected_id %} selected{% endif %}>{{ placeholder }}
+    <option value=""{% if geolocation_enabled %} id="starting-point-placeholder"{% endif %} disabled{% if not selected_id %} selected{% endif %}>{{ placeholder }}</option>
     <optgroup label="Stations principales">
         {% for station in stations.main_stations %}
             <option value="{{ station.name }}">{{ station.displayName }}</option>

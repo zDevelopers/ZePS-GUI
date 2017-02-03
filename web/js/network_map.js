@@ -20,6 +20,9 @@
         dynmap_map_nether: undefined,
         dynmap_map_type: undefined,
 
+        // The link to the “missing stations” page
+        missing_stations: undefined,
+
         // The layers displayed on the map
         layer_main: undefined,
         layer_intersections: undefined,
@@ -980,7 +983,9 @@
                     });
 
                     NetworkMap.map.attributionControl.addAttribution(
-                        'Plan du Netherrail <a href="https://zcraft.fr">Zcraftien</a> | Données aggrégées par <a href="https://github.com/FlorianCassayre/ZePS-Core">Florian Cassayre</a>'
+                        'Plan du Netherrail <a href="https://zcraft.fr">Zcraftien</a>' +
+                        ' | Données aggrégées par <a href="https://github.com/FlorianCassayre/ZePS-Core">Florian Cassayre</a>' +
+                        (NetworkMap.missing_stations ? ' | <a href="' + NetworkMap.missing_stations + '">Station manquante ?</a>' : '')
                     );
 
 

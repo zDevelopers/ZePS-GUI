@@ -7,6 +7,8 @@
 /cache
 /web/assets
 
+missing_stations.json
+
 
 ### WebStorm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm

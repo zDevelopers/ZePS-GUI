@@ -28,6 +28,8 @@
             NetworkMap.main_stations      = '{{ main_stations }}'.split(',');
             NetworkMap.map_container_id   = 'network_map';
 
+            NetworkMap.missing_stations   = '{{ path('zeps.missing') }}';
+
             NetworkMap.permanent_url_with_anchor = true;
 
             NetworkMap.dynmap_map_overworld      = '{{ app.config.world_name_overworld }}';

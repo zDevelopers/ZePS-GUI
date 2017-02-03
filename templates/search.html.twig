@@ -39,6 +39,8 @@
         NetworkMap.main_stations      = [{% for station in stations.main_stations %}'{{ station.name }}', {% endfor %}];
         NetworkMap.map_container_id   = 'route_map';
 
+        NetworkMap.missing_stations   = '{{ path('zeps.missing') }}';
+
         NetworkMap.permanent_url_with_anchor = false;
 
         NetworkMap.dynmap_map_overworld      = '{{ app.config.world_name_overworld }}';

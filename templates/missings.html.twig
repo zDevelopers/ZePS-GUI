@@ -1,0 +1,140 @@
+{%  extends 'base.html.twig' %}
+
+{% import "_macros.html.twig" as macros %}
+
+{% block main_title %}Station manquante ?{% endblock %}
+
+{% block content %}
+    <div class="well">
+        {% if saved %}
+            <div class="alert alert-success">
+                <span class="glyphicon glyphicon-floppy-saved" aria-hidden="true"></span>
+                <strong>Signalement sauvegardé.</strong> Merci pour votre contribution !
+            </div>
+        {% endif %}
+
+        <h2>Station manquante ? <span class="text-muted">Signalez ici.</span></h2>
+
+        <p class="text-justify">
+            Comme les mainteneurs du Z<em>é</em>PS ne sont, personne ne pourra le nier, pas les plus actifs en jeu,
+            nous ne suivons pas forcément de très près l'ajout d'arrêts au Netherrail. Ce formulaire est là afin de
+            vous permettre de signaler toute station manquante, ce qui nous facilite considérablement le travail de
+            mise à jour. Merci pour votre signalement :) .
+        </p>
+        <p class="text-justify">
+            Évidemment, merci de ne pas rentrer n'importe quoi ici. En utilisant ce formulaire, votre
+            adresse IP est enregistrée jusqu'à traitement de la demande (et effacée ensuite), afin de
+            lutter contre les abus. Les signalement sont publics (voir plus bas), pas les adresses.
+        </p>
+
+        <form method="post" class="form-horizontal" style="margin-top: 2.5em;">
+            <div class="form-group">
+                <label for="station_name" class="col-sm-3 control-label">Nom de la station</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="station_name" name="station_name" placeholder="Le nom de la station manquante" required />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="station_coords" class="col-sm-3 control-label">Position de la station</label>
+                <div class="col-sm-2">
+                    <input type="number" class="form-control" id="station_coords" name="station_coords_x" placeholder="X" aria-describedby="help_station_coords" required />
+                </div>
+                <div class="col-sm-2">
+                    <input type="number" class="form-control" id="station_coords" name="station_coords_z" placeholder="Z" aria-describedby="help_station_coords" required />
+                </div>
+                <div class="col-sm-5">
+                    <span id="help_station_coords" class="help-block">Coordonnées <strong>dans le Nether</strong>.</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="station_neighbor_1" class="col-sm-3 control-label">Stations voisines</label>
+                <div class="col-sm-4">
+                    <select class="form-control selectpicker-disabled station-selector" id="station_neighbor_1" name="station_neighbor_1" title="Première voisine">
+                        {{ macros.stations_list(stations, false, false, "Première station voisine") }}
+                    </select>
+                </div>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="station_neighbor_1_raw" name="station_neighbor_1_raw" placeholder="Pas répertoriée ? Écrivez ici" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="station_neighbor_2" class="col-sm-3 control-label"></label>
+                <div class="col-sm-4">
+                    <select class="form-control selectpicker-disabled station-selector" id="station_neighbor_2" name="station_neighbor_2" title="Seconde voisine">
+                        {{ macros.stations_list(stations, false, false, "Seconde station voisine") }}
+                    </select>
+                </div>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="station_neighbor_2_raw" name="station_neighbor_2_raw" placeholder="Pas répertoriée ? Écrivez ici" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="station_link" class="col-sm-3 control-label">Sujet du forum</label>
+                <div class="col-sm-9">
+                    <input type="url" class="form-control" id="station_link" name="station_link" placeholder="Lien vers le sujet du forum sur lequel cette station est mentionnée (si existant), ou autre lien contextuel" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="station_notes" class="col-sm-3 control-label">Notes</label>
+                <div class="col-sm-9">
+                    <textarea class="form-control" id="station_notes" name="station_notes" rows="3" placeholder="Si vous avez quoique ce soit à ajouter, écrivez-le ici. (Sinon, non.)"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                    <button type="submit" class="btn btn-default">Ajouter la station à la liste</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="well">
+        <h2>Stations en attente d'ajout</h2>
+
+        <p class="text-justify">
+            Les ajouts sont généralement traités par lots, donc si quelques stations s'accumulent en attente,
+            ce n'est probablement pas anormal.
+        </p>
+
+        <table class="table" style="margin-top: 2.5em;">
+            <thead>
+                <tr>
+                    <th style="width: 25%">Nom de la station</th>
+                    <th style="width: 15%">Position</th>
+                    <th colspan="2">Stations voisines</th>
+                    <th style="width: 30%">Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for missing in missings %}
+                    <tr>
+                        <td style="width: 25%">{{ missing.name }}</td>
+                        <td style="width: 15%">{{ missing.location.x }} ; {{ missing.location.z }}</td>
+                        {% for neighbor in missing.neighbors %}
+                        <td>
+                            {% if neighbor is empty %}
+                                <em>Non renseigné</em>
+                            {% else %}
+                                {{ neighbor }}
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                        <td style="width: 30%">
+                            {% if missing.notes %}
+                                <p style="margin: 0; padding: 0">{{ missing.notes|nl2br }}</p>
+                            {% endif %}
+                            {% if missing.link %}
+                                <p style="margin: 0; padding: 0"><a href="{{ missing.link }}">Page associée</a></p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td rowspan="5" class="text-center">
+                            <em>Aucune station en attente d'ajout o/</em>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

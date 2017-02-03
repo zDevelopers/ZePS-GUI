@@ -34,7 +34,10 @@
             {% block content %}{% endblock %}
 
             <footer class="footer">
-                <p>Des chatons vont mourir si vous abusez de ce service.</p>
+                <p>
+                    Des chatons vont mourir si vous abusez de ce service.
+                    <a href="{{ path('zeps.missing') }}">Cliquez ici si une station manque à l'appel.</a>
+                </p>
                 <p>
                     Z<em>é</em>PS{% block footer_in_line %}{% endblock %}
                     — Logiciel publié sous la licence CeCILL-B
