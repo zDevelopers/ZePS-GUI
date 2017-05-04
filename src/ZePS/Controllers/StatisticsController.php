@@ -142,7 +142,7 @@ class StatisticsController
             }
         }
 
-        $last_update_zeps['signed'] = strpos($git->log(['n' => '1', 'pretty' => 'raw'])->getOutput(), '-----BEGIN PGP SIGNATURE-----') !== false;
+        $last_update_zeps['signed'] = strpos($git->log(['n' => '1', 'pretty' => 'raw', 'no-merges' => true])->getOutput(), '-----BEGIN PGP SIGNATURE-----') !== false;
 
 
         return new Response($app['twig']->render('statistics.html.twig', array(
