@@ -109,25 +109,27 @@ class StatisticsController
         $wrapper = new GitWrapper();
         $git = $wrapper->workingCopy($app['root_directory']);
 
-        $last_commit = $git->log(['n' => '1', 'pretty' => 'medium', 'date' => 'iso8601-strict'])->getOutput();
+        $last_commit = $git->log(['n' => '1', 'pretty' => 'medium', 'date' => 'iso8601-strict', 'no-merges' => true])->getOutput();
+        error_log($last_commit);
         foreach (explode("\n", $last_commit) as $line)
         {
+            $rline = $line;
             $line = trim($line);
             if (empty($line)) continue;
 
             if (strpos($line, 'commit') === 0)
             {
-                $last_update_zeps['commit'] = array_pop(explode(' ', $line));
+                $last_update_zeps['commit'] = @array_pop(explode(' ', $line));
             }
             else if (strpos($line, 'Author') === 0)
             {
-                $last_update_zeps['author'] = trim(explode(' <', array_pop(explode(':', $line)))[0]);
+                $last_update_zeps['author'] = @trim(explode(' <', array_pop(explode(':', $line)))[0]);
             }
             else if (strpos($line, 'Date') === 0)
             {
                 $last_update_zeps['date'] = DateTime::createFromFormat(DateTime::ISO8601, trim(implode(':', array_slice(explode(':', $line), 1))));
             }
-            else
+            else if (strpos($rline, '    ') === 0)
             {
                 if (array_key_exists('message', $last_update_zeps))
                 {
@@ -135,7 +137,7 @@ class StatisticsController
                 }
                 else
                 {
-                    $last_update_zeps['message'] = trim($line);
+                    $last_update_zeps['message'] = trim($line) . "\n";
                 }
             }
         }
