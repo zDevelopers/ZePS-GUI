@@ -2,7 +2,9 @@
 
 namespace ZePS\Controllers;
 
+use DateTime;
 use Doctrine\Common\Cache\Cache;
+use GitWrapper\GitWrapper;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 use ZePS\Routing\Station;
@@ -99,6 +101,48 @@ class StatisticsController
         $cache_stats = $app['cache.routing']->getStats();
 
 
+        // Updates
+
+        $last_update_network = $app['cache.routing']->fetch($app['config']['cache']['last_update_cache_key']);
+
+        $last_update_zeps = array();
+        $wrapper = new GitWrapper();
+        $git = $wrapper->workingCopy($app['root_directory']);
+
+        $last_commit = $git->log(['n' => '1', 'pretty' => 'medium', 'date' => 'iso8601-strict'])->getOutput();
+        foreach (explode("\n", $last_commit) as $line)
+        {
+            $line = trim($line);
+            if (empty($line)) continue;
+
+            if (strpos($line, 'commit') === 0)
+            {
+                $last_update_zeps['commit'] = array_pop(explode(' ', $line));
+            }
+            else if (strpos($line, 'Author') === 0)
+            {
+                $last_update_zeps['author'] = trim(explode(' <', array_pop(explode(':', $line)))[0]);
+            }
+            else if (strpos($line, 'Date') === 0)
+            {
+                $last_update_zeps['date'] = DateTime::createFromFormat(DateTime::ISO8601, trim(implode(':', array_slice(explode(':', $line), 1))));
+            }
+            else
+            {
+                if (array_key_exists('message', $last_update_zeps))
+                {
+                    $last_update_zeps['message'] += "\n" + trim($line);
+                }
+                else
+                {
+                    $last_update_zeps['message'] = trim($line);
+                }
+            }
+        }
+
+        $last_update_zeps['signed'] = strpos($git->log(['n' => '1', 'pretty' => 'raw'])->getOutput(), '-----BEGIN PGP SIGNATURE-----') !== false;
+
+
         return new Response($app['twig']->render('statistics.html.twig', array(
             'section' => 'statistics',
             'stations' => array(
@@ -117,7 +161,11 @@ class StatisticsController
             ),
             'cache' => array(
                 'space_used' => $cache_stats[Cache::STATS_MEMORY_USAGE]
-            )
+            ),
+            'last_updates' => array(
+                'network' => $last_update_network,
+                'zeps' => $last_update_zeps
+            ),
         )));
     }
 }

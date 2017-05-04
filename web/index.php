@@ -46,6 +46,7 @@ $app['config'] = array
     'cache' => array(
         'directory' => __DIR__ . '/../cache/data',     // The main cache folder for miscellaneous data.
         'checksum_cache_key' => 'router_api_checksum', // The key where the API checksum is stored. If the checksum change, the cache is invalidated.
+        'last_update_cache_key' => 'router_api_last_update', // The key storing the last detected update of the routing data
 
         'cache_suffix_routing'  => 'routingcache',    // The suffix of the routing API cache
         'cache_suffix_uuid' => 'uuidcache',           // The suffix of the player<>UUID cache
@@ -56,8 +57,14 @@ $app['config'] = array
             'directory' => __DIR__ . '/assets/heads/',// The storage location of the players heads. Must be in the web folder!
             'lifetime'  => 604800                     // The lifetime of a head locally cached. It is downloaded again past this delay.
         )
+    ),
+
+    'git' => array(
+        'web_commit_url' => 'https://github.com/zDevelopers/ZePS-GUI/commit/%s' // The URL to a commit. %s is the hash.
     )
 );
+
+$app['root_directory'] = __DIR__ . '/../';
 
 
 // Silex initialization
@@ -126,24 +133,38 @@ $app->before(function (Request $request, Application $app)
 
     if ($request->query->has('purge'))
     {
-        $clearCache = true;
+        $clear_cache = true;
+        $real_update = false;
     }
     else
     {
         if ($stored_checksum === false || $stored_checksum != $remote_checksum)
         {
-            $clearCache = true;
+            $clear_cache = true;
+            $real_update = true;
         }
         else
         {
-            $clearCache = false;
+            $clear_cache = false;
+            $real_update = false;
         }
     }
 
-    if ($clearCache)
+    $last_update = $app['cache.routing']->fetch($app['config']['cache']['last_update_cache_key']);
+
+    if ($clear_cache)
     {
         $app['cache.routing']->flushAll();
         $app['cache.routing']->save($app['config']['cache']['checksum_cache_key'], $remote_checksum, 0);
+
+        if ($real_update || $last_update == null)
+        {
+            $app['cache.routing']->save($app['config']['cache']['last_update_cache_key'], new \DateTime());
+        }
+        else
+        {
+            $app['cache.routing']->save($app['config']['cache']['last_update_cache_key'], $last_update);
+        }
     }
 });
 

@@ -22,7 +22,8 @@
         "silex/silex": "~1.0",
         "twig/twig": "~1.0",
         "symfony/twig-bridge": "^2.0",
-        "doctrine/cache": "^1.6"
+        "doctrine/cache": "^1.6",
+        "cpliakas/git-wrapper": "~1.0"
     },
 
     "autoload": {

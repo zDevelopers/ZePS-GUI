@@ -50,6 +50,31 @@
                     <h3>Données en cache</h3>
                     <p>Pour optimiser le site, lorsqu'une requête d'itinéraire est faite pour la première fois, l'itinéraire est stocké et la copie, accessible quasi instantanément, est utilisée par la suite.</p>
                     <p>Le cache des requêtes d'itinéraire occupe <strong>{{ macros.bytesToSize(cache.space_used) }}</strong>.</p>
+
+                    {% if last_updates.network or last_updates.zeps %}
+                        <h3>Mises à jour</h3>
+
+                        {% if last_updates.network %}
+                            <p>Dernière mise à jour du réseau : <strong>{{ last_updates.network|date("d/m/Y à H:i") }}</strong>.</p>
+                        {% endif %}
+
+                        {% if last_updates.zeps %}
+                            <p>
+                                Dernière mise à jour du ZéPS : <strong>{{ last_updates.zeps.date|date("d/m/Y à H:i") }}</strong>.
+                            </p>
+                            <blockquote class="commit-details">
+                                {% spaceless -%}
+                                    <p>{{ last_updates.zeps.message|nl2br }}</p>
+                                    <footer>
+                                        {{- last_updates.zeps.author }},
+                                        <a href="{{ app.config.git.web_commit_url|format(last_updates.zeps.commit)}}">
+                                            {{- last_updates.zeps.commit|slice(0, 7) -}}
+                                        </a>{%- if last_updates.zeps.signed -%}, signé{%- endif -%}
+                                    </footer>
+                                {%- endspaceless %}
+                            </blockquote>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
         </div>
