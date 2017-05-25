@@ -64,7 +64,7 @@
                             </p>
                             <blockquote class="commit-details">
                                 {% spaceless -%}
-                                    <p>{{ last_updates.zeps.message|trim|nl2br }}</p>
+                                    <p>{{ last_updates.zeps.message|trim|raw|nl2br }}</p>
                                     <footer>
                                         {{- last_updates.zeps.author }},
                                         <a href="{{ app.config.git.web_commit_url|format(last_updates.zeps.commit)}}">

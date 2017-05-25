@@ -109,8 +109,8 @@ class StatisticsController
         $wrapper = new GitWrapper();
         $git = $wrapper->workingCopy($app['root_directory']);
 
-        $last_commit = $git->log(['n' => '1', 'pretty' => 'medium', 'date' => 'iso8601-strict', 'no-merges' => true])->getOutput();
-        error_log($last_commit);
+        $last_commit = $git->log(['n' => '1', 'pretty' => 'medium', 'date' => 'iso8601', 'no-merges' => true])->getOutput();
+
         foreach (explode("\n", $last_commit) as $line)
         {
             $rline = $line;
@@ -127,13 +127,13 @@ class StatisticsController
             }
             else if (strpos($line, 'Date') === 0)
             {
-                $last_update_zeps['date'] = DateTime::createFromFormat(DateTime::ISO8601, trim(implode(':', array_slice(explode(':', $line), 1))));
+                $last_update_zeps['date'] = DateTime::createFromFormat("Y-m-d H:i:s O", trim(implode(':', array_slice(explode(':', $line), 1))));
             }
             else if (strpos($rline, '    ') === 0)
             {
                 if (array_key_exists('message', $last_update_zeps))
                 {
-                    $last_update_zeps['message'] += "\n" + trim($line);
+                    $last_update_zeps['message'] .= "\n" . trim($line);
                 }
                 else
                 {
@@ -142,6 +142,7 @@ class StatisticsController
             }
         }
 
+        $last_update_zeps['message'] = preg_replace("/\n\- (.+)/m", "\n<em>$1</em>", $last_update_zeps['message']);
         $last_update_zeps['signed'] = strpos($git->log(['n' => '1', 'pretty' => 'raw', 'no-merges' => true])->getOutput(), '-----BEGIN PGP SIGNATURE-----') !== false;
 
 
