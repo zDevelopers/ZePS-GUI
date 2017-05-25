@@ -984,7 +984,7 @@
 
                     NetworkMap.map.attributionControl.addAttribution(
                         'Plan du Netherrail <a href="https://zcraft.fr">Zcraftien</a>' +
-                        ' | Données aggrégées par <a href="https://github.com/FlorianCassayre/ZePS-Core">Florian Cassayre</a>' +
+                        ' | Données aggrégées par <a href="https://github.com/FlorianCassayre/ZePS-Core">Florian Cassayre &amp; Amaury Carrade</a>' +
                         (NetworkMap.missing_stations ? ' | <a href="' + NetworkMap.missing_stations + '">Station manquante ?</a>' : '')
                     );
 

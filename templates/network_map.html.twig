@@ -25,7 +25,7 @@
             NetworkMap.network_api        = '{{ path('zeps.api.stations_network') }}';
             NetworkMap.network_colors_api = '{{ path('zeps.api.stations_network_colors') }}';
             NetworkMap.dynmap_root        = '{{ app.config.dynmap.root }}';
-            NetworkMap.main_stations      = '{{ main_stations }}'.split(',');
+            NetworkMap.main_stations      = '{{ main_stations|join(',') }}'.split(',');
             NetworkMap.map_container_id   = 'network_map';
 
             NetworkMap.missing_stations   = '{{ path('zeps.missing') }}';

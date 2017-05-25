@@ -170,10 +170,8 @@ class RouteSearchController
 
             'directions_translations' => $directions_translations,
 
-            'spawn_station'    => RoutesManager::SPAWN_STATION,
-            'spawn_station_id' => $app['zeps.routing']->station_name_to_id(RoutesManager::SPAWN_STATION),
-
-            'image' => $error === null ? $app['zeps.routing']->get_netherrail_route_image($route) : ''
+            'spawn_station'    => $app['zeps.routing']->get_spawn_station(),
+            'spawn_station_id' => $app['zeps.routing']->station_name_to_id($app['zeps.routing']->get_spawn_station())
         )));
     }
 }

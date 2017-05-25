@@ -20,6 +20,14 @@ $app['version'] = '1.2';
 
 $app['config'] = array
 (
+    'api_root' => 'https://api.zeps.zcraft.fr',// The root of the ZePS routing API (without trailing slash)
+
+    'stations' => array(
+        'spawn' => 'tentacles',                // The name of the station located at the spawn point.
+        'main' => array('tentacles', 'nouvea', 'vaalon') // The name of the stations accessible through a portal
+                                                         // via the spawn.
+    ),
+
     'world_name_nether' => 'V5_nether',        // The name of the world where the netherrail is in
     'world_name_overworld' => 'V5',            // The name of the world above the netherrail world
     'overworld_and_nether_worlds' => array(    // A list of nether & overworld worlds. Any world except 'world_name'
@@ -65,6 +73,8 @@ $app['config'] = array
 );
 
 $app['root_directory'] = __DIR__ . '/../';
+
+if (file_exists(__DIR__ . '/../config.php')) $app['config'] = array_merge($app['config'], include(__DIR__ . '/../config.php'));
 
 
 // Silex initialization

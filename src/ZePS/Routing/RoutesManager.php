@@ -8,15 +8,13 @@ use ZePS\Misc\NetworkManager;
 
 class RoutesManager extends NetworkManager
 {
-    const API_LIST = 'https://api.cassayre.me/minecraft/zeps/list';
-    const API_NETWORK = 'https://api.cassayre.me/minecraft/zeps/list/network';
-    const API_NETWORK_COLORS = 'https://api.cassayre.me/minecraft/zeps/colors';
-    const API_ROUTE = 'https://api.cassayre.me/minecraft/zeps/path/{from}/{to}';
-    const API_ROUTE_IMAGE = 'http://florian.cassayre.me/api/minecraft/zeps/v1.1/map';
+    private $api_list = '/list';
+    private $api_network = '/list/network';
+    private $api_network_colors = '/colors';
+    private $api_route = '/path/{from}/{to}';
 
-    const SPAWN_STATION = 'tentacles';
-    const MAIN_NETHERRAIL_STATIONS = 'tentacles,vaalon,nouvea';
-
+    private $spawn_station = '';
+    private $main_netherrail_stations = '';
 
     private $netherrail_stations = null;
 
@@ -30,8 +28,28 @@ class RoutesManager extends NetworkManager
     {
         parent::__construct($app);
 
+        $api_root = $app['config']['api_root'];
+
+        $this->api_list = $api_root . $this->api_list;
+        $this->api_network = $api_root . $this->api_network;
+        $this->api_network_colors = $api_root . $this->api_network_colors;
+        $this->api_route = $api_root . $this->api_route;
+
+        $this->spawn_station = $app['config']['stations']['spawn'];
+        $this->main_netherrail_stations = $app['config']['stations']['main'];
+
         // Unlimited cache (removed when the cache is cleared, when the router's checksum changes).
         $this->cache_lifetime = 0;
+    }
+
+    public function get_main_stations()
+    {
+        return $this->main_netherrail_stations;
+    }
+
+    public function get_spawn_station()
+    {
+        return $this->spawn_station;
     }
 
 
@@ -48,7 +66,7 @@ class RoutesManager extends NetworkManager
     {
         if ($this->netherrail_stations === null)
         {
-            $json = $this->get_json(self::API_LIST);
+            $json = $this->get_json($this->api_list);
 
             if ($json === null || $json->result !== "success")
             {
@@ -65,7 +83,7 @@ class RoutesManager extends NetworkManager
                 }
 
                 $main_stations = array();
-                $main_stations_codes = \explode(',', self::MAIN_NETHERRAIL_STATIONS);
+                $main_stations_codes = $this->main_netherrail_stations;
 
                 foreach ($stations as $station)
                 {
@@ -134,54 +152,12 @@ class RoutesManager extends NetworkManager
         if ($official) $parameters[] = 'official';
         if ($accessible) $parameters[] = 'accessible';
 
-        $json = $this->get_json(str_replace(['{from}', '{to}'], [$from, $to], self::API_ROUTE) . '?' . implode('&', $parameters));
+        $json = $this->get_json(str_replace(['{from}', '{to}'], [$from, $to], $this->api_route) . '?' . implode('&', $parameters));
 
         if (!isset($json->result) || $json->result != 'success')
             throw new \RuntimeException($json->cause, $json->result);
 
         return RoutingPath::fromJSON($this->app, $json);
-    }
-
-    /**
-     * Returns a link to an image representing the route.
-     *
-     * @param RoutingPath $routes The route.
-     * @return string The image URL.
-     */
-    public function get_netherrail_route_image($routes)
-    {
-        $lines  = '';
-        $points = '';
-
-        $lines_limits = array();
-
-        $prev_point = null;
-
-        foreach ($routes->getPath() as $step)
-        {
-            if (!$step->getStation()->isVisible())
-                continue;
-
-            $point = $step->getStation()->getLocationX() . ',' . $step->getStation()->getLocationZ() . ',';
-
-            if ($prev_point !== null)
-            {
-                $lines_limits[] = $prev_point . $point;
-            }
-
-            $points .= $point;
-            $prev_point = $point;
-        }
-
-        foreach ($lines_limits as $line)
-        {
-            $lines .= $line;
-        }
-
-        $lines  = \substr($lines,  0, -1);
-        $points = \substr($points, 0, -1);
-
-        return self::API_ROUTE_IMAGE . '?lines=' . $lines . '&points=' . $points;
     }
 
     /**
@@ -193,7 +169,7 @@ class RoutesManager extends NetworkManager
      */
     public function get_netherrail_network()
     {
-        $response = $this->get_json(self::API_NETWORK);
+        $response = $this->get_json($this->api_network);
 
         if ($response === null || $response->result != 'success')
             return array();
@@ -210,7 +186,7 @@ class RoutesManager extends NetworkManager
      */
     public function get_netherrail_network_colors()
     {
-        return $this->get_json(self::API_NETWORK_COLORS);
+        return $this->get_json($this->api_network_colors);
     }
 
     /**

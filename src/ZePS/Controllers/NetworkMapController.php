@@ -13,7 +13,7 @@ class NetworkMapController
     {
         return new Response($app['twig']->render('network_map.html.twig', array(
             'section' => 'network_map',
-            'main_stations' => RoutesManager::MAIN_NETHERRAIL_STATIONS
+            'main_stations' => $app['zeps.routing']->get_main_stations()
         )));
     }
 
