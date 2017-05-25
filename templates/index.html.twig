@@ -6,9 +6,15 @@
     Itinéraire
 {% endblock %}
 
-{% block title %}
-    <h1>Z<em>é</em>PS</h1>
-    <p>Itinéraire dans le Netherrail</p>
+{% block subtitle %}
+    {# TODO Reintroduce quote
+    {% if quote %}
+        <blockquote id="homepage-quote">
+            <p>{{ quote.quote }}</p>
+            <footer>{{ quote.author }}</footer>
+        </blockquote>
+    {% endif %}
+    #}
 {% endblock %}
 
 {% block stylesheets %}
@@ -33,22 +39,5 @@
             <strong>L'API de recherche est injoignable.</strong>
             Il s'agit certainement d'un problème temporaire. Réessayez dans quelques minutes.
         </div>
-    {% else %}
-        {% include 'includes/search_box.html.twig' with
-            {
-                'stations': stations,
-                'from': false,
-                'to': false,
-                'official' : false,
-                'accessible': false
-            }
-        %}
-    {% endif %}
-
-    {% if quote %}
-        <blockquote id="homepage-quote">
-            <p>{{ quote.quote }}</p>
-            <footer>{{ quote.author }}</footer>
-        </blockquote>
     {% endif %}
 {% endblock %}

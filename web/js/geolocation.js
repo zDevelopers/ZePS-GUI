@@ -6,7 +6,7 @@ $(function ()
 
     // Non-Javascript graceful degradation
     $('#starting-point-placeholder').after('<option value="">Me localiser...</option>');
-    $('#open-geolocation-icon').removeClass("glyphicon-globe").addClass("glyphicon-map-marker");
+    $('#open-geolocation-icon span.fa').removeClass("fa-globe").addClass("fa-location-arrow");
     $('.cliquable-icon').removeClass("cliquable-icon-nojs");
 
     var $geolocation_modal_selector = $('#geolocation-modal-selector');
@@ -25,7 +25,7 @@ $(function ()
     var $from_overworld_field = $('#from_overworld');
 
 
-    $('.open-geolocation-dialog, .geolocation-modal-retry').click(open_geolocation_dialog);
+    $('#open-geolocation-icon, .geolocation-modal-retry').click(open_geolocation_dialog);
 
     $from_select.on('change', function () {
         if (this.value == "")
@@ -47,8 +47,12 @@ $(function ()
 
         $geolocation_modal_button.attr('disabled', true);
 
-        $('#geo-geolocation-modal').modal('show');
+        $('#geo-geolocation-modal').addClass('is-active');
 
+        $(document).on('keydown.zeps.geolocation', function(e)
+        {
+            e.which == 27 && $('#geo-geolocation-modal').removeClass('is-active');
+        });
 
         // Then we load players in the nether and display them
         $.getJSON(routes.get_players, function (players)
@@ -107,7 +111,8 @@ $(function ()
             if (result.from_overworld)
                 $from_overworld_field.val('true');
 
-            $('#geo-geolocation-modal').modal('hide');
+            $('#geo-geolocation-modal').removeClass('is-active');
+            $(document).off('keydown.zeps.geolocation');
         })
         .fail(function (error)
         {

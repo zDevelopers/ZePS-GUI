@@ -11,7 +11,8 @@
 
         <title>{% block main_title %}{% endblock %} ⋅ ZéPS</title>
 
-        <link href="{{ app.request.basePath }}/css/bootstrap/bootstrap.min.css" rel="stylesheet">
+        <link href="{{ app.request.basePath }}/css/bulma.css" rel="stylesheet">
+        <link href="{{ app.request.basePath }}/css/font-awesome.min.css" rel="stylesheet">
         <link href="{{ app.request.basePath }}/css/workarounds/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
         <link href="{{ app.request.basePath }}/css/site.css" rel="stylesheet">
@@ -19,35 +20,54 @@
         {% block stylesheets %}{% endblock %}
     </head>
 
-    <body class="plan">
-        <div class="container">
-            <div class="header clearfix">
-                <nav>
-                    <ul class="nav nav-pills pull-right">
-                        <li role="presentation"{% if not section %} class="active"{% endif %}><a href="{{ path('zeps.homepage') }}">Itinéraire</a></li>
-                        <li role="presentation"{% if section and section == 'network_map' %} class="active"{% endif %}><a href="{{ path('zeps.network_map') }}">Carte du réseau</a></li>
-                    </ul>
-                </nav>
-                <h3>{% block nav_title %}Z<em>é</em>PS{% endblock %}</h3>
+    <body>
+        <section class="hero is-primary is-bold">
+            <div class="hero-body">
+                <div class="container">
+                    <div class="columns">
+                        <div class="column">
+                            {% block block_titles %}
+                                <h1 class="title">
+                                    {% block title %}Z<em>é</em>PS{% endblock %}
+                                </h1>
+                                <h2 class="subtitle">
+                                    {% block subtitle %}{% endblock %}
+                                </h2>
+                            {% endblock %}
+                        </div>
+                        <div class="column is-three-quarters has-text-right">
+                            {% if error != 'unreachable' %}
+                                {% include 'includes/search_box.html.twig' with
+                                    {
+                                        'stations': stations,
+                                        'from': false,
+                                        'to': false,
+                                        'official' : false,
+                                        'accessible': false
+                                    }
+                                %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
+        </section>
 
-            {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
 
-            <footer class="footer">
-                <p>
-                    Des chatons vont mourir si vous abusez de ce service.
-                    <a href="{{ path('zeps.missing') }}">Cliquez ici si une station manque à l'appel.</a>
-                </p>
-                <p>
-                    Z<em>é</em>PS{% block footer_in_line %}{% endblock %}
-                    — Logiciel publié sous la licence CeCILL-B
-                    — <a href="https://github.com/zDevelopers/ZePS-GUI">Code source</a>
-                    — <a href="{{ path('zeps.stats') }}">Statistiques</a>
-                    — Moteur d'itinéraire par <a href="http://florian.cassayre.me/netherrail">Florian Cassayre</a>
-                </p>
-            </footer>
-
-        </div> <!-- /container -->
+        <footer class="footer">
+            <p>
+                Des chatons vont mourir si vous abusez de ce service.
+                <a href="{{ path('zeps.missing') }}">Cliquez ici si une station manque à l'appel.</a>
+            </p>
+            <p>
+                Z<em>é</em>PS{% block footer_in_line %}{% endblock %}
+                — Logiciel publié sous la licence CeCILL-B
+                — <a href="https://github.com/zDevelopers/ZePS-GUI">Code source</a>
+                — <a href="{{ path('zeps.stats') }}">Statistiques</a>
+                — Moteur d'itinéraire par <a href="http://florian.cassayre.me/netherrail">Florian Cassayre</a>
+            </p>
+        </footer>
 
 
         <script src="{{ app.request.basePath }}/js/jquery/jquery.min.js"></script>
@@ -61,6 +81,17 @@
             <script src="{{ app.request.basePath }}/js/workarounds/html5shiv.min.js"></script>
             <script src="{{ app.request.basePath }}/js/workarounds/respond.min.js"></script>
         <![endif]-->
+
+        <script type="text/javascript">
+            $(function() {
+                'use strict';
+
+                $('.modal-close').on('click', function()
+                {
+                    $(this).parent().removeClass('is-active');
+                });
+            });
+        </script>
 
         {% block javascripts %}{% endblock %}
     </body>

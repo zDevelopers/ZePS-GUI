@@ -1,8 +1,7 @@
 /* Layout styles */
 
 body {
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding: 0;
 }
 
 .plan {
@@ -122,23 +121,18 @@ footer.footer, footer.footer a {
 /* Index quote style */
 
 #homepage-quote {
-    width: 60%;
-    margin: 30px auto 30px;
-
-    border: none;
+    text-align: left;
+    font-size: small;
 }
 
 #homepage-quote p {
-    text-align: center;
     font-style: italic;
 
     color: white;
 }
 
 #homepage-quote footer {
-    text-align: right;
     font-style: normal;
-
     color: whitesmoke;
 }
 
@@ -168,6 +162,17 @@ footer.footer, footer.footer a {
     font-style: italic;
 }
 
+.between-search-fields {
+    position: relative;
+    top: .5em;
+
+    display: inline-block;
+    width: 3em;
+    text-align: center;
+
+    cursor: pointer;
+}
+
 
 /* User geolocation */
 
@@ -192,6 +197,19 @@ footer.footer, footer.footer a {
     margin-bottom: 50px;
 
     text-align: center;
+}
+
+.geolocation-modal-main-text {
+    margin-top: 50px;
+    margin-bottom: 50px;
+
+    text-align: center;
+}
+
+#geolocation-modal-footer-message {
+    text-align: center;
+    font-size: small;
+    color: #888;
 }
 
 #geolocation-modal-selector, #geolocation-modal-error-nether-empty, #geolocation-modal-error-cannot-retrieve {
