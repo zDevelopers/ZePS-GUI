@@ -17,6 +17,8 @@
 
         <link href="{{ app.request.basePath }}/css/site.css" rel="stylesheet">
 
+        {% include 'includes/search_box_css.html.twig' %}
+
         {% block stylesheets %}{% endblock %}
     </head>
 
@@ -51,24 +53,23 @@
                     </div>
                 </div>
             </div>
+            {% if error == 'unreachable' %}
+                <div class="alert alert-danger">
+                    <strong>L'API de recherche est injoignable.</strong>
+                    Il s'agit certainement d'un problème temporaire. Réessayez dans quelques minutes.
+                </div>
+            {% else %}
+                <noscript>
+                    <div class="alert alert-warning">
+                        <strong>Javascript est désactivé.</strong>
+                        Certaines fonctionnalités (plan, géolocalisation...) ne marcheront pas.
+                        <a href="http://www.enable-javascript.com/fr/">Cliquez ici pour apprendre comment activer Javascript</a>.
+                    </div>
+                </noscript>
+            {% endif %}
         </section>
 
         {% block content %}{% endblock %}
-
-        <footer class="footer">
-            <p>
-                Des chatons vont mourir si vous abusez de ce service.
-                <a href="{{ path('zeps.missing') }}">Cliquez ici si une station manque à l'appel.</a>
-            </p>
-            <p>
-                Z<em>é</em>PS{% block footer_in_line %}{% endblock %}
-                — Logiciel publié sous la licence CeCILL-B
-                — <a href="https://github.com/zDevelopers/ZePS-GUI">Code source</a>
-                — <a href="{{ path('zeps.stats') }}">Statistiques</a>
-                — Moteur d'itinéraire par <a href="http://florian.cassayre.me/netherrail">Florian Cassayre</a>
-            </p>
-        </footer>
-
 
         <script src="{{ app.request.basePath }}/js/jquery/jquery.min.js"></script>
         <script src="{{ app.request.basePath }}/js/bootstrap/bootstrap.min.js"></script>
@@ -92,6 +93,8 @@
                 });
             });
         </script>
+
+        {% include 'includes/search_box_js.html.twig' %}
 
         {% block javascripts %}{% endblock %}
     </body>

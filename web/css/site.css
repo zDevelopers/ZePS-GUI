@@ -110,6 +110,35 @@ footer.footer, footer.footer a {
     color: white !important;
 }
 
+.alert {
+    padding: .2em 0;
+    text-align: center;
+}
+.alert.alert-danger, .alert.alert-danger strong {
+    background-color: #EC2020;
+    color: white;
+}
+.alert.alert-warning, .alert.alert-warning strong {
+    background-color: #FF9000;
+    color: white;
+}
+
+
+/* Main layout */
+
+body {
+    display: flex;
+    flex-flow: column;
+    height: 100vh;
+}
+
+body > section.hero {
+    flex: 0 1 auto;
+}
+
+body > section.section-fullscreen {
+    flex: 1 1 auto;
+}
 
 /* Fix for text cursor on input groups */
 
@@ -173,6 +202,19 @@ footer.footer, footer.footer a {
     cursor: pointer;
 }
 
+.spin-effect {
+    animation: spin .3s 1 linear;
+}
+
+@keyframes spin {
+    0%  {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 
 /* User geolocation */
 
@@ -216,9 +258,32 @@ footer.footer, footer.footer a {
     display: none;
 }
 
-.avatar-in-select {
-    display: inline-block;
-    margin-right: 15px;
+.geolocation-modal-selector-list-item {
+    margin: .3em;
+    padding: .4em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: calc(32px + .8em);
+
+    text-align: left;
+    cursor: pointer;
+}
+.geolocation-modal-selector-list-item img {
+    position: relative;
+    top: -2px;
+}
+.geolocation-modal-selector-list-item span {
+    position: relative;
+    top: -12px;
+    left: .8em;
+}
+
+.geolocation-modal-selector-list-item:hover {
+    -moz-box-shadow: inset 1px 1px 2px 0px #cfcfcf;
+    -webkit-box-shadow: inset 1px 1px 2px 0px #cfcfcf;
+    -o-box-shadow: inset 1px 1px 2px 0px #cfcfcf;
+    box-shadow: inset 1px 1px 2px 0px #cfcfcf;
+    filter:progid:DXImageTransform.Microsoft.Shadow(color=#cfcfcf, Direction=134, Strength=2);
 }
 
 .modal-footer .pull-left {
@@ -239,24 +304,14 @@ footer.footer, footer.footer a {
 
 /* Network map */
 
-.leaflet-container.network_map {
-    background-color: whitesmoke;
+.leaflet-container.network-map {
+    background-color: white;
 }
 
-#network_map {
-    position: absolute;
-    top: 60px;
-    left: 0;
-
-    width: 100%;
-    height: calc(100% - 60px);
-
-    border-radius: 0;
-    border: medium none;
-}
-
-#route_map {
-    height: 600px;
+.network_map_loader {
+    margin-top: 4em;
+    text-align: center;
+    font-size: large;
 }
 
 .station-label {

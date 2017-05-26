@@ -17,8 +17,8 @@ $(function ()
     var $geolocation_modal_error_cannot_retrieve_id      = $('#geolocation-modal-error-cannot-retrieve-error-id');
     var $geolocation_modal_error_cannot_retrieve_message = $('#geolocation-modal-error-cannot-retrieve-error-message');
 
-    var $geolocation_modal_selector_list = $('#geolocation-modal-selector-select');
     var $geolocation_modal_title         = $('#geolocation-modal-title');
+    var $geolocation_modal_selector_list = $('#geolocation-modal-selector-list');
     var $geolocation_modal_button        = $('#geolocation-modal-button');
 
     var $from_select          = $('#from');
@@ -35,7 +35,6 @@ $(function ()
     });
 
     $geolocation_modal_button.on('click', retrieve_nearest_station);
-
 
     function open_geolocation_dialog()
     {
@@ -71,26 +70,26 @@ $(function ()
                 var list_content = '';
 
                 players.forEach(function (player) {
-                    list_content += '<option data-content="<div class=\'avatar-in-select\'><img src=\'' + routes.get_head.replace('playerNamePlaceholder', player.name) + '\' alt=\'[Avatar]\' aria-hidden=\'true\' /></div>' + player.name + '" value="' + player.name + '">' + player.display_name + '</option>';
+                    list_content += '<div class="column is-half"><div class="geolocation-modal-selector-list-item" data-player-name="' + player.name + '"><img src="' + routes.get_head.replace('playerNamePlaceholder', player.name) + '" alt="[Avatar]" aria-hidden="true" /><span>' + player.name + '</span></div></div>';
                 });
 
                 $geolocation_modal_loading.hide();
                 $geolocation_modal_selector.show();
 
                 $geolocation_modal_selector_list.empty().append(list_content);
-                $geolocation_modal_selector_list.selectpicker('refresh');
-
-                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-                    $geolocation_modal_selector_list.selectpicker('mobile');
-                }
 
                 $geolocation_modal_title.text("Qui êtes-vous ?");
                 $geolocation_modal_button.attr('disabled', false);
+
+                $('.geolocation-modal-selector-list-item').on('click.zeps.geolocation_list', function() {
+                    console.log($(this));
+                    retrieve_nearest_station($(this).attr('data-player-name'));
+                });
             }
         });
     }
 
-    function retrieve_nearest_station()
+    function retrieve_nearest_station(player_name)
     {
         $geolocation_modal_error_nether_empty.hide();
         $geolocation_modal_error_cannot_retrieve.hide();
@@ -101,9 +100,6 @@ $(function ()
 
         $geolocation_modal_title.text("Recherche...");
 
-
-        var player_name = $geolocation_modal_selector_list.val();
-
         $.getJSON(routes.get_nearest.replace('playerNamePlaceholder', player_name), function (result)
         {
             $from_select.val(result.nearest_station.code_name);
@@ -113,6 +109,7 @@ $(function ()
 
             $('#geo-geolocation-modal').removeClass('is-active');
             $(document).off('keydown.zeps.geolocation');
+            $('.geolocation-modal-selector-list-item').off('click.zeps.geolocation_list');
         })
         .fail(function (error)
         {

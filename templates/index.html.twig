@@ -18,26 +18,51 @@
 {% endblock %}
 
 {% block stylesheets %}
-    {% include 'includes/search_box_css.html.twig' %}
+    <link href="{{ app.request.basePath }}/css/leaflet/leaflet.css" rel="stylesheet" />
+    <link href="{{ app.request.basePath }}/css/leaflet/leaflet.label.css" rel="stylesheet" />
+    <link href="{{ app.request.basePath }}/css/leaflet/easy-button.css" rel="stylesheet" />
 {% endblock %}
 
 {% block javascripts %}
-    {% include 'includes/search_box_js.html.twig' %}
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.js"></script>
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.label.js"></script>
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/easy-button.js"></script>
+
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/network_map.js"></script>
+
+    <script type="text/javascript">
+        $(function()
+        {
+            // $('[data-toggle="tooltip"]').tooltip();
+
+            NetworkMap.network_api        = '{{ path('zeps.api.stations_network') }}';
+            NetworkMap.network_colors_api = '{{ path('zeps.api.stations_network_colors') }}';
+            NetworkMap.dynmap_root        = '{{ app.config.dynmap.root }}';
+            NetworkMap.main_stations      = '{{ main_stations|join(',') }}'.split(',');
+            NetworkMap.map_container_id   = 'network_map';
+
+            NetworkMap.missing_stations   = '{{ path('zeps.missing') }}';
+
+            NetworkMap.permanent_url_with_anchor = true;
+
+            NetworkMap.dynmap_map_overworld      = '{{ app.config.world_name_overworld }}';
+            NetworkMap.dynmap_map_nether         = '{{ app.config.world_name_nether }}';
+            NetworkMap.dynmap_map_type           = '{{ app.config.dynmap.map_type }}';
+
+            NetworkMap.init($('#still_nothing_loader'));
+        });
+    </script>
 {% endblock %}
 
 {% block content %}
-    <noscript>
-        <div class="alert alert-warning">
-            <strong>Javascript est désactivé.</strong>
-            Certaines fonctionnalités secondaires (géolocalisation...) ne marcheront pas.
-            <a href="http://www.enable-javascript.com/fr/">Cliquez ici pour apprendre comment activer Javascript</a>.
-        </div>
-    </noscript>
-
-    {% if error == 'unreachable' %}
-        <div class="alert alert-danger">
-            <strong>L'API de recherche est injoignable.</strong>
-            Il s'agit certainement d'un problème temporaire. Réessayez dans quelques minutes.
-        </div>
-    {% endif %}
+    <section id="network_map" class="network-map section-fullscreen">
+        {% if error != 'unreachable' %}
+            <div class="network_map_loader">
+                <h4>Chargement de la carte en cours...</h4>
+                <p class="is-hidden" id="still_nothing_loader">
+                    Toujours rien ? Vérifiez que vous n'avez pas perdu votre accès internet entre temps.
+                </p>
+            </div>
+        {% endif %}
+    </section>
 {% endblock %}

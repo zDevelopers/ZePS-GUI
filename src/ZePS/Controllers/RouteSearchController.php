@@ -48,6 +48,7 @@ class RouteSearchController
         return new Response($app['twig']->render('index.html.twig', array(
             'error'    => $error,
             'stations' => $stations,
+            'main_stations' => $app['zeps.routing']->get_main_stations(),
             'quote'    => $app['zeps.quotes']->get_random_quote()
         )));
     }

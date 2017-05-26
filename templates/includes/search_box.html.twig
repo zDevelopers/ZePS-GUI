@@ -31,30 +31,6 @@
             <span class="fa fa-compass"></span>
         </button>
         <!--
-        <div class="row">
-            <div class="col-xs-12 col-md-9 form-inline">
-                <div class="form-group" id="route-form-part">
-                    <label class="sr-only" for="from">Sélectionnez les points de départ et d'arrivée</label>
-                    <div class="input-group">
-                        <div class="input-group-addon station-selector-between cliquable-icon cliquable-icon-nojs open-geolocation-dialog">
-                            <span class="glyphicon glyphicon-globe" id="open-geolocation-icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Me localiser"></span>
-                            <span class="sr-only">Me localiser</span>
-                        </div>
-
-                        <select class="form-control selectpicker-disabled station-selector" id="from" name="from" data-live-search="true">
-                            {{ macros.stations_list(stations, from, true, "Point de départ") }}
-                        </select>
-
-                        <div class="input-group-addon station-selector-between cliquable-icon cliquable-icon-nojs" id="invert-from-to" >
-                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Inverser origine et destination"></span>
-                            <span class="sr-only">(Inverser origine et destination)</span>
-                        </div>
-
-                        <select class="form-control selectpicker-disabled station-selector" id="to" name="to" data-live-search="true" title="Destination">
-                            {{ macros.stations_list(stations, to, false, "Destination") }}
-                        </select>
-                    </div>
-                </div>
                 <div class="form-group route-options">
                     <label class="checkbox-inline">
                         <input type="checkbox" id="route_option_official" name="official" value="official"{% if official %} checked{% endif %}> Lignes officielles uniquement
@@ -62,12 +38,7 @@
                     <label class="checkbox-inline">
                         <input type="checkbox" id="route_option_accessible" name="accessible" value="accessible"{% if accessible %} checked{% endif %}> Stations sécurisées uniquement
                     </label>
-                </div>
-            </div>
-            <div class="col-xs-12 col-md-3 text-right">
-                <input class="btn btn-primary" type="submit" value="Calculer l'itinéraire">
-            </div>
-        </div>-->
+                </div>-->
     </form>
 </div>
 
@@ -86,7 +57,7 @@
                 </div>
 
                 <div id="geolocation-modal-selector" class="geolocation-modal-main-text">
-                    <select id="geolocation-modal-selector-select" class="selectpicker" data-width="70%" title="Sélectionnez-vous dans la liste"></select>
+                    <div id="geolocation-modal-selector-list" class="columns is-multiline is-mobile"></div>
                 </div>
 
                 <div id="geolocation-modal-error-nether-empty" class="geolocation-modal-main-text">
@@ -111,7 +82,7 @@
                 </p>
             </div>
             <footer class="card-footer">
-                <a class="card-footer-item" id="geolocation-modal-button" disabled>Localiser la station la plus proche</a>
+                <a class="card-footer-item geolocation-modal-retry" disabled>Actualiser la liste des connectés</a>
             </footer>
         </div>
     </div>

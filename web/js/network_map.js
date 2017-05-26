@@ -767,7 +767,7 @@
 
 
         /**
-         * Highlights a startup station, using a pre-determined style.
+         * Highlights an end-of-path station, using a pre-determined style.
          *
          * @param station_code_name The station's code name.
          */
@@ -1132,7 +1132,7 @@
                         NetworkMap._update_location_from_hash();
 
                         L
-                            .easyButton('glyphicon-link', NetworkMap._encode_location_in_hash, 'Lien permanent')
+                            .easyButton('fa fa-link', NetworkMap._encode_location_in_hash, 'Lien permanent')
                             .addTo(NetworkMap.map);
                     }
 

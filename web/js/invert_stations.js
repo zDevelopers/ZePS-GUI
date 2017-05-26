@@ -13,6 +13,11 @@ $(function ()
         {
             $from_select.val(to_value);
             $to_select.val(from_value);
+
+            var $spinner = $(this).find('span.fa');
+
+            $spinner.addClass('spin-effect');
+            setTimeout(function() { $spinner.removeClass('spin-effect'); }, 300);
         }
     });
 });
