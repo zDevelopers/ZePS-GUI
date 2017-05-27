@@ -1137,12 +1137,6 @@
                     }
 
 
-                    // Enables tooltips
-                    $('.leaflet-bar-part').tooltip({
-                        placement: 'right'
-                    });
-
-
                     // Updates labels colors
                     NetworkMap.label_colors_waiting_for_update.forEach(function(update)
                     {

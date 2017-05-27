@@ -1,14 +1,47 @@
+@font-face {
+  font-family: 'Lato';
+  font-weight: 300;
+  font-style: normal;
+  src: url('../fonts/Lato-regular/Lato-regular.eot');
+  src: url('../fonts/Lato-regular/Lato-regular.eot?#iefix') format('embedded-opentype'),
+       local('Lato Light'),
+       local('Lato-regular'),
+       url('../fonts/Lato-regular/Lato-regular.woff2') format('woff2'),
+       url('../fonts/Lato-regular/Lato-regular.woff') format('woff'),
+       url('../fonts/Lato-regular/Lato-regular.ttf') format('truetype'),
+       url('../fonts/Lato-regular/Lato-regular.svg#Lato') format('svg');
+}
+
+@font-face {
+  font-family: 'Lato';
+  font-weight: 300;
+  font-style: italic;
+  src: url('../fonts/Lato-italic/Lato-italic.eot');
+  src: url('../fonts/Lato-italic/Lato-italic.eot?#iefix') format('embedded-opentype'),
+       local('Lato Light Italic'),
+       local('Lato-italic'),
+       url('../fonts/Lato-italic/Lato-italic.woff2') format('woff2'),
+       url('../fonts/Lato-italic/Lato-italic.woff') format('woff'),
+       url('../fonts/Lato-italic/Lato-italic.ttf') format('truetype'),
+       url('../fonts/Lato-italic/Lato-italic.svg#Lato') format('svg');
+}
+
+
 /* Layout styles */
 
 body {
     padding: 0;
+    display: flex;
+    flex-flow: column;
+    height: 100vh;
 }
 
-.plan {
-    background: url('../img/blue_graph_paper.jpg') repeat;
-    margin: 0;
-    padding: 20px;
-    padding-top: 10px !important;
+body > section.hero {
+    flex: 0 1 auto;
+}
+
+body > section.section-fullscreen {
+    flex: 1 1 auto;
 }
 
 h3 {
@@ -35,6 +68,13 @@ h3:not(:first-child) {
     line-height: 40px;
 
     color: white;
+}
+
+.zeps-logo, .zeps-logo span {
+    font-family: 'Lato';
+}
+.zeps-logo span {
+    font-style: italic;
 }
 
 .nav-pills li a {
@@ -83,11 +123,6 @@ h3:not(:first-child) {
 
 /* Generic styles */
 
-.well h2 {
-    margin-top: 0;
-    margin-bottom: 25px;
-}
-
 .muted {
     color: #838383;
 }
@@ -100,10 +135,6 @@ h3:not(:first-child) {
     word-spacing: 4px;
 
     margin-bottom: 0;
-}
-
-.table-bordered {
-    border-radius: 10px !important;
 }
 
 footer.footer, footer.footer a {
@@ -123,22 +154,6 @@ footer.footer, footer.footer a {
     color: white;
 }
 
-
-/* Main layout */
-
-body {
-    display: flex;
-    flex-flow: column;
-    height: 100vh;
-}
-
-body > section.hero {
-    flex: 0 1 auto;
-}
-
-body > section.section-fullscreen {
-    flex: 1 1 auto;
-}
 
 /* Fix for text cursor on input groups */
 
@@ -207,7 +222,7 @@ body > section.section-fullscreen {
 }
 
 @keyframes spin {
-    0%  {
+    0% {
         transform: rotate(0deg);
     }
     100% {
@@ -248,6 +263,10 @@ body > section.section-fullscreen {
     text-align: center;
 }
 
+.geolocation-modal-main-selector {
+    margin-bottom: 16px;
+}
+
 #geolocation-modal-footer-message {
     text-align: center;
     font-size: small;
@@ -271,6 +290,9 @@ body > section.section-fullscreen {
 .geolocation-modal-selector-list-item img {
     position: relative;
     top: -2px;
+
+    width: 32px;
+    height: 32px;
 }
 .geolocation-modal-selector-list-item span {
     position: relative;
@@ -314,6 +336,21 @@ body > section.section-fullscreen {
     font-size: large;
 }
 
+.easy-button-button {
+    cursor: pointer;
+}
+
+.easy-button-button span.fa {
+    position: relative;
+    top: 7px;
+    left: -2px;
+}
+
+/* Fix so buttons are under the modal layer */
+.modal {
+    z-index: 2000;
+}
+
 .station-label {
     transform-origin: 0% 0%;
     transform: rotate(-38deg) translateY(-10px) translateX(-6px);
@@ -345,6 +382,11 @@ body > section.section-fullscreen {
     margin-right: 3px;
 
     vertical-align: sub;
+}
+
+.leaflet-popup-content h4 {
+    font-size: large;
+    margin-bottom: .3em;
 }
 
 .leaflet-popup-content h4 span {

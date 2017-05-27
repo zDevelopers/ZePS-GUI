@@ -30,7 +30,7 @@
                         <div class="column">
                             {% block block_titles %}
                                 <h1 class="title">
-                                    {% block title %}Z<em>é</em>PS{% endblock %}
+                                    {% block title %}<span class="zeps-logo">Z<span>é</span>PS</span>{% endblock %}
                                 </h1>
                                 <h2 class="subtitle">
                                     {% block subtitle %}{% endblock %}
@@ -87,9 +87,9 @@
             $(function() {
                 'use strict';
 
-                $('.modal-close').on('click', function()
+                $('.modal-close, .modal-close-handler').on('click', function()
                 {
-                    $(this).parent().removeClass('is-active');
+                    $(this).parent('.modal').removeClass('is-active');
                 });
             });
         </script>
