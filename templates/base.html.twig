@@ -42,10 +42,10 @@
                                 {% include 'includes/search_box.html.twig' with
                                     {
                                         'stations': stations,
-                                        'from': false,
-                                        'to': false,
-                                        'official' : false,
-                                        'accessible': false
+                                        'from': from is defined ? from : false,
+                                        'to': to is defined ? to : false,
+                                        'official' : options is defined and options.official is defined ? options.official : false,
+                                        'accessible': options is defined and options.accessible is defined ? options.accessible : false
                                     }
                                 %}
                             {% endif %}

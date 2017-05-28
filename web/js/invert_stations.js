@@ -5,9 +5,11 @@ $(function ()
     var $from_select = $('#from');
     var $to_select   = $('#to');
 
-    $('#invert-from-to').click(function () {
+    $('#invert-from-to').on('click', function () {
         var from_value = $from_select.val();
         var to_value   = $to_select.val();
+
+        console.log(from_value, to_value);
 
         if (from_value != "" && to_value != "")
         {

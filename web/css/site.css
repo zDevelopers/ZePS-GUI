@@ -218,7 +218,7 @@ footer.footer, footer.footer a {
 }
 
 .spin-effect {
-    animation: spin .3s 1 linear;
+    animation: spin .3s 1 cubic-bezier(.46,.03,.52,.96);
 }
 
 @keyframes spin {

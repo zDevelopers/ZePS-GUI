@@ -3,30 +3,19 @@
 {% import "_macros.html.twig" as macros %}
 
 {% block main_title %}
-    {%  if submitted and valid %}
+    {%  if valid %}
         {{ attribute(stations.stations, from).displayName }} → {{ attribute(stations.stations, to).displayName }} ⋅
     {% endif %}
     Itinéraire
 {% endblock %}
 
-{% block title %}
-    <h1>Z<em>é</em>PS</h1>
-    {% if valid %}
-        <p>De {{ attribute(stations.stations, from).displayName }} à {{ attribute(stations.stations, to).displayName }}</p>
-    {% endif %}
-{% endblock %}
-
 {% block stylesheets %}
-    {% include 'includes/search_box_css.html.twig' %}
-
     <link href="{{ app.request.basePath }}/css/leaflet/leaflet.css" rel="stylesheet" />
     <link href="{{ app.request.basePath }}/css/leaflet/leaflet.label.css" rel="stylesheet" />
     <link href="{{ app.request.basePath }}/css/leaflet/easy-button.css" rel="stylesheet" />
 {% endblock %}
 
 {% block javascripts %}
-    {% include 'includes/search_box_js.html.twig' %}
-
     <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.js"></script>
     <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.label.js"></script>
     <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/easy-button.js"></script>
@@ -106,20 +95,8 @@
                 Une erreur inconnue est survenue : {{ raw_error }}.
             {% endif %}
 
-            <br /><em>N'hésitez pas à signaler ce problème en spécifiant l'URL de la page ! Merci.</em>
+            <br />N'hésitez pas à signaler ce problème en spécifiant l'URL de la page ! Merci.
         </div>
-    {% endif %}
-
-    {% if not (not valid and error == 'unreachable') %}
-        {% include 'includes/search_box.html.twig' with
-            {
-                'stations': stations,
-                'from': from,
-                'to': to,
-                'official' : options.official,
-                'accessible': options.accessible
-            }
-        %}
     {% endif %}
 
     {% if valid and not error %}
@@ -263,7 +240,7 @@
 {% endblock %}
 
 {% block footer_in_line %}
-    {% if submitted and valid %}
+    {% if valid %}
         — <span title="Temps nécessaire pour calculer l'itinéraire : {{ route.computeTime }} ms">{{ route.computeTime }} ms</span>
     {% endif %}
 {% endblock %}
