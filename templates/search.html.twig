@@ -70,21 +70,15 @@
 {% endblock %}
 
 {% block content %}
-    <noscript>
-        <div class="alert alert-warning">
-            <strong>Javascript est désactivé.</strong>
-            Certaines fonctionnalités secondaires (géolocalisation...) ne marcheront pas.
-            <a href="http://www.enable-javascript.com/fr/">Cliquez ici pour apprendre comment activer Javascript</a>.
-        </div>
-    </noscript>
+    <section class="section-fullscreen columns">
+        <aside class="route-sidebar column is-4">
 
-    {% if error == 'unreachable' %}
-        <div class="alert alert-danger">
-            <strong>L'API de recherche est injoignable.</strong>
-            Il s'agit certainement d'un problème temporaire. Réessayez dans quelques minutes.
-        </div>
-    {% endif %}
-
+        </aside>
+        <article class="network-map column is-8" id="route_map" aria-hidden="true">
+            <p class="text-center">Chargement du plan du trajet...</p>
+        </article>
+    </section>
+{##
     {% if error != 'unreachable' and (not valid or error) %}
         <div class="alert alert-danger">
             <strong>Erreur.</strong>
@@ -237,6 +231,7 @@
             <p class="text-center">Chargement du plan du trajet...</p>
         </div>
     {% endif %}
+#}
 {% endblock %}
 
 {% block footer_in_line %}
