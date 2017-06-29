@@ -13,6 +13,18 @@
         // will be loaded and used as default from the URL anchor, if available.
         permanent_url_with_anchor: false,
 
+        // The location of the buttons in the map (zoom, anchor...).
+        // Can be topleft, topright, bottomleft, bottomright.
+        buttons_location: 'topright',
+
+        // If a form is available on the map, defines here their jQuery objects
+        // to links the form and the map, e.g. by adding buttons in the popups
+        // to select a station as departure or destination.
+        elem_form_from_id: undefined,
+        elem_form_from_code_id: undefined,
+        elem_form_to_id: undefined,
+        elem_form_to_code_id: undefined,
+
         // The Dynmap base URL, without trailing slash. If undefined, links to the dynmap will not be displayed.
         // Followed by the config
         dynmap_root: undefined,
@@ -116,23 +128,7 @@
         _get_neighborhood_infos: function(station)
         {
             var relations_count = Object.keys(station.network).length;
-            var is_intersection = false;
-
-            if (relations_count > 2)
-            {
-                is_intersection = true;
-            }
-            else if (relations_count == 2)
-            {
-                // If there are two relations, it's an intersection if they are not in the same axis.
-                var direction1 = station.network[0].direction;
-                var direction2 = station.network[1].direction;
-
-                var axis1 = (direction1 == 'east' || direction1 == 'west') ? 0 : 1;
-                var axis2 = (direction2 == 'east' || direction2 == 'west') ? 0 : 1;
-
-                if (axis1 != axis2) is_intersection = true;
-            }
+            var is_intersection = relations_count > 2;
 
             return {
                 is_intersection: is_intersection,
@@ -971,6 +967,9 @@
                         minZoom: 8,
                         maxZoom: 14,
 
+                        // Control will be added later, customized, not in the default location.
+                        zoomControl: false,
+
                         // Layers are added by inverted order of importance—the last will be displayed on top.
                         layers: [
                             NetworkMap.layer_lines,
@@ -982,12 +981,15 @@
                         ]
                     });
 
+                    L.control.zoom({
+                        position:NetworkMap.buttons_location
+                    }).addTo(NetworkMap.map);
+
                     NetworkMap.map.attributionControl.addAttribution(
                         'Plan du Netherrail <a href="https://zcraft.fr">Zcraftien</a>' +
                         ' | Données aggrégées par <a href="https://github.com/FlorianCassayre/ZePS-Core">Florian Cassayre &amp; Amaury Carrade</a>' +
                         (NetworkMap.missing_stations ? ' | <a href="' + NetworkMap.missing_stations + '">Station manquante ?</a>' : '')
                     );
-
 
                     // Ensures the zoom is handled correctly
                     NetworkMap._adapt_zoom();
@@ -1059,30 +1061,32 @@
                                 .sort()
                                 .filter(function(el,i,a) { return i == a.indexOf(el); });
 
-                            var popup = '<h4>';
+                            var popup_title = '<h4>';
                             unique_lines.forEach(function (color) {
-                                popup += '<div class="square-line" style="background-color: ' + color + ';"></div>';
+                                popup_title += '<div class="square-line" style="background-color: ' + color + ';"></div>';
                             });
-                            popup += '<span>' + marker.zeps.station.full_name + '</span></h4>';
+                            popup_title += '<span>' + marker.zeps.station.full_name + '</span></h4>';
 
-                            popup += '<p class="station-popup-subtitle">';
+                            var popup_subtitle = '<p class="station-popup-subtitle">';
                             if (marker.zeps.station.is_portal)
                                 if (marker.zeps.is_intersection)
-                                    popup += '<strong>Portail et intersection</strong>';
+                                    popup_subtitle += '<strong>Portail et intersection</strong>';
                                 else
-                                    popup += '<strong>Portail de sortie</strong>';
+                                    popup_subtitle += '<strong>Portail de sortie</strong>';
                             else
-                                popup += '<strong>Intersection</strong>';
+                                popup_subtitle += '<strong>Intersection</strong>';
 
                             if (!marker.zeps.station.is_intersection)
-                                popup += ' (sans arrêt)';
+                                popup_subtitle += ' (sans arrêt)';
 
-                            popup += '</p><p class="station-popup-content">';
+                            popup_subtitle += '</p>'
 
-                            popup += '<strong>Coordonnées : </strong>' + marker.zeps.station.x + ' ; ' + marker.zeps.station.y + '<br />';
+                            var popup_content = '<p class="station-popup-content">';
+
+                            popup_content += '<strong>Coordonnées : </strong>' + marker.zeps.station.x + ' ; ' + marker.zeps.station.y + '<br />';
                             if (NetworkMap.dynmap_root && (NetworkMap.dynmap_map_overworld || NetworkMap.dynmap_map_nether))
                             {
-                                popup += '<strong>Voir sur la Dynmap : </strong>';
+                                popup_content += '<strong>Voir sur la Dynmap : </strong>';
 
                                 var links = [];
                                 if (NetworkMap.dynmap_map_overworld)
@@ -1090,12 +1094,65 @@
                                 if (NetworkMap.dynmap_map_nether)
                                     links.push('<a href="' + NetworkMap.dynmap_root + '/' + '?worldname=' + NetworkMap.dynmap_map_nether + '&mapname=' + NetworkMap.dynmap_map_type + '&x=' + marker.zeps.station.x + '&y=64&z=' + marker.zeps.station.y + '&zoom=3" target="_blank">nether</a>');
 
-                                popup += links.join(', ');
+                                popup_content += links.join(', ');
                             }
 
-                            popup += '</p>';
+                            popup_content += '</p>';
 
-                            marker.bindPopup(popup);
+                            if (NetworkMap.elem_form_from_id || NetworkMap.elem_form_to_id)
+                            {
+                                var fields = {
+                                    'from': [
+                                        $(document.getElementById(NetworkMap.elem_form_from_id)),
+                                        $(document.getElementById(NetworkMap.elem_form_from_code_id))
+                                    ],
+                                    'to': [
+                                        $(document.getElementById(NetworkMap.elem_form_to_id)),
+                                        $(document.getElementById(NetworkMap.elem_form_to_code_id))
+                                    ]
+                                };
+
+                                function put_data_to_field(field, $button_elem)
+                                {
+                                    console.log($button_elem, field, fields, fields[field]);
+
+                                    fields[field][0].val($button_elem.attr('data-station-full-name'));
+                                    fields[field][1].val($button_elem.attr('data-station-code-name'));
+
+                                    // TODO close popup
+                                }
+
+                                var $popup_list_action_departure = $('<li class="station-popup-link-set-departure" '
+                                            + 'data-station-code-name="' + marker.zeps.station.code_name + '" '
+                                            + 'data-station-full-name="' + marker.zeps.station.full_name + '">'
+                                            + '<span class="fa fa-plane fa-lg" aria-hidden="true"></span>'
+                                            + 'Partir d\'ici'
+                                            + '</li>').on('click', function() {
+                                                put_data_to_field('from', $(this));
+                                            });
+
+                                var $popup_list_action_arrival = $('<li class="station-popup-link-set-arrival" '
+                                            + 'data-station-code-name="' + marker.zeps.station.code_name + '" '
+                                            + 'data-station-full-name="' + marker.zeps.station.full_name + '">'
+                                            + '<span class="fa fa-plane fa-lg fa-rotate-90" aria-hidden="true"></span>'
+                                            + 'Arriver ici'
+                                            + '</li>').on('click', function() {
+                                                put_data_to_field('to', $(this));
+                                            });
+
+                                var $popup_list_actions = $('<ul class="station-popup-actions" />')
+                                        .append($popup_list_action_departure)
+                                        .append($popup_list_action_arrival);
+                            }
+
+
+                            var $popup = $('<div />')
+                                    .append(popup_title)
+                                    .append(popup_subtitle)
+                                    .append(popup_content)
+                                    .append($popup_list_actions);
+
+                            marker.bindPopup($popup[0]);
                         });
                     });
 
@@ -1132,8 +1189,16 @@
                         NetworkMap._update_location_from_hash();
 
                         L
-                            .easyButton('fa fa-link', NetworkMap._encode_location_in_hash, 'Lien permanent')
-                            .addTo(NetworkMap.map);
+                            .easyButton({
+                                id:'permanent-link-button',
+                                position: NetworkMap.buttons_location,
+                                states: [{
+                                    stateName: 'default',
+                                    onClick: NetworkMap._encode_location_in_hash,
+                                    title: 'Lien permanent',
+                                    icon: 'fa fa-link',
+                                }],
+                            }).addTo(NetworkMap.map);
                     }
 
 

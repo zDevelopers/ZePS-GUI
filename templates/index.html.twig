@@ -41,6 +41,11 @@
             NetworkMap.main_stations      = '{{ main_stations|join(',') }}'.split(',');
             NetworkMap.map_container_id   = 'network_map';
 
+            NetworkMap.elem_form_from_id      = 'from';
+            NetworkMap.elem_form_from_code_id = 'from_code_name';
+            NetworkMap.elem_form_to_id        = 'to';
+            NetworkMap.elem_form_to_code_id   = 'to_code_name';
+
             NetworkMap.missing_stations   = '{{ path('zeps.missing') }}';
 
             NetworkMap.permanent_url_with_anchor = true;
@@ -52,9 +57,40 @@
             NetworkMap.init($('#still_nothing_loader'));
         });
     </script>
+
+    <script type="text/javascript">
+        routes = {
+            'get_players': '{{ path('zeps.api.logged_in_players', {'world_names': app.config.overworld_and_nether_worlds|join(',')}) }}',
+            'get_nearest': '{{ path('zeps.api.nearest_station', {'name': 'playerNamePlaceholder'}) }}',
+            'get_head': '{{ path('zeps.player_head', {'name': 'playerNamePlaceholder'}) }}',
+            'get_length': '{{ path('zeps.api.route_length', {'from_id': 'from_id_placeholder', 'to_id': 'to_id_placeholder', 'official': 'official_placeholder', 'accessible': 'accessible_placeholder'}) }}',
+            'public_search_results': '{{ path('zeps.search_results', {'from': 'from_placeholer', 'to': 'to_placeholder', 'options': 'options_placeholder'}) }}'
+        };
+
+        nether_world = '{{ app.config.world_name_nether }}';
+    </script>
+
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/geolocation.js"></script>
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/invert_stations.js"></script>
 {% endblock %}
 
 {% block content %}
+    <aside class="home-search-form">
+        <form>
+            <div>
+                <input type="text" name="from" id="from" placeholder="Point de départ" autocomplete="off" tabindex="10" />
+                <input type="hidden" name="from_code_name" id="from_code_name" />
+                <button class="search-over-button" id="open-geolocation-icon" title="Me géolocaliser"></button>
+            </div>
+            <div>
+                <input type="text" name="to" id="to" placeholder="Destination" autocomplete="off" tabindex="20" />
+                <input type="hidden" name="to_code_name" id="to_code_name" />
+                <button class="search-over-button" type="submit" title="Rechercher l'itinéraire" tabindex="30">
+                    <span class="fa fa-arrow-right" aria-hidden="true"></span>
+                </button>
+            </div>
+        </form>
+    </aside>
     <section id="network_map" class="network-map section-fullscreen">
         {% if error != 'unreachable' %}
             <div class="network_map_loader">
@@ -65,4 +101,51 @@
             </div>
         {% endif %}
     </section>
+
+    <div class="modal" tabindex="-1" role="dialog" id="geo-geolocation-modal">
+        <div class="modal-background modal-close-handler"></div>
+        <div class="modal-content">
+            <div class="card">
+                <header class="card-header">
+                    <p class="card-header-title" id="geolocation-modal-title">
+                        Chargement...
+                    </p>
+                </header>
+                <div class="card-content">
+                    <div id="geolocation-modal-loading" class="geolocation-modal-main-text">
+                        <img src="{{ app.request.basePath }}/img/loading.gif" alt="Chargement en cours, patientez une seconde..." />
+                    </div>
+
+                    <div id="geolocation-modal-selector" class="geolocation-modal-main-selector">
+                        <div id="geolocation-modal-selector-list" class="columns is-multiline is-mobile"></div>
+                    </div>
+
+                    <div id="geolocation-modal-error-nether-empty" class="geolocation-modal-main-text">
+                        <p>
+                            <strong>Il n'y a personne dans un monde survie.</strong><br />
+                            Allez au préalable dans l'un d'entre eux puis <a href="#" class="geolocation-modal-retry">réessayez</a>.
+                        </p>
+                    </div>
+
+                    <div id="geolocation-modal-error-cannot-retrieve" class="geolocation-modal-main-text">
+                        <p>
+                            <strong>Impossible de récupérer la station.</strong><br />
+                            Le serveur a retourné une erreur.
+                        </p>
+                        <p class="text-muted">
+                            Erreur <span id="geolocation-modal-error-cannot-retrieve-error-id"></span> : «&nbsp;<span id="geolocation-modal-error-cannot-retrieve-error-message"></span>&nbsp;»
+                        </p>
+                    </div>
+
+                    <p id="geolocation-modal-footer-message">
+                        <a href="#" class="geolocation-modal-retry" title="Cliquez pour réessayer">Pas dans la liste ?</a> Vérifiez que vous êtes dans un monde survie (et hors de l'End).
+                    </p>
+                </div>
+                <footer class="card-footer">
+                    <a class="card-footer-item geolocation-modal-retry" disabled>Actualiser la liste des connectés</a>
+                </footer>
+            </div>
+        </div>
+        <button class="modal-close"></button>
+    </div>
 {% endblock %}

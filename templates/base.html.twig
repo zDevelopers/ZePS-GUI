@@ -17,42 +17,11 @@
 
         <link href="{{ app.request.basePath }}/css/site.css" rel="stylesheet">
 
-        {% include 'includes/search_box_css.html.twig' %}
-
         {% block stylesheets %}{% endblock %}
     </head>
 
     <body>
-        <section class="hero is-primary is-bold">
-            <div class="hero-body">
-                <div class="container">
-                    <div class="columns">
-                        <div class="column">
-                            {% block block_titles %}
-                                <h1 class="title">
-                                    {% block title %}<span class="zeps-logo">Z<span>é</span>PS</span>{% endblock %}
-                                </h1>
-                                <h2 class="subtitle">
-                                    {% block subtitle %}{% endblock %}
-                                </h2>
-                            {% endblock %}
-                        </div>
-                        <div class="column is-three-quarters has-text-right">
-                            {% if error != 'unreachable' %}
-                                {% include 'includes/search_box.html.twig' with
-                                    {
-                                        'stations': stations,
-                                        'from': from is defined ? from : false,
-                                        'to': to is defined ? to : false,
-                                        'official' : options is defined and options.official is defined ? options.official : false,
-                                        'accessible': options is defined and options.accessible is defined ? options.accessible : false
-                                    }
-                                %}
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <section>
             {% if error == 'unreachable' %}
                 <div class="alert alert-danger">
                     <strong>L'API de recherche est injoignable.</strong>
@@ -93,8 +62,6 @@
                 });
             });
         </script>
-
-        {% include 'includes/search_box_js.html.twig' %}
 
         {% block javascripts %}{% endblock %}
     </body>

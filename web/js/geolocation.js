@@ -6,7 +6,7 @@ $(function ()
 
     // Non-Javascript graceful degradation
     $('#starting-point-placeholder').after('<option value="">Me localiser...</option>');
-    $('#open-geolocation-icon span.fa').removeClass("fa-globe").addClass("fa-location-arrow");
+    $('#open-geolocation-icon').append('<span class="fa fa-location-arrow" aria-hidden="true"></span>');
     $('.cliquable-icon').removeClass("cliquable-icon-nojs");
 
     var $geolocation_modal_selector = $('#geolocation-modal-selector');
@@ -21,13 +21,14 @@ $(function ()
     var $geolocation_modal_selector_list = $('#geolocation-modal-selector-list');
     var $geolocation_modal_button        = $('#geolocation-modal-button');
 
-    var $from_select          = $('#from');
+    var $from_input           = $('#from');
+    var $from_input_code      = $('#from_code_name');
     var $from_overworld_field = $('#from_overworld');
 
 
     $('#open-geolocation-icon, .geolocation-modal-retry').click(open_geolocation_dialog);
 
-    $from_select.on('change', function () {
+    $from_input.on('change', function () {
         if (this.value == "")
             open_geolocation_dialog();
         else
@@ -36,8 +37,10 @@ $(function ()
 
     $geolocation_modal_button.on('click', retrieve_nearest_station);
 
-    function open_geolocation_dialog()
+    function open_geolocation_dialog(e)
     {
+        e.preventDefault();
+
         // First the modal is shown (with a loading animation)
         $geolocation_modal_error_nether_empty.hide();
         $geolocation_modal_error_cannot_retrieve.hide();
@@ -82,7 +85,6 @@ $(function ()
                 $geolocation_modal_button.attr('disabled', false);
 
                 $('.geolocation-modal-selector-list-item').on('click.zeps.geolocation_list', function() {
-                    console.log($(this));
                     retrieve_nearest_station($(this).attr('data-player-name'));
                 });
             }
@@ -102,7 +104,8 @@ $(function ()
 
         $.getJSON(routes.get_nearest.replace('playerNamePlaceholder', player_name), function (result)
         {
-            $from_select.val(result.nearest_station.code_name);
+            $from_input.val(result.nearest_station.full_name);
+            $from_input_code.val(result.nearest_station.code_name);
 
             if (result.from_overworld)
                 $from_overworld_field.val('true');
