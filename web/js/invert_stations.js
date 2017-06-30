@@ -2,24 +2,31 @@
 
 $(function ()
 {
-    var $from_select = $('#from');
-    var $to_select   = $('#to');
+    var $from_input = $('#from');
+    var $from_code  = $('#from_code_name');
+    var $to_input   = $('#to');
+    var $to_code    = $('#to_code_name');
 
-    $('#invert-from-to').on('click', function () {
-        var from_value = $from_select.val();
-        var to_value   = $to_select.val();
+    $('#invert-from-to').on('click', function (e) {
+        var from_value = $from_input.val();
+        var to_value   = $to_input.val();
 
-        console.log(from_value, to_value);
-
-        if (from_value != "" && to_value != "")
+        if (from_value != "" || to_value != "")
         {
-            $from_select.val(to_value);
-            $to_select.val(from_value);
+            var from_code = $from_code.val();
+
+            $from_input.val(to_value);
+            $to_input.val(from_value);
+
+            $from_code.val($to_code.val());
+            $to_code.val(from_code);
 
             var $spinner = $(this).find('span.fa');
 
-            $spinner.addClass('spin-effect');
-            setTimeout(function() { $spinner.removeClass('spin-effect'); }, 300);
+            $spinner.addClass('spin-effect-90');
+            setTimeout(function() { $spinner.removeClass('spin-effect-90'); }, 300);
         }
+
+        e.preventDefault();
     });
 });

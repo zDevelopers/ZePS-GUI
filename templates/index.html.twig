@@ -106,8 +106,13 @@
                 <input type="hidden" name="to_code_name" id="to_code_name" />
                 <button class="search-over-button" type="submit" title="Rechercher l'itinéraire" tabindex="30">
                     <span class="fa fa-arrow-right" aria-hidden="true"></span>
+                    <span class="sr-only">Rechercher l'itinéraire</span>
                 </button>
             </div>
+            <button class="invert-from-to" id="invert-from-to" title="Inverser le point de départ et la destination">
+                <span class="fa fa-exchange fa-rotate-90" aria-hidden="true"></span>
+                <span class="sr-only">Inverser le point de départ et la destination</span>
+            </button>
         </form>
     </aside>
     <section id="network_map" class="network-map section-fullscreen">

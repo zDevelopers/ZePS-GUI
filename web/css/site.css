@@ -202,6 +202,12 @@ aside.home-search-form {
     background: white;
 }
 
+/* Fix for Firefox dotted inner border on pressed buttons */
+/* TODO fix for other browsers */
+aside.home-search-form button::-moz-focus-inner {
+    border: none;
+}
+
 aside.home-search-form header {
     display: flex;
     padding: .5em;
@@ -291,6 +297,37 @@ aside.home-search-form form button[type="submit"].search-over-button:hover {
     color: #193c09;
 }
 
+aside.home-search-form form button.invert-from-to {
+    position: absolute;
+    right: 52px;
+    top: 70px;
+
+    background: white;
+    border: solid 1px #ddd;
+    border-radius: 100%;
+
+    width: 2.5em;
+    height: 2.5em;
+
+    color: #666;
+
+    cursor: pointer;
+}
+
+aside.home-search-form form button.invert-from-to:hover {
+    background-color: #eee;
+}
+
+aside.home-search-form form button.invert-from-to:active {
+    outline: none;
+}
+
+aside.home-search-form form button.invert-from-to span.fa {
+    position: relative;
+    top: 2px;
+    left: 1px;
+}
+
 @media screen and (max-width: 600px) {
     aside.home-search-form {
         width: calc(100% - 1.6em);
@@ -301,12 +338,25 @@ aside.home-search-form form button[type="submit"].search-over-button:hover {
     animation: spin .3s 1 cubic-bezier(.46,.03,.52,.96);
 }
 
+.spin-effect-90 {
+    animation: spin-90 .3s 1 cubic-bezier(.46,.03,.52,.96);
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);
     }
     100% {
         transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-90 {
+    0% {
+        transform: rotate(90deg);
+    }
+    100% {
+        transform: rotate(450deg);
     }
 }
 
