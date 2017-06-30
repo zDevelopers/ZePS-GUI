@@ -77,6 +77,25 @@
 {% block content %}
     <aside class="home-search-form">
         <form>
+            <header>
+                <h1>Z<em>é</em>PS</h1>
+                <ul>
+                    <li title="Stations officielles uniquement">
+                        <input type="checkbox" name="options_official" id="options_official" />
+                        <label for="options_official">
+                            <span class="fa fa-check fa-lg"></span>
+                            <span class="sr-only">Stations officielles uniquement</span>
+                        </label>
+                    </li>
+                    <li title="Stations sécurisées uniquement">
+                        <input type="checkbox" name="options_secure" id="options_secure" />
+                        <label for="options_secure">
+                            <span class="fa fa-lock fa-lg"></span>
+                            <span class="sr-only">Stations sécurisées uniquement</span>
+                        </label>
+                    </li>
+                </ul>
+            </header>
             <div>
                 <input type="text" name="from" id="from" placeholder="Point de départ" autocomplete="off" tabindex="10" />
                 <input type="hidden" name="from_code_name" id="from_code_name" />

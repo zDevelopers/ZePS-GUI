@@ -1119,7 +1119,7 @@
                                     fields[field][0].val($button_elem.attr('data-station-full-name'));
                                     fields[field][1].val($button_elem.attr('data-station-code-name'));
 
-                                    // TODO close popup
+                                    NetworkMap.map.closePopup();
                                 }
 
                                 var $popup_list_action_departure = $('<li class="station-popup-link-set-departure" '
@@ -1153,6 +1153,16 @@
                                     .append($popup_list_actions);
 
                             marker.bindPopup($popup[0]);
+
+                            marker.on('click', function(e)
+                            {
+                                if (e.originalEvent.ctrlKey)
+                                {
+                                    console.log(e);
+                                    e.originalEvent.stopPropagation();
+                                    alert('cc');
+                                }
+                            });
                         });
                     });
 
