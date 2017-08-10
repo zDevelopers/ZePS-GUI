@@ -19,6 +19,15 @@ class RouteSearchController
             if (empty($from) || empty($to))
                 return $app->redirect($app['url_generator']->generate('zeps.homepage'));
 
+            $from_station = $app['zeps.routing']->get_station_by_codename($from);
+            $to_station   = $app['zeps.routing']->get_station_by_codename($to);
+
+            if ($from_station == null)
+                $from_station = $app['zeps.routing']->get_station_by_displayname($from);
+
+            if ($to_station == null)
+                $to_station = $app['zeps.routing']->get_station_by_displayname($to);
+
             $options = '';
             if ($app['request']->query->has('official'))
                 $options .= 'official-';
@@ -32,8 +41,8 @@ class RouteSearchController
             $options = trim($options, '-');
 
             return $app->redirect($app['url_generator']->generate('zeps.search_results', array(
-                'from'    => $from,
-                'to'      => $to,
+                'from'    => $from_station != null ? $from_station->getName() : $from,
+                'to'      => $to_station != null ? $to_station->getName() : $to,
                 'options' => $options
             )), Response::HTTP_MOVED_PERMANENTLY);
         }

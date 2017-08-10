@@ -45,6 +45,17 @@ $app['config'] = array
         'json_file' => __DIR__ . '/../missing_stations.json'
     ),
 
+    'autocompletion' => array(
+        'max_results' => 10,
+        'weights' => array(
+            'beginning_station_name' => 50,
+            'beginning_word' => 10,
+            'in_word' => 5,
+            'in_capitalized_word' => 2,
+            'multiple_occurrences_per_occurrence' => 5
+        )
+    ),
+
     'twig' => array(
         'cache' => __DIR__ . '/../cache/twig'          // The Twig's cache folder
     ),
@@ -203,6 +214,10 @@ $app
 $app
     ->get('/api/stations_network_colors', 'ZePS\\Controllers\\NetworkMapController::network_colors_json')
     ->bind('zeps.api.stations_network_colors');
+
+$app
+    ->get('/api/autocompletion', 'ZePS\\Controllers\\APIController::autocomplete')
+    ->bind('zeps.api.autocomplete');
 
 
 // Players heads

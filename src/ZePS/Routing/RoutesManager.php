@@ -136,6 +136,24 @@ class RoutesManager extends NetworkManager
     }
 
     /**
+     * Retrieves a station from its display name. The search is not case sensitive.
+     *
+     * @param string $display_name The station's display name
+     * @return Station The station, or `null` if not found.
+     */
+    public function get_station_by_displayname($display_name)
+    {
+        $stations = $this->get_netherrail_stations()['stations'];
+        $display_name = strtolower(trim($display_name));
+
+        foreach ($stations as $station)
+            if (strtolower(trim($station->getDisplayName())) == $display_name)
+                return $station;
+
+        return null;
+    }
+
+    /**
      * Retrieves a route.
      *
      * @param int  $from       The departure station ID.

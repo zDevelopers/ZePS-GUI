@@ -29,7 +29,7 @@
 
 /* Layout styles */
 
-body {
+body, .container-fullscreen {
     padding: 0;
     display: flex;
     flex-flow: column;
@@ -40,7 +40,7 @@ body > section.hero {
     flex: 0 1 auto;
 }
 
-body > section.section-fullscreen {
+body > section.section-fullscreen, body > .container-fullscreen > section.section-fullscreen {
     flex: 1 1 auto;
 }
 
@@ -188,6 +188,10 @@ footer.footer, footer.footer a {
 
 /* Search form on index */
 
+.container-fullscreen {
+    position: relative;
+}
+
 aside.home-search-form {
     position: absolute;
     top: .8em;
@@ -268,7 +272,7 @@ aside.home-search-form form input[type="text"] {
     border: none;
     padding: .8em;
 }
-aside.home-search-form form input[type="text"]:not(:last-child) {
+aside.home-search-form form input[type="text"]:not(:last-of-type) {
     border-bottom: 1px solid #ddd;
 }
 
@@ -326,6 +330,29 @@ aside.home-search-form form button.invert-from-to span.fa {
     position: relative;
     top: 2px;
     left: 1px;
+}
+
+#home-search-form-autocomplete:empty {
+    display: none;
+}
+
+#home-search-form-autocomplete li {
+    padding: .4em;
+    color: #555;
+    cursor: pointer;
+}
+#home-search-form-autocomplete li span.fa {
+    position: relative;
+    top: 5px;
+
+    margin-right: .3em;
+}
+#home-search-form-autocomplete li:hover, #home-search-form-autocomplete li.selected {
+    background: #eee;
+}
+
+#home-search-form-autocomplete li span.highlight {
+    color: black;
 }
 
 @media screen and (max-width: 600px) {

@@ -63,6 +63,96 @@ class APIController
     }
 
 
+    public function autocomplete(Application $app)
+    {
+        $original_input = $app['request']->query->get('input');
+        $input = strtolower(trim($original_input));
+
+        if (empty($input))
+        {
+            return $app->json(array('items' => array(), 'input' => ''));
+        }
+
+        $matchingStations = array();
+        $weights = $app['config']['autocompletion']['weights'];
+
+        foreach ($app['zeps.routing']->get_netherrail_stations()['stations'] as $station)
+        {
+            $station_name = trim($station->getDisplayName());
+            $station_name_lower = strtolower($station_name);
+            $strpos_input = strpos($station_name_lower, $input);
+
+            if ($strpos_input > -1)
+            {
+                $weight = 0;
+
+                if ($strpos_input === 0)
+                {
+                    $weight = $weights['beginning_station_name'];
+                }
+                else
+                {
+                    $words_in_station_name = preg_split('/[ ,\-_]/', $station_name);
+
+                    foreach ($words_in_station_name as $word)
+                    {
+                        $strpos_input_in_word = strpos(strtolower($word), $input);
+                        if ($strpos_input_in_word === 0)
+                        {
+                            $weight += $weights['beginning_word'];
+                        }
+                        else if ($strpos_input_in_word > -1)
+                        {
+                            $weight += $weights['in_word'];
+                        }
+
+                        // If the matched word starts with an uppercase character,
+                        // it's probably more important.
+                        $chr = mb_substr ($word, 0, 1, "UTF-8");
+                        if (mb_strtolower($chr, "UTF-8") != $chr)
+                        {
+                            $weight += $weights['in_capitalized_word'];
+                        }
+                    }
+                }
+
+                $input_count_in_name = substr_count($station_name_lower, $input);
+                if ($input_count_in_name >= 2)
+                {
+                    $weight += $weights['multiple_occurrences_per_occurrence'] * $input_count_in_name;
+                }
+
+                $matchingStations[] = array(
+                    'display_name' => $station->getDisplayName(),
+                    'weight' => $weight
+                );
+            }
+        }
+
+        $sortMatches = array();
+
+        foreach($matchingStations as $match)
+        {
+            foreach($match as $key => $value)
+            {
+                if(!isset($sortMatches[$key]))
+                {
+                    $sortMatches[$key] = array();
+                }
+
+                $sortMatches[$key][] = $value;
+            }
+        }
+
+        array_multisort($sortMatches['weight'], SORT_DESC, $matchingStations);
+
+        return $app->json(array(
+            'items' => array_slice($matchingStations, 0, $app['config']['autocompletion']['max_results']),
+            'input' => $original_input
+        ));
+    }
+
+
     private function code2error($error_code)
     {
         switch ($error_code)
