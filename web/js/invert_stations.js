@@ -13,13 +13,8 @@ $(function ()
 
         if (from_value != "" || to_value != "")
         {
-            var from_code = $from_code.val();
-
             $from_input.val(to_value);
             $to_input.val(from_value);
-
-            $from_code.val($to_code.val());
-            $to_code.val(from_code);
 
             var $spinner = $(this).find('span.fa');
 

@@ -270,10 +270,8 @@ aside.home-search-form form input[type="text"] {
     display: block;
     width: 100%;
     border: none;
-    padding: .8em;
-}
-aside.home-search-form form input[type="text"]:not(:last-of-type) {
     border-bottom: 1px solid #ddd;
+    padding: .8em;
 }
 
 aside.home-search-form form div {

@@ -21,9 +21,7 @@
         // to links the form and the map, e.g. by adding buttons in the popups
         // to select a station as departure or destination.
         elem_form_from_id: undefined,
-        elem_form_from_code_id: undefined,
         elem_form_to_id: undefined,
-        elem_form_to_code_id: undefined,
 
         // The Dynmap base URL, without trailing slash. If undefined, links to the dynmap will not be displayed.
         // Followed by the config
@@ -1104,26 +1102,20 @@
                                 var fields = {
                                     'from': [
                                         $(document.getElementById(NetworkMap.elem_form_from_id)),
-                                        $(document.getElementById(NetworkMap.elem_form_from_code_id))
                                     ],
                                     'to': [
                                         $(document.getElementById(NetworkMap.elem_form_to_id)),
-                                        $(document.getElementById(NetworkMap.elem_form_to_code_id))
                                     ]
                                 };
 
                                 function put_data_to_field(field, $button_elem)
                                 {
-                                    console.log($button_elem, field, fields, fields[field]);
-
                                     fields[field][0].val($button_elem.attr('data-station-full-name'));
-                                    fields[field][1].val($button_elem.attr('data-station-code-name'));
 
                                     NetworkMap.map.closePopup();
                                 }
 
                                 var $popup_list_action_departure = $('<li class="station-popup-link-set-departure" '
-                                            + 'data-station-code-name="' + marker.zeps.station.code_name + '" '
                                             + 'data-station-full-name="' + marker.zeps.station.full_name + '">'
                                             + '<span class="fa fa-plane fa-lg" aria-hidden="true"></span>'
                                             + 'Partir d\'ici'
@@ -1132,7 +1124,6 @@
                                             });
 
                                 var $popup_list_action_arrival = $('<li class="station-popup-link-set-arrival" '
-                                            + 'data-station-code-name="' + marker.zeps.station.code_name + '" '
                                             + 'data-station-full-name="' + marker.zeps.station.full_name + '">'
                                             + '<span class="fa fa-plane fa-lg fa-rotate-90" aria-hidden="true"></span>'
                                             + 'Arriver ici'
