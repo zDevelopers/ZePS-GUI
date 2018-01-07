@@ -1,8 +1,10 @@
 'use strict';
 
-$(function()
+function check_quickest_path(route_infos, alternative_starts)
 {
     var $quickest_path = $('#quickest-path');
+
+    $quickest_path.hide();
 
     var $quickest_path_link       = $('#quickest-path-link');
     var $quickest_path_station    = $('#quickest-path-station');
@@ -65,5 +67,22 @@ $(function()
         $quickest_path_saved_time.text(secondsToString(saved_time));
 
         $quickest_path.show();
+    });
+}
+
+$(function()
+{
+    $('#home-search-form-results .results-details ul.intermediate-stations-list').hide();
+
+    $('.intermediate-stations').on('click', function()
+    {
+        $(this).parent().parent().find('.intermediate-stations-list').slideToggle('fast');
+        $(this).find('.fa').toggleClass('fa-caret-down').toggleClass('fa-caret-up');
+    });
+
+    console.log('pomf');
+    $('.results-alternatives .alternatives-handle').on('click', function () {
+        $(this).siblings('.results-alternatives-details').slideToggle('fast');
+        $(this).find('.fa').toggleClass('fa-caret-down').toggleClass('fa-caret-right');
     });
 });

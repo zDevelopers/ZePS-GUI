@@ -81,10 +81,10 @@ class RouteSearchController
         $nether_portal = array();
 
         $directions_translations = array(
-            'north' => 'nord',
-            'south' => 'sud',
-            'east' => 'est',
-            'west' => 'ouest'
+            'north' => 'le nord',
+            'south' => 'le sud',
+            'east' => 'l\'est',
+            'west' => 'l\'ouest'
         );
 
         $stations = $app['zeps.routing']->get_netherrail_stations($debug);
@@ -161,7 +161,7 @@ class RouteSearchController
             }
         }
 
-        return new Response($app['twig']->render('search.html.twig', array(
+        return new Response($app['twig']->render('index.html.twig', array(
             'valid'       => $valid,
             'error'       => $error,
             'raw_error'   => $raw_error,

@@ -1,0 +1,182 @@
+<div class="results-overview">
+    <div class="columns is-mobile">
+        <div class="column is-half">
+            <h3>Durée</h3>
+            <p>{{ route.travelTime|time_format(true, true) }}</p>
+        </div>
+        <div class="column is-half">
+            <h3>Distance</h3>
+            <p>{{ route.length|number_format }} bloc{% if route.length > 1 %}s{% endif %}</p>
+        </div>
+    </div>
+</div>
+
+<div class="results-alternatives" id="quickest-path">
+    <div class="columns alternatives-handle">
+        <div class="column is-10">
+            <h4>Itinéraires alternatifs</h4>
+        </div>
+        <div class="column is-2">
+            <span class="fa fa-caret-right fa-lg"></span>
+        </div>
+    </div>
+    <ul class="results-alternatives-details">
+        <li>
+            <h5><a href="#">Trajet direct sans téléportation</a></h5>
+            <p><a href="">2 minutes et demi de plus</a></p>
+        </li>
+        <li>
+            <h5><a href="#">Trajet à pieds</a></h5>
+            <p><a href="">13 minutes de plus</a></p>
+        </li>
+    </ul>
+</div>
+
+<ul class="results-details timeline">
+
+    {% if through_spawn %}
+        <li class="timeline-item">
+            <div class="timeline-content">
+                <p class="heading">{{ macros.station(attribute(stations.stations, from)) }}</p>
+                <p>
+                    Rejoignez <strong>la capitale</strong> ({{ macros.station(attribute(stations.stations, spawn_station_id)) }}). Vous pouvez utiliser <code>/spawn</code>.
+
+                    {% if from != spawn_station_id %}
+                        <br />
+                        Ensuite, rendez-vous à <strong>{{ macros.station(attribute(stations.stations, from)) }}</strong> via le portail de la capitale {% if from != to %}et entrez dans le Nether{% endif %}. Les portails sont au sous-sol de la mairie.
+                    {% elseif from != to %}
+                        <br />
+                        Ensuite, entrez dans le Nether. Le portail est situé au sous-sol de la mairie.
+                        {# TODO These tips should not be hardcoded. #}
+                    {% endif %}
+                </p>
+            </div>
+        </li>
+    {% endif %}
+
+    {% if from != to %}
+
+        {%  if from_overworld and not through_spawn %}
+            <li class="timeline-item">
+                <div class="timeline-content">
+                    <p class="heading">{{ macros.station(attribute(stations.stations, from)) }} (surface)</p>
+                    <p>Rejoignez <strong>le Nether</strong>. Le portail est probablement situé vers ({{ nether_portal.x }}&nbsp;; {{ nether_portal.z }}).</p>
+                </div>
+            </li>
+        {% endif %}
+
+        {% for step in route.compactPath %}
+            <li class="timeline-item">
+                <div class="timeline-content">
+                    <p class="heading">
+                        {% if step.stationFrom.isVisible %}
+                            {{ macros.station(step.stationFrom) }}
+                        {% else %}
+                            Vers ({{ step.stationFrom.locationX }} ; {{ step.stationFrom.locationZ }})
+                        {% endif %}
+                    </p>
+                    <p>
+                        Dirigez-vous vers <strong>{{ attribute(directions_translations, step.direction) }}</strong>
+                        jusqu'à
+                        <strong>
+                            {%- if route.compactPath[loop.index0 + 1] -%}
+                                {{ macros.station(route.compactPath[loop.index0 + 1].stationFrom) }}
+                            {%- else -%}
+                                {{ macros.station(attribute(stations.stations, to)) }}
+                            {%- endif -%}
+                        </strong>
+                    </p>
+                    <p class="small-details">
+                        {%- spaceless -%}
+                            {{ step.length|number_format }} bloc{% if step.length > 1 %}s{% endif -%}
+                            {%- if step.steps|length >= 2 -%}
+                                &nbsp;&middot;&nbsp;
+                                <span class="intermediate-stations">
+                                    {% if step.steps|length == 2 -%}
+                                        Station intermédiaire
+                                    {%- else -%}
+                                        Stations intermédiaires
+                                    {%- endif %} <span class="fa fa-caret-down"></span></span>
+                            {%- endif -%}
+                        {%- endspaceless -%}
+                    </p>
+                    {%- if step.steps|length >= 2 -%}
+                        <ul class="intermediate-stations-list">
+                            {% for substep in step.steps %}
+                                {% if substep.station.id != step.stationFrom.id and substep.station.isVisible %}
+                                    <li>{{ macros.station(substep.station) }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    {%- endif -%}
+                </div>
+            </li>
+        {% endfor %}
+
+        <li class="timeline-item">
+            <div class="timeline-content">
+                <p class="heading">{{ macros.station(attribute(stations.stations, to)) }}</p>
+                <p>Vous voilà à votre destination.</p>
+            </div>
+        </li>
+
+    {% else %}
+        <li class="timeline-item">
+            <div class="timeline-content">
+                <p class="heading">{{ macros.station(attribute(stations.stations, to)) }}</p>
+                <p>Ne bougez pas. Vous êtes déjà à {{ macros.station(attribute(stations.stations, to)) }}.
+            </div>
+        </li>
+    {% endif %}
+
+
+{#
+    <li class="timeline-item">
+        <div class="timeline-content">
+            <p class="heading">Laputa</p>
+            <p>
+                Dirigez-vous vers le <strong>nord</strong>.
+            </p>
+        </div>
+    </li>
+    <li class="timeline-item">
+        <div class="timeline-content">
+            <p class="heading">Secteur Clem</p>
+            <p>
+                <strong>Tournez à droite</strong> : vous vous dirigez vers l'est.
+            </p>
+        </div>
+    </li>
+    <li class="timeline-item">
+        <div class="timeline-content">
+            <p class="heading">Melburne</p>
+            <p>
+                <strong>Tournez à gauche</strong> : vous vous dirigez vers le nord.<br />
+                À Cart Toon, continuez tout droit.
+            </p>
+            <p class="intermediate-stations">
+                Stations intermédiaires <span class="fa fa-caret-down"></span>
+            </p>
+        </div>
+    </li>
+    <li class="timeline-item">
+        <div class="timeline-content">
+            <p class="heading">Speranza Pristine</p>
+            <p>
+                <strong>Tournez à gauche</strong> : vous vous dirigez vers l'ouest.
+            </p>
+            <p class="intermediate-stations">
+                Stations intermédiaires <span class="fa fa-caret-down"></span>
+            </p>
+        </div>
+    </li>
+    <li class="timeline-item">
+        <div class="timeline-content">
+            <p class="heading">Maraya Toumismo</p>
+            <p>
+                Vous voilà à votre destination.
+            </p>
+        </div>
+    </li>
+    #}
+</ul>

@@ -134,43 +134,7 @@
             <h2>Itinéraire</h2>
 
             <table class="table table-bordered">
-                {% if through_spawn %}
-                    <tr>
-                        <td>
-                            <p class="route_main_consign">Rejoignez <strong>la capitale</strong> ({{ macros.station(attribute(stations.stations, spawn_station_id)) }}).</p>
-                            <p class="route_intermediate_stations">
-                                Vous pouvez utiliser <code>/spawn</code>.
-                            </p>
-                        </td>
-                    </tr>
-                    {% if from != spawn_station_id %}
-                        <tr>
-                            <td>
-                                <p class="route_main_consign">Rendez-vous à <strong>{{ macros.station(attribute(stations.stations, from)) }}</strong> via le portail de la capitale.</p>
-                                <p class="route_intermediate_stations">
-                                    Les portails sont situés au sous-sol de la mairie.
-                                </p>
-                            </td>
-                        </tr>
-                        {% if from != to %}
-                            <tr>
-                                <td>
-                                    <p class="route_main_consign">Entrez dans <strong>le Nether</strong>.</p>
-                                </td>
-                            </tr>
-                        {% endif %}
-                    {% elseif from != to %}
-                        <tr>
-                            <td>
-                                <p class="route_main_consign">Entrez dans <strong>le Nether</strong>.</p>
-                                <p class="route_intermediate_stations">
-                                    Le portails est situé au sous-sol de la mairie.
-                                </p>
-                            </td>
-                        </tr>
-                    {% endif %}
-                {% endif %}
-
+ 
                 {% if from != to %}
                     {%  if from_overworld and not through_spawn %}
                         <tr>

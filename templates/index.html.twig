@@ -55,7 +55,19 @@
             NetworkMap.dynmap_map_nether         = '{{ app.config.world_name_nether }}';
             NetworkMap.dynmap_map_type           = '{{ app.config.dynmap.map_type }}';
 
-            NetworkMap.init($('#still_nothing_loader'));
+            {% if route %}
+            NetworkMap.shading_default = 0.8;
+
+            NetworkMap.highlight_path([{% for step in route.path %}'{{ step.station.name}}',{% endfor %}], 0);
+            NetworkMap.highlight_path_start('{{ route.firstStation.name }}');
+            NetworkMap.highlight_path_end('{{ route.lastStation.name }}');
+            {% endif %}
+
+            NetworkMap.init($('#still_nothing_loader'), function () {
+                {% if route %}
+                NetworkMap.center_on_highlighted_path(0);
+                {% endif %}
+            });
         });
     </script>
 
@@ -77,49 +89,59 @@
     <script type="text/javascript" src="{{ app.request.basePath }}/js/jquery/jquery.easy-autocomplete.js"></script>
 
     <script type="text/javascript">
-        $('#from, #to').easyAutocomplete({
-            url: function(input) {
-                return '{{ path('zeps.api.autocomplete') }}?input=' + input;
-            },
-            getValue: 'display_name',
-            listLocation: 'items',
-            matchResponseProperty: 'input',
+        $(function()
+        {
+            // Avoids double tooltop but keeps titles attributes for
+            // assistive engines
+            $('.home-search-form header > ul > li').attr('title', '');
 
-            externalContainer: 'home-search-form-autocomplete',
+            // Setups autocompletion
+            $('#from, #to').easyAutocomplete({
+                url: function(input) {
+                    return '{{ path('zeps.api.autocomplete') }}?input=' + input;
+                },
+                getValue: 'display_name',
+                listLocation: 'items',
+                matchResponseProperty: 'input',
 
-            list: {
-                match: {
-                    enabled: true
+                externalContainer: 'home-search-form-autocomplete',
+
+                list: {
+                    match: {
+                        enabled: true
+                    }
+                },
+
+                template: {
+                    type: "custom",
+                    method: function(label) {
+                        return '<span class="fa fa-map-signs" aria-hidden="true"></span> ' + label;
+                    }
                 }
-            },
-
-            template: {
-                type: "custom",
-                method: function(label) {
-                    return '<span class="fa fa-map-signs" aria-hidden="true"></span> ' + label;
-                }
-            }
+            });
         });
     </script>
+
+    <script type="text/javascript" src="{{ app.request.basePath }}/js/routing_results.js"></script>
 {% endblock %}
 
 {% block content %}
     {% if not error or error != 'unreachable' %}
         <div class="container-fullscreen">
             <aside class="home-search-form">
-                <form>
+                <form action="{{ path('zeps.homepage') }}">
                     <header>
                         <h1>Z<em>é</em>PS</h1>
                         <ul>
-                            <li title="Stations officielles uniquement">
-                                <input type="checkbox" name="options_official" id="options_official" />
+                            <li title="Stations officielles uniquement" class="tooltip tooltip-bottom" data-tooltip="Stations officielles uniquement">
+                                <input type="checkbox" name="official" id="options_official" />
                                 <label for="options_official">
                                     <span class="fa fa-check fa-lg" aria-hidden="true"></span>
                                     <span class="sr-only">Stations officielles uniquement</span>
                                 </label>
                             </li>
-                            <li title="Stations sécurisées uniquement">
-                                <input type="checkbox" name="options_secure" id="options_secure" />
+                            <li title="Stations sécurisées uniquement" class="tooltip tooltip-bottom" data-tooltip="Stations sécurisées uniquement">
+                                <input type="checkbox" name="accessible" id="options_secure" />
                                 <label for="options_secure">
                                     <span class="fa fa-lock fa-lg" aria-hidden="true"></span>
                                     <span class="sr-only">Stations sécurisées uniquement</span>
@@ -128,11 +150,11 @@
                         </ul>
                     </header>
                     <div>
-                        <input type="text" name="from" id="from" placeholder="Point de départ" autocomplete="off" tabindex="10" />
+                        <input type="text" name="from" id="from" placeholder="Point de départ" autocomplete="off" tabindex="10" value="{{ attribute(stations.stations, from).displayName }}" />
                         <button class="search-over-button" id="open-geolocation-icon" title="Me géolocaliser" aria-haspopup="true"></button>
                     </div>
                     <div>
-                        <input type="text" name="to" id="to" placeholder="Destination" autocomplete="off" tabindex="20" />
+                        <input type="text" name="to" id="to" placeholder="Destination" autocomplete="off" tabindex="20" value="{{ attribute(stations.stations, to).displayName }}" />
                         <button class="search-over-button" type="submit" title="Rechercher l'itinéraire" tabindex="30">
                             <span class="fa fa-arrow-right" aria-hidden="true"></span>
                             <span class="sr-only">Rechercher l'itinéraire</span>
@@ -144,16 +166,14 @@
                     </button>
                 </form>
                 <div id="home-search-form-autocomplete"></div>
-                <!--
-                <ul id="home-search-form-autocomplete">
-                    <li data-station-full-name="Toast" data-station-code-name="toast-code">
-                        <span class="fa fa-map-signs"></span> <span class="highlight">Toa</span>st
-                    </li>
-                    <li data-station-full-name="Toarstr" data-station-code-name="toarstr-code">
-                        <span class="fa fa-map-signs"></span> <span class="highlight">Toa</span>rstr
-                    </li>
-                </ul>
-                -->
+                <div id="home-search-form-loading" style="display: none;">
+                    <div class="loading-dot"></div>
+                </div>
+                <div id="home-search-form-results">
+                    {%- if route -%}
+                        {% include 'includes/search_results.html.twig' with {'route': route, 'error': error} %}
+                    {%- endif -%}
+                </div>
             </aside>
 
             <section id="network_map" class="network-map section-fullscreen">

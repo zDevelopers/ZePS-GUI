@@ -44,6 +44,10 @@ body > section.section-fullscreen, body > .container-fullscreen > section.sectio
     flex: 1 1 auto;
 }
 
+.container-fullscreen {
+    background-color: #fcf7ed;
+}
+
 h3 {
     margin-bottom: 25px;
 }
@@ -151,6 +155,10 @@ footer.footer, footer.footer a {
 }
 .alert.alert-warning, .alert.alert-warning strong {
     background-color: #FF9000;
+    color: white;
+}
+.alert.alert-info, .alert.alert-info strong {
+    background-color: #0054FF;
     color: white;
 }
 
@@ -468,21 +476,180 @@ aside.home-search-form form button.invert-from-to span.fa {
 }
 
 
-/* Quickest path */
+/* Loading results */
 
-#quickest-path {
+#home-search-form-loading {
+    height: 230px;
+}
+
+#home-search-form-loading .loading-dot {
+    position: relative;
+    left: 50%;
+    top: 50%;
+
+    margin-left: -6px;
+    margin-top: -6px;
+
+    display: block;
+    border: solid 1px transparent;
+    border-radius: 100%;
+
+    width: 12px;
+    height: 12px;
+    background-color: #666;
+
+    animation: flash 2s infinite;
+}
+
+@keyframes flash {
+  0%   { opacity:   0; }
+  50%  { opacity: 100; }
+  100% { opacity:   0; }
+}
+
+
+/* Results */
+
+#home-search-form-results {
+    border-top: solid 1px #ddd;
+
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+}
+
+#home-search-form-results .results-overview {
+    border-bottom: solid 1px #ddd;
+}
+
+#home-search-form-results .results-overview .columns {
+    padding: .6em;
+    padding-left: .8em;
+    margin: 0;
+}
+
+#home-search-form-results .results-overview .column {
+    padding: 0;
+}
+
+#home-search-form-results .results-overview .column h3 {
+    margin-bottom: 0;
+
+    color: #666;
+    font-size: small;
+    font-variant: small-caps;
+
+    letter-spacing: .1em;
+}
+
+#home-search-form-results .results-overview .column p {
+    font-size: large;
+}
+
+
+.results-alternatives {
+    margin: 0;
+
+    padding: .6em 1.2em;
+
+    background-color: #184a97; /* 183f97 */
+    color: white;
+}
+.results-alternatives .columns {
+    margin-bottom: 0;
+}
+.results-alternatives .columns .column {
+    padding-bottom: 0;
+}
+.results-alternatives .columns .column:last-of-type {
+    text-align: right;
+    padding-right: 1em;
+}
+
+.results-alternatives h4 {
+    font-size: 1.05em;
+}
+.results-alternatives h4 span.fa {
+    padding-left: .4em;
+}
+.results-alternatives p {
+    font-size: .8em;
+}
+.results-alternatives a {
+    color: white;
+}
+.results-alternatives a.use-quickest-path {
+    font-size: 1.1em;
+}
+
+.results-alternatives .alternatives-handle {
+    cursor: pointer;
+}
+
+.results-alternatives ul.results-alternatives-details {
+    margin-top: .5em;
+    margin-bottom: .3em;
     display: none;
 }
-
-#quickest-path > p {
-    font-weight: bold;
+.results-alternatives ul.results-alternatives-details li {
+    padding-left: .8em;
 }
+.results-alternatives ul.results-alternatives-details li:not(:first-child) {
+    padding-top: .6em;
+}
+.results-alternatives ul.results-alternatives-details li:before {
+    content: '›';
+    float: left;
+    color: white;
+    position: relative;
+    left: -.85em;
+    transition: left .2s ease-in-out;
+}
+.results-alternatives ul.results-alternatives-details li:hover:before {
+    left: -.66em;
+}
+.results-alternatives ul.results-alternatives-details li h5 a {
+    position: relative;
+    left: -.3em;
+}
+
+
+#home-search-form-results .results-details .timeline-item {
+    padding-bottom: 1em;
+}
+
+#home-search-form-results .results-details p.small-details {
+    margin-top: .2em;
+    color: #888;
+    font-size: small;
+}
+
+#home-search-form-results .results-details p.small-details .intermediate-stations {
+    cursor: pointer;
+}
+#home-search-form-results .results-details p.small-details .intermediate-stations:hover {
+    color: #666;
+}
+#home-search-form-results .results-details p.small-details .intermediate-stations span.fa {
+    position: relative;
+    top: .2em;
+}
+
+#home-search-form-results .results-details ul.intermediate-stations-list {
+    margin-left: .5em;
+    padding-left: .4em;
+
+    border-left: solid 1px #ccc;
+
+    font-size: small;
+    color: #888;
+}
+
 
 
 /* Network map */
 
 .leaflet-container.network-map {
-    background-color: white;
+    background-color: #fcf7ed;
 }
 
 .network_map_loader {
@@ -511,7 +678,7 @@ aside.home-search-form form button.invert-from-to span.fa {
     transform: rotate(-38deg) translateY(-10px) translateX(-6px);
 
     font-size: 125%;
-    text-shadow: 3px 3px 3px whitesmoke, -3px -3px 3px whitesmoke
+    text-shadow: 3px 3px 3px #fcf7ed, -3px -3px 3px #fcf7ed;
 }
 
 .station-label.station-label-intersection {
@@ -688,20 +855,3 @@ blockquote.commit-details a:hover {
 .black_meme img {
     max-width: 60%;
 }
-
-
-/* Bootstrap select */
-
-/*
-.bootstrap-select {
-    width: 100% !important;
-}
-
-.station-selector-between {
-    width: 40px !important;
-}
-
-.station-selector {
-    width: 100% !important;
-}
-*/

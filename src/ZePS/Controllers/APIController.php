@@ -129,22 +129,25 @@ class APIController
             }
         }
 
-        $sortMatches = array();
-
-        foreach($matchingStations as $match)
+        if (!empty($matchingStations))
         {
-            foreach($match as $key => $value)
+            $sortMatches = array();
+
+            foreach($matchingStations as $match)
             {
-                if(!isset($sortMatches[$key]))
+                foreach($match as $key => $value)
                 {
-                    $sortMatches[$key] = array();
+                    if(!isset($sortMatches[$key]))
+                    {
+                        $sortMatches[$key] = array();
+                    }
+
+                    $sortMatches[$key][] = $value;
                 }
-
-                $sortMatches[$key][] = $value;
             }
-        }
 
-        array_multisort($sortMatches['weight'], SORT_DESC, $matchingStations);
+            array_multisort($sortMatches['weight'], SORT_DESC, $matchingStations);
+        }
 
         return $app->json(array(
             'items' => array_slice($matchingStations, 0, $app['config']['autocompletion']['max_results']),

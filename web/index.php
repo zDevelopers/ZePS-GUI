@@ -118,8 +118,8 @@ $app['twig']->addFilter(new Twig_SimpleFilter('number_format', function ($number
     return number_format($number, $decimals, $decimal_point, $thousands_separator);
 }, array('is_safe' => array('html'))));
 
-$app['twig']->addFilter(new Twig_SimpleFilter('time_format', function ($seconds, $with_seconds = true) {
-    return \ZePS\Misc\DateTimeManager::friendly_interval($seconds, $with_seconds);
+$app['twig']->addFilter(new Twig_SimpleFilter('time_format', function ($seconds, $with_seconds = true, $short = false) {
+    return \ZePS\Misc\DateTimeManager::friendly_interval($seconds, $with_seconds, $short);
 }));
 
 
