@@ -80,7 +80,6 @@ $(function()
         $(this).find('.fa').toggleClass('fa-caret-down').toggleClass('fa-caret-up');
     });
 
-    console.log('pomf');
     $('.results-alternatives .alternatives-handle').on('click', function () {
         $(this).siblings('.results-alternatives-details').slideToggle('fast');
         $(this).find('.fa').toggleClass('fa-caret-down').toggleClass('fa-caret-right');

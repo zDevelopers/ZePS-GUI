@@ -4,6 +4,7 @@ namespace ZePS\Controllers;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
+use ZePS\Routing\AlternativeRoutingPath;
 use ZePS\Routing\RoutesManager;
 
 
@@ -70,13 +71,15 @@ class RouteSearchController
         $error = null;
         $raw_error = null;
 
-        $route = array();
+        $route = [];
+        $alternatives = [];
 
         $accessible = false;
         $official = false;
         $from_overworld = false;
 
         $through_spawn = false;
+        $force_direct = false;
 
         $nether_portal = array();
 
@@ -128,6 +131,11 @@ class RouteSearchController
                 $from_overworld = true;
             if (in_array('spawn', $options_split))
                 $through_spawn = true;
+            else if (in_array('direct', $options_split))
+            {
+                $through_spawn = false;
+                $force_direct = true;
+            }
 
             try
             {
@@ -141,6 +149,34 @@ class RouteSearchController
                 }
                 else
                 {
+                    // We calculate the routes through the main stations to see if it's shorter
+                    $shortest_path = $route;
+                    $shortest_path_threshold = $app['config']['shortest_path_threshold'];
+
+                    foreach ($app['zeps.routing']->get_main_stations() as $main_station)
+                    {
+                        /** @var $alternative \Zeps\Routing\RoutingPath */
+                        $alternative = $app['zeps.routing']->get_netherrail_route($app['zeps.routing']->station_name_to_id($main_station), $to, $official, $accessible, $debug);
+                        if ($alternative->getTravelTime() < $route->getTravelTime() - $shortest_path_threshold && $alternative->getTravelTime() < $shortest_path->getTravelTime())
+                        {
+                            $shortest_path = $alternative;
+                        }
+                    }
+
+                    if ($shortest_path !== $route)
+                    {
+                        if (!$force_direct)
+                        {
+                            $alternatives[] = new AlternativeRoutingPath($shortest_path, $route, $route, 'direct');
+                            $route = $shortest_path;
+                            $through_spawn = true;
+                        }
+                        else
+                        {
+                            $alternatives[] = new AlternativeRoutingPath($route, $shortest_path, $route, 'spawn');
+                        }
+                    }
+
                     $route->compact();
 
                     // If needed, the nether portal coordinates are calculated
@@ -162,16 +198,17 @@ class RouteSearchController
         }
 
         return new Response($app['twig']->render('index.html.twig', array(
-            'valid'       => $valid,
-            'error'       => $error,
-            'raw_error'   => $raw_error,
-            'from'        => $from,
-            'to'          => $to,
-            'options'     => array('official' => $official, 'accessible' => $accessible),
-            'raw_options' => $options,
-            'stations'    => $stations,
+            'valid'        => $valid,
+            'error'        => $error,
+            'raw_error'    => $raw_error,
+            'from'         => $from,
+            'to'           => $to,
+            'options'      => array('official' => $official, 'accessible' => $accessible),
+            'raw_options'  => $options,
+            'stations'     => $stations,
 
-            'route'       => $route,
+            'route'        => $route,
+            'alternatives' => $alternatives,
 
             'from_overworld' => $from_overworld,
             'nether_portal'  => $nether_portal,

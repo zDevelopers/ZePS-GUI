@@ -11,26 +11,49 @@
     </div>
 </div>
 
-<div class="results-alternatives" id="quickest-path">
-    <div class="columns alternatives-handle">
-        <div class="column is-10">
-            <h4>Itinéraires alternatifs</h4>
+{% if alternatives %}
+    <div class="results-alternatives" id="quickest-path">
+        <div class="columns alternatives-handle">
+            <div class="column is-10">
+                <h4>
+                    {% if alternatives|length > 1 %}
+                        Itinéraires alternatifs
+                    {% else %}
+                        Itinéraire alternatif
+                    {% endif %}
+                </h4>
+            </div>
+            <div class="column is-2">
+                <span class="fa fa-caret-right fa-lg"></span>
+            </div>
         </div>
-        <div class="column is-2">
-            <span class="fa fa-caret-right fa-lg"></span>
-        </div>
+        <ul class="results-alternatives-details">
+            {% for alternative in alternatives %}
+                {% set alternative_url = path('zeps.search_results', {
+                    'from': alternative.searchedRoute.firstStation.name,
+                    'to': alternative.searchedRoute.lastStation.name,
+                    'options': alternative.updateRouteOptions(raw_options)
+                }) %}
+                <li>
+                    <h5>
+                        <a href="{{ alternative_url }}">
+                            {% if alternative.name == 'direct' %}
+                                Trajet direct sans téléportation
+                            {% elseif alternative.name == 'spawn' %}
+                                Trajet via {{ macros.station(alternative.alternativeRoute.firstStation) }}
+                            {% else %}
+                                {{ alternative.name }}
+                            {% endif %}
+                        </a>
+                    </h5>
+                    <p>
+                        <a href="{{ alternative_url }}">{{ alternative.userFriendlyLengthDiff }}</a>
+                    </p>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
-    <ul class="results-alternatives-details">
-        <li>
-            <h5><a href="#">Trajet direct sans téléportation</a></h5>
-            <p><a href="">2 minutes et demi de plus</a></p>
-        </li>
-        <li>
-            <h5><a href="#">Trajet à pieds</a></h5>
-            <p><a href="">13 minutes de plus</a></p>
-        </li>
-    </ul>
-</div>
+{% endif %}
 
 <ul class="results-details timeline">
 
@@ -43,7 +66,7 @@
 
                     {% if from != spawn_station_id %}
                         <br />
-                        Ensuite, rendez-vous à <strong>{{ macros.station(attribute(stations.stations, from)) }}</strong> via le portail de la capitale {% if from != to %}et entrez dans le Nether{% endif %}. Les portails sont au sous-sol de la mairie.
+                        Ensuite, rendez-vous à <strong>{{ macros.station(route.getFirstStation()) }}</strong> via le portail de la capitale {% if from != to %}et entrez dans le Nether{% endif %}. Les portails sont au sous-sol de la mairie.
                     {% elseif from != to %}
                         <br />
                         Ensuite, entrez dans le Nether. Le portail est situé au sous-sol de la mairie.
@@ -59,7 +82,7 @@
         {%  if from_overworld and not through_spawn %}
             <li class="timeline-item">
                 <div class="timeline-content">
-                    <p class="heading">{{ macros.station(attribute(stations.stations, from)) }} (surface)</p>
+                    <p class="heading">{{ macros.station(route.getFirstStation()) }} (surface)</p>
                     <p>Rejoignez <strong>le Nether</strong>. Le portail est probablement situé vers ({{ nether_portal.x }}&nbsp;; {{ nether_portal.z }}).</p>
                 </div>
             </li>
@@ -128,55 +151,4 @@
             </div>
         </li>
     {% endif %}
-
-
-{#
-    <li class="timeline-item">
-        <div class="timeline-content">
-            <p class="heading">Laputa</p>
-            <p>
-                Dirigez-vous vers le <strong>nord</strong>.
-            </p>
-        </div>
-    </li>
-    <li class="timeline-item">
-        <div class="timeline-content">
-            <p class="heading">Secteur Clem</p>
-            <p>
-                <strong>Tournez à droite</strong> : vous vous dirigez vers l'est.
-            </p>
-        </div>
-    </li>
-    <li class="timeline-item">
-        <div class="timeline-content">
-            <p class="heading">Melburne</p>
-            <p>
-                <strong>Tournez à gauche</strong> : vous vous dirigez vers le nord.<br />
-                À Cart Toon, continuez tout droit.
-            </p>
-            <p class="intermediate-stations">
-                Stations intermédiaires <span class="fa fa-caret-down"></span>
-            </p>
-        </div>
-    </li>
-    <li class="timeline-item">
-        <div class="timeline-content">
-            <p class="heading">Speranza Pristine</p>
-            <p>
-                <strong>Tournez à gauche</strong> : vous vous dirigez vers l'ouest.
-            </p>
-            <p class="intermediate-stations">
-                Stations intermédiaires <span class="fa fa-caret-down"></span>
-            </p>
-        </div>
-    </li>
-    <li class="timeline-item">
-        <div class="timeline-content">
-            <p class="heading">Maraya Toumismo</p>
-            <p>
-                Vous voilà à votre destination.
-            </p>
-        </div>
-    </li>
-    #}
 </ul>

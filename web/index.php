@@ -45,6 +45,9 @@ $app['config'] = array
         'json_file' => __DIR__ . '/../missing_stations.json'
     ),
 
+    'shortest_path_threshold' => 45,            // If a shortest path is found through a main station but it's not
+                                                // shorter by this amount of seconds at least, it is ignored.
+
     'autocompletion' => array(
         'max_results' => 10,
         'weights' => array(
