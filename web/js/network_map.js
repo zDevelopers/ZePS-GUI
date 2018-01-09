@@ -53,7 +53,7 @@
         // The stations sizes
         stations_size_outline_normal: 2,
         stations_size_outline_main: 5,
-        station_size_dot: 10,
+        station_size_dot: 9,
 
         // The main stations (array)
         main_stations: [],

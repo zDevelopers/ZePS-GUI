@@ -617,6 +617,10 @@ aside.home-search-form form button.invert-from-to span.fa {
     padding-bottom: 1em;
 }
 
+#home-search-form-results .results-details .timeline-item p.heading {
+    font-size: .8em;
+}
+
 #home-search-form-results .results-details p.small-details {
     margin-top: .2em;
     color: #888;

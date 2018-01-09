@@ -62,11 +62,11 @@
             <div class="timeline-content">
                 <p class="heading">{{ macros.station(attribute(stations.stations, from)) }}</p>
                 <p>
-                    Rejoignez <strong>la capitale</strong> ({{ macros.station(attribute(stations.stations, spawn_station_id)) }}). Vous pouvez utiliser <code>/spawn</code>.
+                    <strong>Rejoignez la capitale</strong> ({{ macros.station(attribute(stations.stations, spawn_station_id)) }}). Vous pouvez utiliser <code>/spawn</code>.
 
                     {% if from != spawn_station_id %}
                         <br />
-                        Ensuite, rendez-vous à <strong>{{ macros.station(route.getFirstStation()) }}</strong> via le portail de la capitale {% if from != to %}et entrez dans le Nether{% endif %}. Les portails sont au sous-sol de la mairie.
+                        Ensuite, rendez-vous à <strong>{{ macros.station(route.getFirstStation()) }}</strong> via le portail de la capitale situé au sous-sol de la mairie{% if from != to %}, et entrez dans le Nether{% endif %}.
                     {% elseif from != to %}
                         <br />
                         Ensuite, entrez dans le Nether. Le portail est situé au sous-sol de la mairie.
@@ -113,7 +113,7 @@
                         {%- spaceless -%}
                             {{ step.length|number_format }} bloc{% if step.length > 1 %}s{% endif -%}
                             {%- if step.steps|length >= 2 -%}
-                                &nbsp;&middot;&nbsp;
+                                &nbsp;&middot;
                                 <span class="intermediate-stations">
                                     {% if step.steps|length == 2 -%}
                                         Station intermédiaire
