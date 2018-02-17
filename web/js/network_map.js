@@ -15,7 +15,7 @@
 
         // The location of the buttons in the map (zoom, anchor...).
         // Can be topleft, topright, bottomleft, bottomright.
-        buttons_location: 'topright',
+        buttons_location: 'bottomright',
 
         // If a form is available on the map, defines here their jQuery objects
         // to links the form and the map, e.g. by adding buttons in the popups
@@ -983,7 +983,7 @@
                     });
 
                     L.control.zoom({
-                        position:NetworkMap.buttons_location
+                        position: NetworkMap.buttons_location
                     }).addTo(NetworkMap.map);
 
                     NetworkMap.map.attributionControl.addAttribution(

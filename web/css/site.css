@@ -648,6 +648,58 @@ aside.home-search-form form button.invert-from-to span.fa {
     color: #888;
 }
 
+#home-search-form-reduce {
+    display: none;
+}
+
+@media screen and (max-width: 768px)
+{
+    aside.home-search-form {
+        max-height: 90vh;
+
+        /* For the map controls to pass under the details pane */
+        z-index: 2000;
+    }
+
+    #home-search-form-results {
+        max-height: calc(90vh - 160px);
+    }
+
+    #home-search-form-reduce {
+        display: block;
+
+        height: 3em;
+        padding-top: .4em;
+
+        background: white;
+        border-top: solid 1px #ccc;
+
+        font-size: .8em;
+        text-align: center;
+        color: #888;
+
+        cursor: pointer;
+    }
+
+    #home-search-form-reduce .fa {
+        position: relative;
+        top: .12em;
+    }
+
+    #home-search-form-reduce:hover, #home-search-form-reduce:focus, #home-search-form-reduce:active {
+        background: #eee;
+    }
+
+    .leaflet-control-container .leaflet-bottom.leaflet-right .leaflet-control:not(.leaflet-control-attribution) {
+        position: relative;
+        right: .6em;
+        bottom: 1.4em;
+
+        z-index: 1;
+    }
+}
+
+
 
 
 /* Network map */
