@@ -832,6 +832,9 @@
                 return;
 
             NetworkMap.map.fitBounds([NetworkMap._coords_to_latlng([min_x, min_z]), NetworkMap._coords_to_latlng([max_x, max_z])]);
+
+            if (NetworkMap.map.getZoom() >= 11)
+                NetworkMap.map.setZoom(NetworkMap.map.getZoom() - 1);
         },
 
 
