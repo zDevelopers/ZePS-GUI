@@ -134,14 +134,14 @@
                         <h1>Z<em>é</em>PS</h1>
                         <ul>
                             <li title="Stations officielles uniquement" class="tooltip tooltip-bottom" data-tooltip="Stations officielles uniquement">
-                                <input type="checkbox" name="official" id="options_official" />
+                                <input type="checkbox" name="official" id="options_official"{% if options.official %} checked="checked"{% endif %} />
                                 <label for="options_official">
                                     <span class="fa fa-check fa-lg" aria-hidden="true"></span>
                                     <span class="sr-only">Stations officielles uniquement</span>
                                 </label>
                             </li>
                             <li title="Stations sécurisées uniquement" class="tooltip tooltip-bottom" data-tooltip="Stations sécurisées uniquement">
-                                <input type="checkbox" name="accessible" id="options_secure" />
+                                <input type="checkbox" name="accessible" id="options_secure"{% if options.accessible %} checked="checked"{% endif %} />
                                 <label for="options_secure">
                                     <span class="fa fa-lock fa-lg" aria-hidden="true"></span>
                                     <span class="sr-only">Stations sécurisées uniquement</span>
