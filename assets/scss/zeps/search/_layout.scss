@@ -1,0 +1,141 @@
+aside.home-search-form {
+    position: absolute;
+    top: .8em;
+    left: .8em;
+
+    z-index: 100;
+
+    width: 400px;
+
+    @include mobile {
+        width: calc(100% - 1.6em);
+        max-height: 90vh;
+        z-index: 2000;
+    }
+
+    box-shadow: 1px 1px 3px 1px #ccc;
+    border-radius: 2px;
+
+    background: white;
+
+    button::-moz-focus-inner {
+        border: none;
+    }
+
+    header {
+        display: flex;
+        padding: .5em;
+        background-color: #3f9718;
+        color: white;
+
+        h1 {
+            flex-grow: 5;
+            font-family: Lato;
+            font-size: 1.15em;
+            letter-spacing: .05em;
+        }
+
+        ul {
+            flex-grow: 1;
+            text-align: right;
+
+            li {
+                display: inline-block;
+                margin: 0;
+
+                label {
+                    display: inline-block;
+                    width: 1.8em;
+                    height: 1.8em;
+                    text-align: center;
+                    vertical-align: middle;
+                    cursor: pointer;
+                    border-radius: 100%;
+
+                    &:hover {
+                        background-color: #2e8109;
+                    }
+
+                    span.fa {
+                        position: relative;
+                        top: 2px;
+                    }
+                }
+
+                input[type="checkbox"] {
+                    display: none;
+
+                    &:checked + label {
+                        background-color: #193c09;
+                    }
+                }
+            }
+        }
+    }
+
+    form {
+        input[type="text"] {
+            display: block;
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #ddd;
+            padding: .8em;
+        }
+
+        div {
+            position: relative;
+        }
+
+        button {
+            &.search-over-button {
+                position: absolute;
+                top: 0;
+                right: 0;
+                border: none;
+                background: none;
+                padding: 1em;
+                color: gray;
+                cursor: pointer;
+
+                &:hover {
+                    color: #2e8109;
+                }
+            }
+
+            &.invert-from-to {
+                position: absolute;
+                right: 52px;
+                top: 70px;
+                background: white;
+                border: solid 1px #ddd;
+                border-radius: 100%;
+                width: 2.5em;
+                height: 2.5em;
+                color: #666;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: #eee;
+                }
+
+                &:active {
+                    outline: none;
+                }
+
+                span.fa {
+                    position: relative;
+                    top: 2px;
+                    left: 1px;
+                }
+            }
+        }
+
+        button[type="submit"].search-over-button {
+            color: #2e8109;
+            
+            &:hover {
+                color: #193c09;
+            }
+        }
+    }
+}

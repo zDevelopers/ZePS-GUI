@@ -1,56 +1,52 @@
 {% import "_macros.html.twig" as macros %}
 
 
-    <form action="{{ path('zeps.homepage') }}">
+<form action="{{ path('zeps.homepage') }}">
 
-        <input type="hidden" name="from_overworld" id="from_overworld" value="false" />
+    <input type="hidden" name="from_overworld" id="from_overworld" value="false" />
 
-        <a class="button is-info is-outlined is-inverted cliquable-icon cliquable-icon-nojs" id="open-geolocation-icon">
-            <span class="fa fa-globe"></span>
-        </a>
+    <a class="button is-info is-outlined is-inverted cliquable-icon cliquable-icon-nojs" id="open-geolocation-icon">
+        <span class="fa fa-globe"></span>
+    </a>
 
-        <span class="contol has-icon-left">
-            <span class="select">
-                <select id="from" name="from">
-                    {{ macros.stations_list(stations, from, true, "Point de départ") }}
-                </select>
-            </span>
-        </span>
-
-        <span class="between-search-fields" id="invert-from-to">
-            <span class="fa fa-arrow-right"></span>
-        </span>
-
+    <span class="contol has-icon-left">
         <span class="select">
-            <select id="to" name="to" title="Destination">
-                {{ macros.stations_list(stations, to, false, "Destination") }}
+            <select id="from" name="from">
+                {{ macros.stations_list(stations, from, true, "Point de départ") }}
             </select>
         </span>
+    </span>
 
-        <button type="submit" class="button is-info is-outlined is-inverted">
-            <span class="fa fa-compass"></span>
-        </button>
-        <!--
-                <div class="form-group route-options">
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="route_option_official" name="official" value="official"{% if official %} checked{% endif %}> Lignes officielles uniquement
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="route_option_accessible" name="accessible" value="accessible"{% if accessible %} checked{% endif %}> Stations sécurisées uniquement
-                    </label>
-                </div>-->
-    </form>
+    <span class="between-search-fields" id="invert-from-to">
+        <span class="fa fa-arrow-right"></span>
+    </span>
+
+    <span class="select">
+        <select id="to" name="to" title="Destination">
+            {{ macros.stations_list(stations, to, false, "Destination") }}
+        </select>
+    </span>
+
+    <button type="submit" class="button is-info is-outlined is-inverted">
+        <span class="fa fa-compass"></span>
+    </button>
+
+</form>
 
 
 <div class="modal" tabindex="-1" role="dialog" id="geo-geolocation-modal">
+
     <div class="modal-background modal-close-handler"></div>
+
     <div class="modal-content">
         <div class="card">
+            
             <header class="card-header">
                 <p class="card-header-title" id="geolocation-modal-title">
                     Chargement...
                 </p>
             </header>
+
             <div class="card-content">
                 <div id="geolocation-modal-loading" class="geolocation-modal-main-text">
                     <img src="{{ app.request.basePath }}/img/loading.gif" alt="Chargement en cours, patientez une seconde..." />
@@ -81,10 +77,14 @@
                     <a href="#" class="geolocation-modal-retry" title="Cliquez pour réessayer">Pas dans la liste ?</a> Vérifiez que vous êtes dans un monde survie (et hors de l'End).
                 </p>
             </div>
+
             <footer class="card-footer">
                 <a class="card-footer-item geolocation-modal-retry" disabled>Actualiser la liste des connectés</a>
             </footer>
+
         </div>
     </div>
+
     <button class="modal-close"></button>
+
 </div>

@@ -1,3 +1,5 @@
+/* TODO replace Leaflet.Label with Leaflet.Tooltip as it's deprecated */
+
 (function(window) {
     'use strict';
 

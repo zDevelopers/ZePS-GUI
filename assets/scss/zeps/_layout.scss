@@ -1,0 +1,105 @@
+body {
+    > section {
+        &.hero {
+            flex: 0 1 auto;
+        }
+        &.section-fullscreen {
+            flex: 1 1 auto;
+        }
+    }
+
+    > .container-fullscreen > section.section-fullscreen {
+        flex: 1 1 auto;
+    }
+}
+
+.container-fullscreen {
+    background-color: #fcf7ed;
+    position: relative;
+}
+
+
+.zeps-logo {
+    font-family: Lato;
+    span {
+        font-family: Lato;
+        font-style: italic;
+    }
+}
+
+@include tablet {
+    .container {
+        max-width: 1200px;
+    }
+}
+
+.small-title {
+    font-size: 100%;
+    font-variant: small-caps;
+    letter-spacing: 1.5px;
+    word-spacing: 4px;
+    margin-bottom: 0;
+}
+
+.alert {
+    padding: .2em 0;
+    text-align: center;
+
+    &.alert-danger {
+        background-color: #ec2020;
+        color: white;
+        strong {
+            background-color: #ec2020;
+            color: white;
+        }
+    }
+
+    &.alert-warning {
+        background-color: #ff9000;
+        color: white;
+        strong {
+            background-color: #ff9000;
+            color: white;
+        }
+    }
+
+    &.alert-info {
+        background-color: #0054ff;
+        color: white;
+        strong {
+            background-color: #0054ff;
+            color: white;
+        }
+    }
+}
+
+
+.input-group-addon {
+    cursor: default;
+}
+
+.cliquable-icon {
+    cursor: pointer;
+    &:hover {
+        color: #1b6d85;
+    }
+}
+
+.cliquable-icon-nojs {
+    cursor: default !important;
+
+    &:hover {
+        color: #555555 !important;
+    }
+}
+
+
+.modal-body {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.modal-footer .pull-left {
+    max-width: 50%;
+}

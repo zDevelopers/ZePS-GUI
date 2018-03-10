@@ -11,11 +11,7 @@
 
         <title>{% block main_title %}{% endblock %} ⋅ ZéPS</title>
 
-        <link href="{{ app.request.basePath }}/css/bulma.css" rel="stylesheet">
-        <link href="{{ app.request.basePath }}/css/font-awesome.min.css" rel="stylesheet">
-        <link href="{{ app.request.basePath }}/css/workarounds/ie10-viewport-bug-workaround.css" rel="stylesheet">
-
-        <link href="{{ app.request.basePath }}/css/site.css" rel="stylesheet">
+        <link href="{{ app.request.basePath }}/dist/zeps-gui.css" rel="stylesheet" />
 
         {% block stylesheets %}{% endblock %}
     </head>

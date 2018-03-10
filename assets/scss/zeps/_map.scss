@@ -1,0 +1,130 @@
+.network_map_loader {
+    margin-top: 4em;
+    text-align: center;
+    font-size: large;
+}
+
+.easy-button-button {
+    cursor: pointer;
+    
+    span.fa {
+        position: relative;
+        top: 7px;
+        left: -2px;
+    }
+}
+
+.modal {
+    z-index: 2000;
+}
+
+.station-label {
+    transform-origin: 0 0;
+    transform: rotate(-38deg) translateY(-10px) translateX(-6px);
+    font-size: 125%;
+    text-shadow: 3px 3px 3px #fcf7ed, -3px -3px 3px #fcf7ed;
+
+    &.station-label-intersection {
+        font-size: 130%;
+        font-weight: bolder;
+    }
+
+    &.station-label-main {
+        font-size: 160%;
+        text-transform: uppercase;
+        font-weight: normal;
+    }
+
+    &.label-force-display {
+        display: block !important;
+    }
+}
+
+.square-line {
+    display: inline-block;
+    width: 22px;
+    height: 20px;
+    margin-right: 3px;
+    vertical-align: sub;
+}
+
+.leaflet-popup-content {
+    h4 {
+        font-size: large;
+        margin-bottom: .3em;
+
+        span {
+            padding-left: 6px;
+        }
+    }
+
+    p {
+        &.station-popup-subtitle {
+            margin-top: -5px;
+            font-size: 1.1em;
+        }
+
+        &.station-popup-content {
+            margin-top: 15px;
+            color: #666;
+
+            a {
+                color: #4b4b4b;
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+
+    ul.station-popup-actions {
+        display: flex;
+        min-width: 220px;
+
+        li {
+            flex-direction: column;
+            width: 50%;
+            padding: .4em;
+            margin: .1em;
+            border: solid 1px #bbb;
+            border-radius: 3px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 1.2em;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #ddd;
+            }
+
+            span.fa {
+                display: inline-block;
+                margin-right: .4em;
+
+                &.fa-rotate-90 {
+                    position: relative;
+                    top: -2px;
+                }
+            }
+        }
+    }
+}
+
+.leaflet-popup {
+    z-index: 9111 !important;
+}
+
+.leaflet-container.network-map {
+    background-color: #fcf7ed;
+}
+
+@include mobile {
+    .leaflet-control-container .leaflet-bottom.leaflet-right .leaflet-control:not(.leaflet-control-attribution) {
+        position: relative;
+        right: .6em;
+        bottom: 1.4em;
+        z-index: 1;
+    }
+}

@@ -1,0 +1,57 @@
+{
+  "name": "zeps-gui",
+  "version": "1.4.0",
+  "description": "The GUI of a path calculator for Minecraft",
+  "main": "web/js/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zDevelopers/ZePS-GUI.git"
+  },
+  "keywords": [
+    "gps",
+    "minecraft",
+    "routing",
+    "map",
+    "localization",
+    "pathfinding"
+  ],
+  "contributors": [
+    "Amaury Carrade (https://amaury.carrade.eu)",
+    "Florian Cassayre (https://florian.cassayre.me)",
+    "Adrien Prokopowicz"
+  ],
+  "license": "CECILL-B",
+  "bugs": {
+    "url": "https://github.com/zDevelopers/ZePS-GUI/issues"
+  },
+  "homepage": "https://github.com/zDevelopers/ZePS-GUI#readme",
+  "dependencies": {
+    "bulma": "^0.6.2",
+    "bulma-pageloader": "^1.0.1",
+    "bulma-timeline": "^2.0.1",
+    "bulma-tooltip": "^1.0.3",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.3.1",
+    "leaflet": "^1.3.1",
+    "leaflet-easybutton": "^2.3.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^8.1.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "css-loader": "^0.28.10",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "file-loader": "^1.1.11",
+    "node-sass": "^4.7.2",
+    "postcss-loader": "^2.1.1",
+    "sass-loader": "^6.0.7",
+    "style-loader": "^0.20.3",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.10",
+    "webpack-dev-server": "^3.1.1"
+  }
+}

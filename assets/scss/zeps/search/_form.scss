@@ -1,0 +1,50 @@
+.spin-effect {
+    animation: spin .3s 1 cubic-bezier(.46,.03,.52,.96);
+}
+.spin-effect-90 {
+    animation: spin-90 .3s 1 cubic-bezier(.46,.03,.52,.96);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-90 {
+    0% {
+        transform: rotate(90deg);
+    }
+    100% {
+        transform: rotate(450deg);
+    }
+}
+
+
+#home-search-form-reduce {
+    display: none;
+
+    @include mobile {
+        display: block;
+        height: 3em;
+        padding-top: .4em;
+        background: white;
+        border-top: solid 1px #ccc;
+        font-size: .8em;
+        text-align: center;
+        color: #888;
+        cursor: pointer;
+
+        .fa {
+            position: relative;
+            top: .12em;
+        }
+
+        &:hover, &:focus, &:active {
+            background: #eee;
+        }
+    }
+}
