@@ -25,7 +25,7 @@ aside.home-search-form {
     header {
         display: flex;
         padding: .5em;
-        background-color: #3f9718;
+        background-color: $primary;
         color: white;
 
         h1 {
@@ -53,7 +53,7 @@ aside.home-search-form {
                     border-radius: 100%;
 
                     &:hover {
-                        background-color: #2e8109;
+                        background-color: darken($primary, 3%);
                     }
 
                     span.fa {
@@ -66,7 +66,7 @@ aside.home-search-form {
                     display: none;
 
                     &:checked + label {
-                        background-color: #193c09;
+                        background-color: darken($primary, 9%);
                     }
                 }
             }
@@ -98,7 +98,7 @@ aside.home-search-form {
                 cursor: pointer;
 
                 &:hover {
-                    color: #2e8109;
+                    color: darken($primary, 12%);
                 }
             }
 
@@ -130,10 +130,10 @@ aside.home-search-form {
         }
 
         button[type="submit"].search-over-button {
-            color: #2e8109;
+            color: darken($primary, 6%);
             
             &:hover {
-                color: #193c09;
+                color: darken($primary, 12%);
             }
         }
     }
