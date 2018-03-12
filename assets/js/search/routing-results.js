@@ -1,6 +1,6 @@
 'use strict';
 
-$(function()
+export function setup_routing()
 {
     $('#home-search-form-results .results-details ul.intermediate-stations-list').hide();
 
@@ -31,4 +31,4 @@ $(function()
         $reduce_text.text(other_text);
         $reduce_text.data('other-text', previous_text);
     });
-});
+}

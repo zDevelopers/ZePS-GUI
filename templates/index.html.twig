@@ -56,39 +56,6 @@
         nether_world = '{{ app.config.world_name_nether }}';
     </script>
 
-    <script type="text/javascript">
-        $(function()
-        {
-            // Avoids double tooltop but keeps titles attributes for
-            // assistive engines
-            $('.home-search-form header > ul > li').attr('title', '');
-
-            // Setups autocompletion
-            $('#from, #to').easyAutocomplete({
-                url: function(input) {
-                    return '{{ path('zeps.api.autocomplete') }}?input=' + input;
-                },
-                getValue: 'display_name',
-                listLocation: 'items',
-                matchResponseProperty: 'input',
-
-                externalContainer: 'home-search-form-autocomplete',
-
-                list: {
-                    match: {
-                        enabled: true
-                    }
-                },
-
-                template: {
-                    type: "custom",
-                    method: function(label) {
-                        return '<span class="fa fa-map-signs" aria-hidden="true"></span> ' + label;
-                    }
-                }
-            });
-        });
-    </script>
 
     <script type="text/javascript" src="{{ app.request.basePath }}/dist/zeps-gui.js"></script>
 {% endblock %}
@@ -118,11 +85,27 @@
                         </ul>
                     </header>
                     <div>
-                        <input type="text" name="from" id="from" placeholder="Point de départ" autocomplete="off" tabindex="10" value="{{ attribute(stations.stations, from).displayName }}" />
+                        <input
+                            type="text"
+                            name="from"
+                            id="from"
+                            placeholder="Point de départ"
+                            autocomplete="off"
+                            tabindex="10"
+                            value="{{ attribute(stations.stations, from).displayName }}"
+                            data-autocomplete-api="{{ path('zeps.api.autocomplete') }}?input={input}" />
                         <button class="search-over-button" id="open-geolocation-icon" title="Me géolocaliser" aria-haspopup="true"></button>
                     </div>
                     <div>
-                        <input type="text" name="to" id="to" placeholder="Destination" autocomplete="off" tabindex="20" value="{{ attribute(stations.stations, to).displayName }}" />
+                        <input
+                            type="text"
+                            name="to"
+                            id="to"
+                            placeholder="Destination"
+                            autocomplete="off"
+                            tabindex="20"
+                            value="{{ attribute(stations.stations, to).displayName }}"
+                            data-autocomplete-api="{{ path('zeps.api.autocomplete') }}?input={input}" />
                         <button class="search-over-button" type="submit" title="Rechercher l'itinéraire" tabindex="30">
                             <span class="fa fa-arrow-right" aria-hidden="true"></span>
                             <span class="sr-only">Rechercher l'itinéraire</span>
@@ -167,37 +150,38 @@
                 <div class="modal-content">
                     <div class="card">
                         <header class="card-header">
-                            <p class="card-header-title" id="geolocation-modal-title">
+                            <p class="card-header-title geolocation-modal-title">
                                 Chargement...
                             </p>
                         </header>
                         <div class="card-content">
-                            <div id="geolocation-modal-loading" class="geolocation-modal-main-text">
+                            <div class="geolocation-modal-main-text geolocation-modal-loading">
                                 <img src="{{ app.request.basePath }}/img/loading.gif" alt="Chargement en cours, patientez une seconde..." />
                             </div>
 
-                            <div id="geolocation-modal-selector" class="geolocation-modal-main-selector">
-                                <div id="geolocation-modal-selector-list" class="columns is-multiline is-mobile"></div>
+                            <div class="geolocation-modal-main-selector geolocation-modal-selector">
+                                <div class="columns is-multiline is-mobile geolocation-modal-selector-list"></div>
                             </div>
 
-                            <div id="geolocation-modal-error-nether-empty" class="geolocation-modal-main-text">
+                            <div class="geolocation-modal-main-text geolocation-modal-error-nether-empty">
                                 <p>
                                     <strong>Il n'y a personne dans un monde survie.</strong><br />
                                     Allez au préalable dans l'un d'entre eux puis <a href="#" class="geolocation-modal-retry">réessayez</a>.
                                 </p>
                             </div>
 
-                            <div id="geolocation-modal-error-cannot-retrieve" class="geolocation-modal-main-text">
+                            <div class="geolocation-modal-main-text geolocation-modal-error-cannot-retrieve">
                                 <p>
                                     <strong>Impossible de récupérer la station.</strong><br />
                                     Le serveur a retourné une erreur.
                                 </p>
                                 <p class="text-muted">
-                                    Erreur <span id="geolocation-modal-error-cannot-retrieve-error-id"></span> : «&nbsp;<span id="geolocation-modal-error-cannot-retrieve-error-message"></span>&nbsp;»
+                                    Erreur <span class="geolocation-modal-error-cannot-retrieve-error-id"></span>&nbsp;:
+                                    «&nbsp;<span class="geolocation-modal-error-cannot-retrieve-error-message"></span>&nbsp;»
                                 </p>
                             </div>
 
-                            <p id="geolocation-modal-footer-message">
+                            <p class="geolocation-modal-footer-message">
                                 <a href="#" class="geolocation-modal-retry" title="Cliquez pour réessayer">Pas dans la liste ?</a> Vérifiez que vous êtes dans un monde survie (et hors de l'End).
                             </p>
                         </div>

@@ -55,7 +55,7 @@ body, .container-fullscreen {
     &.alert-danger {
         background-color: #ec2020;
         color: white;
-        strong {
+        strong, a, a:hover, a:active, a:focus {
             background-color: #ec2020;
             color: white;
         }
@@ -64,7 +64,7 @@ body, .container-fullscreen {
     &.alert-warning {
         background-color: #ff9000;
         color: white;
-        strong {
+        strong, a, a:hover, a:active, a:focus {
             background-color: #ff9000;
             color: white;
         }
@@ -73,10 +73,14 @@ body, .container-fullscreen {
     &.alert-info {
         background-color: #0054ff;
         color: white;
-        strong {
+        strong, a, a:hover, a:active, a:focus {
             background-color: #0054ff;
             color: white;
         }
+    }
+
+    a:hover {
+        text-decoration: underline;
     }
 }
 
