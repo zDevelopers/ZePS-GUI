@@ -2,33 +2,13 @@
 
 {% import "_macros.html.twig" as macros %}
 
-{% block main_title %}
-    Itinéraire
-{% endblock %}
-
-{% block subtitle %}
-    {# TODO Reintroduce quote
-    {% if quote %}
-        <blockquote id="homepage-quote">
-            <p>{{ quote.quote }}</p>
-            <footer>{{ quote.author }}</footer>
-        </blockquote>
-    {% endif %}
-    #}
-{% endblock %}
+{% block main_title %}Itinéraire{% endblock %}
 
 {% block javascripts %}
-    <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.js"></script>
-    <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/leaflet.label.js"></script>
-    <script type="text/javascript" src="{{ app.request.basePath }}/js/leaflet/easy-button.js"></script>
-
-    <script type="text/javascript" src="{{ app.request.basePath }}/js/network_map.js"></script>
 
     <script type="text/javascript">
         $(function()
         {
-            // $('[data-toggle="tooltip"]').tooltip();
-
             NetworkMap.network_api        = '{{ path('zeps.api.stations_network') }}';
             NetworkMap.network_colors_api = '{{ path('zeps.api.stations_network_colors') }}';
             NetworkMap.dynmap_root        = '{{ app.config.dynmap.root }}';
@@ -76,11 +56,6 @@
         nether_world = '{{ app.config.world_name_nether }}';
     </script>
 
-    <script type="text/javascript" src="{{ app.request.basePath }}/js/geolocation.js"></script>
-    <script type="text/javascript" src="{{ app.request.basePath }}/js/invert_stations.js"></script>
-
-    <script type="text/javascript" src="{{ app.request.basePath }}/js/jquery/jquery.easy-autocomplete.js"></script>
-
     <script type="text/javascript">
         $(function()
         {
@@ -115,7 +90,7 @@
         });
     </script>
 
-    <script type="text/javascript" src="{{ app.request.basePath }}/js/routing_results.js"></script>
+    <script type="text/javascript" src="{{ app.request.basePath }}/dist/zeps-gui.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -126,14 +101,14 @@
                     <header>
                         <h1>Z<em>é</em>PS</h1>
                         <ul>
-                            <li title="Stations officielles uniquement" class="tooltip tooltip-bottom" data-tooltip="Stations officielles uniquement">
+                            <li title="Stations officielles uniquement" class="tooltip is-tooltip-bottom" data-tooltip="Stations officielles uniquement">
                                 <input type="checkbox" name="official" id="options_official"{% if options.official %} checked="checked"{% endif %} />
                                 <label for="options_official">
                                     <span class="fa fa-check fa-lg" aria-hidden="true"></span>
                                     <span class="sr-only">Stations officielles uniquement</span>
                                 </label>
                             </li>
-                            <li title="Stations sécurisées uniquement" class="tooltip tooltip-bottom" data-tooltip="Stations sécurisées uniquement">
+                            <li title="Stations sécurisées uniquement" class="tooltip is-tooltip-bottom" data-tooltip="Stations sécurisées uniquement">
                                 <input type="checkbox" name="accessible" id="options_secure"{% if options.accessible %} checked="checked"{% endif %} />
                                 <label for="options_secure">
                                     <span class="fa fa-lock fa-lg" aria-hidden="true"></span>

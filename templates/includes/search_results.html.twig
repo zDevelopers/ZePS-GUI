@@ -59,6 +59,7 @@
 
     {% if through_spawn %}
         <li class="timeline-item">
+            <div class="timeline-marker"></div>
             <div class="timeline-content">
                 <p class="heading">{{ macros.station(attribute(stations.stations, from)) }}</p>
                 <p>
@@ -81,6 +82,7 @@
 
         {%  if from_overworld and not through_spawn %}
             <li class="timeline-item">
+                <div class="timeline-marker"></div>
                 <div class="timeline-content">
                     <p class="heading">{{ macros.station(route.getFirstStation()) }} (surface)</p>
                     <p>Rejoignez <strong>le Nether</strong>. Le portail est probablement situé vers ({{ nether_portal.x }}&nbsp;; {{ nether_portal.z }}).</p>
@@ -90,6 +92,7 @@
 
         {% for step in route.compactPath %}
             <li class="timeline-item">
+                <div class="timeline-marker"></div>
                 <div class="timeline-content">
                     <p class="heading">
                         {% if step.stationFrom.isVisible %}
@@ -137,6 +140,7 @@
         {% endfor %}
 
         <li class="timeline-item">
+            <div class="timeline-marker"></div>
             <div class="timeline-content">
                 <p class="heading">{{ macros.station(attribute(stations.stations, to)) }}</p>
                 <p>Vous voilà à votre destination.</p>
@@ -145,6 +149,7 @@
 
     {% else %}
         <li class="timeline-item">
+            <div class="timeline-marker"></div>
             <div class="timeline-content">
                 <p class="heading">{{ macros.station(attribute(stations.stations, to)) }}</p>
                 <p>Ne bougez pas. Vous êtes déjà à {{ macros.station(attribute(stations.stations, to)) }}.

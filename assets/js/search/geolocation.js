@@ -2,10 +2,7 @@
 
 $(function ()
 {
-    $('[data-toggle="tooltip"]').tooltip();
-
     // Non-Javascript graceful degradation
-    $('#starting-point-placeholder').after('<option value="">Me localiser...</option>');
     $('#open-geolocation-icon').append('<span class="fa fa-location-arrow" aria-hidden="true"></span>');
     $('.cliquable-icon').removeClass("cliquable-icon-nojs");
 

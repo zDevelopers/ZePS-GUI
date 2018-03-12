@@ -13,6 +13,13 @@ body {
     }
 }
 
+body, .container-fullscreen {
+    padding: 0;
+    display: flex;
+    flex-flow: column;
+    min-height: 100vh;
+}
+
 .container-fullscreen {
     background-color: #fcf7ed;
     position: relative;

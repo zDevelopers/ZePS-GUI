@@ -1,5 +1,9 @@
-require("../scss/zeps.scss");
+require('../scss/zeps.scss');
 
-let pomf = "Pomf";
-alert(pomf);
+import jQuery from "jquery";
+window.$ = window.jQuery = jQuery;
+
+require('./search/geolocation');
+require('./search/invert-stations');
+require('./search/routing-results');
 

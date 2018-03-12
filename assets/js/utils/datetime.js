@@ -1,6 +1,6 @@
 'use strict';
 
-function secondsToString(seconds)
+export function secondsToString(seconds)
 {
     function numberEnding(number)
     {
