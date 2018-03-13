@@ -1,15 +1,21 @@
-const webpack = require("webpack");
-const path = require("path");
+'use strict';
 
-const ExtractTextWebpackPlugin = require("extract-text-webpack-plugin");
+const webpack = require('webpack');
+const path = require('path');
+
+const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 module.exports = {
-    context: path.resolve(__dirname, "assets"),
-    entry: "./js/index.js",
+    context: path.resolve(__dirname, 'assets'),
+    mode: 'development',
+    entry: {
+        'zeps-gui': './js/index.js'
+    },
     output: {
-        path: path.resolve(__dirname, "./web/dist"),
-        filename: "./zeps-gui.js",
-        publicPath: "/dist"
+        path: path.resolve(__dirname, './web/dist'),
+        filename: '[name].min.js',
+        publicPath: '/dist'
     },
     devtool: 'source-map',
     resolve: {
@@ -20,14 +26,15 @@ module.exports = {
             './images/marker-icon.png$': path.resolve(__dirname, './node_modules/leaflet/dist/images/marker-icon.png'),
             './images/marker-icon-2x.png$': path.resolve(__dirname, './node_modules/leaflet/dist/images/marker-icon-2x.png'),
             './images/marker-shadow.png$': path.resolve(__dirname, './node_modules/leaflet/dist/images/marker-shadow.png')
-        }
+        },
+        unsafeCache: true
     },
     module: {
         rules: [
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                loader: "babel-loader"
+                loader: 'babel-loader'
             },
             {
                 test: /\.scss$/,
@@ -57,9 +64,27 @@ module.exports = {
         ]
     },
     plugins: [
-        new ExtractTextWebpackPlugin("./zeps-gui.css"),
+        new ExtractTextWebpackPlugin('zeps-gui.min.css'),
+        new OptimizeCssAssetsPlugin({
+            cssProcessor: require('cssnano'),
+            cssProcessorOptions: { discardComments: { removeAll: true } },
+            canPrint: true
+        }),
         new webpack.LoaderOptionsPlugin({
             debug: true
         })
-    ]
+    ],
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                commons: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendor',
+                    filename: '[name].min.js',
+                    chunks: 'all',
+                }
+            }
+        },
+        minimize: true
+    }
 }

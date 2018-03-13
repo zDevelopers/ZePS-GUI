@@ -28,6 +28,11 @@
     "url": "https://github.com/zDevelopers/ZePS-GUI/issues"
   },
   "homepage": "https://github.com/zDevelopers/ZePS-GUI#readme",
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "Firefox ESR"
+  ],
   "dependencies": {
     "bulma": "^0.6.2",
     "bulma-pageloader": "^1.0.1",
@@ -47,6 +52,7 @@
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "file-loader": "^1.1.11",
     "node-sass": "^4.7.2",
+    "optimize-css-assets-webpack-plugin": "^4.0.0",
     "postcss-loader": "^2.1.1",
     "sass-loader": "^6.0.7",
     "style-loader": "^0.20.3",

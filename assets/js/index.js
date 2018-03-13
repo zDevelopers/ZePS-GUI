@@ -7,6 +7,7 @@ import { setup_geolocation } from './search/geolocation';
 import { setup_autocomplete } from './search/autocomplete';
 import { setup_invert_fields } from './search/invert-stations';
 import { setup_routing } from './search/routing-results';
+import { setup_network_map } from './network-map/map-manager';
 
 window.$ = window.jQuery = jQuery;
 
@@ -25,9 +26,12 @@ $(function()
 	// Setups autocompletion for both search fields.
 	setup_autocomplete([$('#from'), $('#to')], 'home-search-form-autocomplete');
 
-	// Setups invertion button
+	// Setups invertion button.
 	setup_invert_fields($('#invert-from-to'), $('#from'), $('#to'));
 
-	// Setup everything else in the routing pane
+	// Setups everything else in the routing pane.
 	setup_routing();
+
+	// Setups the network map.
+	setup_network_map($('#network_map'));
 });

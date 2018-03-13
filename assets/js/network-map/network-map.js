@@ -128,19 +128,19 @@ export class NetworkMap
      */
     _get_neighborhood_infos(station)
     {
-        var relations_count = Object.keys(station.network).length;
-        var is_intersection = relations_count > 2;
+        let relations_count = Object.keys(station.network).length;
+        let is_intersection = relations_count > 2;
 
         return {
-            is_intersection = is_intersection;
-            is_terminus = relations_count <= 1
+            is_intersection: is_intersection,
+            is_terminus: relations_count <= 1
         };
     };
 
     /**
      * Shades a color.
      *
-     * Thanks = http://stackoverflow.com/a/13542669/5599794
+     * Thank: http://stackoverflow.com/a/13542669/5599794
      *
      * @param percentage The shading percentage.
      * @param css_color The base CSS color.
@@ -151,17 +151,17 @@ export class NetworkMap
      */
     __shade_color(percentage, css_color, target_color)
     {
-        var n = percentage < 0 ? percentage * -1  = percentage;
-        var from, to;
+        let n = percentage < 0 ? percentage * -1 : percentage;
+        let from, to;
 
         if (css_color.length > 7)
         {
             from = css_color.split(",");
-            to   = (target_color ? target_color  = percentage < 0 ? "rgb(0,0,0)"  = "rgb(255,255,255)").split(",");
+            to   = (target_color ? target_color : (percentage < 0 ? "rgb(0,0,0)" : "rgb(255,255,255)")).split(",");
 
-            var R = parseInt(from[0].slice(4));
-            var G = parseInt(from[1]);
-            var B = parseInt(from[2]);
+            let R = parseInt(from[0].slice(4));
+            let G = parseInt(from[1]);
+            let B = parseInt(from[2]);
 
             return "rgb("
                 + (Math.round((parseInt(to[0].slice(4)) - R) * n) + R) + ","
@@ -171,11 +171,11 @@ export class NetworkMap
         else
         {
             from = parseInt(css_color.slice(1), 16);
-            to   = parseInt((target_color ? target_color  = percentage < 0 ? "#000000"  = "#FFFFFF").slice(1), 16);
+            to   = parseInt((target_color ? target_color : (percentage < 0 ? "#000000" : "#FFFFFF")).slice(1), 16);
 
-            var R1 = from >> 16;
-            var G1 = from >> 8 & 0x00FF;
-            var B1 = from & 0x0000FF;
+            let R1 = from >> 16;
+            let G1 = from >> 8 & 0x00FF;
+            let B1 = from & 0x0000FF;
 
             return "#" + (0x1000000
                     + (Math.round(((to >> 16) - R1) * n) + R1) * 0x10000
@@ -202,7 +202,7 @@ export class NetworkMap
     _create_station(station, location, is_intersection, is_terminus, is_main)
     {
         // Station classes (from type)
-        var label_classes = [];
+        let label_classes = [];
         if (is_intersection || is_terminus || is_main)
             label_classes.push('major_station');
         if (is_terminus)
@@ -212,8 +212,8 @@ export class NetworkMap
 
 
         // Station color
-        var outlineColor = NetworkMap.stations_default_color_dot;
-        var insideColor  = NetworkMap.stations_default_color_dot;
+        let outlineColor = NetworkMap.stations_default_color_dot;
+        let insideColor  = NetworkMap.stations_default_color_dot;
 
         if (is_main)
         {
@@ -233,33 +233,33 @@ export class NetworkMap
 
 
         // Station object
-        var station_marker = L.circleMarker(NetworkMap._coords_to_latlng(location), {
-            color =     outlineColor;
-            fillColor = insideColor;
+        let station_marker = L.circleMarker(NetworkMap._coords_to_latlng(location), {
+            color:     outlineColor,
+            fillColor: insideColor,
 
-            opacity = 0.76;
-            fillOpacity = 1;
+            opacity:     0.76,
+            fillOpacity: 1,
 
-            weight = is_main ? NetworkMap.stations_size_outline_main  = NetworkMap.stations_size_outline_normal;
-            stroke = is_main || is_intersection;
+            weight: is_main ? NetworkMap.stations_size_outline_main : NetworkMap.stations_size_outline_normal,
+            stroke: is_main || is_intersection,
 
-            className = 'network-map-station'
-        }).bindLabel('<div class="station-label' + (is_intersection || is_main ? ' station-label-intersection'  = '') + (is_main ? ' station-label-main'  = '') + '" id="station-label-for-' + station.code_name + '">' + station.full_name + '</div>', {
-            noHide = true;
-            className = label_classes.join(' ')
+            className: 'network-map-station'
+        }).bindLabel('<div class="station-label' + (is_intersection || is_main ? ' station-label-intersection' : '') + (is_main ? ' station-label-main' : '') + '" id="station-label-for-' + station.code_name + '">' + station.full_name + '</div>', {
+            noHide: true,
+            className: label_classes.join(' ')
         });
 
 
         // Station metadata
         station_marker.zeps = {
-            station = station;
+            station: station,
 
-            is_main = is_main;
-            is_terminus = is_terminus;
-            is_intersection = is_intersection;
+            is_main: is_main,
+            is_terminus: is_terminus,
+            is_intersection: is_intersection,
 
-            base_color = outlineColor;
-            base_fill_color = insideColor
+            base_color: outlineColor,
+            base_fill_color: insideColor
         };
 
 
@@ -282,19 +282,19 @@ export class NetworkMap
      */
     _create_line(station_from, station_to, color, is_rail)
     {
-        var line =  L.polyline([NetworkMap._coords_to_latlng([station_from.x, station_from.y]), NetworkMap._coords_to_latlng([station_to.x, station_to.y])], {
-            opacity = 1;
-            clickable = false;
+        let line =  L.polyline([NetworkMap._coords_to_latlng([station_from.x, station_from.y]), NetworkMap._coords_to_latlng([station_to.x, station_to.y])], {
+            opacity: 1,
+            clickable: false,
 
-            dashArray = !is_rail ? '5, 5, 1, 5'  = null;
+            dashArray: !is_rail ? '5, 5, 1, 5' : null,
 
-            className = 'network-map-line'
+            className: 'network-map-line'
         });
 
         line.zeps = {
-            station_from = station_from;
-            station_to = station_to;
-            base_color = color
+            station_from: station_from,
+            station_to: station_to,
+            base_color: color
         };
 
         // Important = after metadata
@@ -343,7 +343,7 @@ export class NetworkMap
     _link_stations(lines, station_base, direction)
     {
         // We try to find a link in this direction
-        var link = null;
+        let link = null;
         station_base.network.forEach(function(network_link)
         {
             if (network_link.direction == direction)
@@ -354,13 +354,13 @@ export class NetworkMap
 
         if (link != null)
         {
-            var station_other = NetworkMap.network[link.to];
+            let station_other = NetworkMap.network[link.to];
 
             if (station_other && !NetworkMap.__link_exists(station_base, station_other))
             {
-                var color = NetworkMap.stations_default_color_lines;
-                var colors_set;
-                var ref_coordinate;
+                let color = NetworkMap.stations_default_color_lines;
+                let colors_set;
+                let ref_coordinate;
 
                 if (direction == 'east' || direction == 'west')
                 {
@@ -409,7 +409,7 @@ export class NetworkMap
      */
     _update_station_dot_size(marker, size)
     {
-        marker.setRadius(size ? size  = NetworkMap.station_size_dot);
+        marker.setRadius(size ? size : NetworkMap.station_size_dot);
     };
 
     /**
@@ -441,13 +441,13 @@ export class NetworkMap
      */
     _colorize_marker(marker, color, shading)
     {
-        shading = shading !== undefined ? shading  = NetworkMap.shading_default;
+        shading = shading !== undefined ? shading : NetworkMap.shading_default;
 
         // Anything to do?
         if (!color && !shading)
             return;
 
-        var outlineColor, insideColor;
+        let outlineColor, insideColor;
 
         if (color)
         {
@@ -470,20 +470,20 @@ export class NetworkMap
             // Updates the color of the dot itself
             if (!color)
             {
-                outlineColor = marker.zeps.base_color ? marker.zeps.base_color  = marker.options.color;
-                insideColor = marker.zeps.base_fill_color ? marker.zeps.base_fill_color  = marker.options.fillColor;
+                outlineColor = marker.zeps.base_color ? marker.zeps.base_color : marker.options.color;
+                insideColor = marker.zeps.base_fill_color ? marker.zeps.base_fill_color : marker.options.fillColor;
             }
 
             marker.setStyle({
-                color = NetworkMap.__shade_color(shading, outlineColor);
-                fillColor = NetworkMap.__shade_color(shading, insideColor)
+                color: NetworkMap.__shade_color(shading, outlineColor),
+                fillColor: NetworkMap.__shade_color(shading, insideColor)
             });
 
 
             // Updates the color of the label
-            var label_id = 'station-label-for-' + marker.zeps.station.code_name;
-            var label_color = NetworkMap.__shade_color(shading, '#111111');
-            var label = document.getElementById(label_id);
+            let label_id = 'station-label-for-' + marker.zeps.station.code_name;
+            let label_color = NetworkMap.__shade_color(shading, '#111111');
+            let label = document.getElementById(label_id);
 
             if (label)
             {
@@ -495,8 +495,8 @@ export class NetworkMap
                 // This only happens before the map is drawn. The colors are updated a few milliseconds after the
                 // initialization of the map, in the init method.
                 NetworkMap.label_colors_waiting_for_update.push({
-                    id = label_id;
-                    color = label_color
+                    id, label_id,
+                    color, label_color
                 });
             }
         }
@@ -505,7 +505,7 @@ export class NetworkMap
         else if (marker instanceof L.Polyline)
         {
             marker.setStyle({
-                color = NetworkMap.__shade_color(shading, color ? insideColor  = marker.zeps.base_color ? marker.zeps.base_color  = marker.options.color)
+                color: NetworkMap.__shade_color(shading, color ? insideColor : marker.zeps.base_color ? marker.zeps.base_color : marker.options.color)
             });
         }
 
@@ -524,7 +524,7 @@ export class NetworkMap
         if (!marker.zeps)
             return false;
 
-        var shading;
+        let shading;
 
         // Stations dots
         if (marker instanceof L.CircleMarker)
@@ -533,7 +533,7 @@ export class NetworkMap
 
             NetworkMap.highlighted_paths.forEach(function (highlight_map)
             {
-                for (var j = 0; j < highlight_map.path.length; j++)
+                for (let j = 0; j < highlight_map.path.length; j++)
                 {
                     if (marker.zeps.station.code_name == highlight_map.path[j])
                     {
@@ -553,12 +553,12 @@ export class NetworkMap
 
             NetworkMap.highlighted_paths.forEach(function (highlight_map)
             {
-                for (var j = 0; j < highlight_map.path.length; j++)
+                for (let j = 0; j < highlight_map.path.length; j++)
                 {
-                    var current_station = highlight_map.path[j];
-                    var next_station = highlight_map.path[j+1];
-                    var from_station = marker.zeps.station_from.code_name;
-                    var to_station = marker.zeps.station_to.code_name;
+                    let current_station = highlight_map.path[j];
+                    let next_station = highlight_map.path[j+1];
+                    let from_station = marker.zeps.station_from.code_name;
+                    let to_station = marker.zeps.station_to.code_name;
 
                     if ((current_station == from_station && next_station == to_station) || (next_station == from_station && current_station == to_station))
                     {
@@ -599,12 +599,12 @@ export class NetworkMap
      */
     _adapt_zoom()
     {
-        var zoom_level = NetworkMap.map.getZoom();
+        let zoom_level = NetworkMap.map.getZoom();
 
-        var $labels = $('.leaflet-label');
-        var $labels_major = $('.leaflet-label.major_station');
-        var $label_terminus = $('.leaflet-label.terminus_station');
-        var $label_main = $('.leaflet-label.main_station');
+        let $labels = $('.leaflet-label');
+        let $labels_major = $('.leaflet-label.major_station');
+        let $label_terminus = $('.leaflet-label.terminus_station');
+        let $label_main = $('.leaflet-label.main_station');
 
         if (zoom_level >= 11)
         {
@@ -668,9 +668,9 @@ export class NetworkMap
      * @private
      */
     _encode_location_in_hash () {
-        var center = NetworkMap.map.getCenter();
-        var center_coordinates = NetworkMap._latlng_to_coords([center.lat, center.lng]);
-        var zoom = NetworkMap.map.getZoom();
+        let center = NetworkMap.map.getCenter();
+        let center_coordinates = NetworkMap._latlng_to_coords([center.lat, center.lng]);
+        let zoom = NetworkMap.map.getZoom();
 
         window.location.hash = center_coordinates[0] + ',' + center_coordinates[1] + ',' + zoom;
     };
@@ -680,15 +680,15 @@ export class NetworkMap
      * @private
      */
     _update_location_from_hash () {
-        var location_components = window.location.hash.substring(1).split(',');
+        let location_components = window.location.hash.substring(1).split(',');
 
         if (location_components.length >= 2) {
-            var center_lat = parseInt(location_components[0]);
-            var center_lng = parseInt(location_components[1]);
+            let center_lat = parseInt(location_components[0]);
+            let center_lng = parseInt(location_components[1]);
 
             if (!isNaN(center_lat) && !isNaN(center_lng)) {
-                var center = NetworkMap._coords_to_latlng([center_lat, center_lng]);
-                var zoom = 10;
+                let center = NetworkMap._coords_to_latlng([center_lat, center_lng]);
+                let zoom = 10;
 
                 if (location_components.length >= 3)
                     zoom = parseInt(location_components[2]);
@@ -715,7 +715,7 @@ export class NetworkMap
      */
     highlight_path(path, shading)
     {
-        return NetworkMap.highlighted_paths.push({ path = path, shading = shading}) - 1;
+        return NetworkMap.highlighted_paths.push({ path: path, shading: shading}) - 1;
     };
 
     /**
@@ -733,12 +733,12 @@ export class NetworkMap
     highlight_station(station_code_name, dot_style, label_style, label_classes)
     {
         NetworkMap.highlighted_stations.push({
-            station_code = station_code_name;
-            style = {
-                dot = dot_style;
-                label = {
-                    css = label_style;
-                    classes = label_classes
+            station_code: station_code_name,
+            style: {
+                dot: dot_style,
+                label: {
+                    css: label_style,
+                    classes: label_classes
                 }
             }
         });
@@ -752,12 +752,12 @@ export class NetworkMap
     highlight_path_start(station_code_name)
     {
         NetworkMap.highlight_station(
-            station_code_name;
+            station_code_name,
             {
-                color = '#00BB00';
-                fillColor = '#00FF00'
-            };
-            {};
+                color: '#00BB00',
+                fillColor: '#00FF00'
+            },
+            {},
             'main_station'
         );
     };
@@ -771,12 +771,12 @@ export class NetworkMap
     highlight_path_end(station_code_name)
     {
         NetworkMap.highlight_station(
-            station_code_name;
+            station_code_name,
             {
-                color = NetworkMap.stations_color_dot_main;
-                fillColor = '#FF0000'
-            };
-            {};
+                color: NetworkMap.stations_color_dot_main,
+                fillColor: '#FF0000'
+            },
+            {},
             'main_station'
         );
     };
@@ -799,13 +799,13 @@ export class NetworkMap
             return;
         }
 
-        var path = NetworkMap.highlighted_paths[path_id];
+        let path = NetworkMap.highlighted_paths[path_id];
         if (!path) return;
 
-        var min_x, min_z, max_x, max_z;
+        let min_x, min_z, max_x, max_z;
 
         // Comparison functions returning the other value if one is undefined
-        var comparison = function(comparison_function) {
+        let comparison = function(comparison_function) {
             return function (a, b) {
                 if (a === undefined && b === undefined)
                     return NaN;
@@ -818,10 +818,10 @@ export class NetworkMap
             }
         };
 
-        var min = comparison(Math.min), max = comparison(Math.max);
+        let min = comparison(Math.min), max = comparison(Math.max);
 
         path.path.forEach(function (station_code_name) {
-            var station = NetworkMap.stations[station_code_name];
+            let station = NetworkMap.stations[station_code_name];
             if (station && station.zeps)
             {
                 min_x = min(min_x, station.zeps.station.x);
@@ -849,7 +849,7 @@ export class NetworkMap
      */
     init($still_nothing_loader, callback)
     {
-        var $network_map = $('#' + NetworkMap.map_container_id);
+        let $network_map = $('#' + NetworkMap.map_container_id);
         $network_map.show();
 
 
@@ -890,23 +890,23 @@ export class NetworkMap
 
 
                 // Creates list of markers (will become layers later)
-                var markers_main = [];
-                var markers_intersections = [];
-                var markers_terminus = [];
-                var markers_others = [];
+                let markers_main = [];
+                let markers_intersections = [];
+                let markers_terminus = [];
+                let markers_others = [];
 
-                var lines = [];
+                let lines = [];
 
 
                 // Creates the stations, and the lines between them
                 network_array.forEach(function (station) {
                     if (station.is_visible) {
-                        var neighborhood = NetworkMap._get_neighborhood_infos(station);
-                        var is_main_station = NetworkMap.main_stations.indexOf(station.code_name) > -1;
+                        let neighborhood = NetworkMap._get_neighborhood_infos(station);
+                        let is_main_station = NetworkMap.main_stations.indexOf(station.code_name) > -1;
 
                         // We check if the station is highlighted
                         if (!is_main_station) {
-                            for (var i = 0; i < NetworkMap.highlighted_stations.length; i++) {
+                            for (let i = 0; i < NetworkMap.highlighted_stations.length; i++) {
                                 if (station.code_name == NetworkMap.highlighted_stations[i].station_code) {
                                     is_main_station = true;
                                     break;
@@ -914,8 +914,8 @@ export class NetworkMap
                             }
                         }
 
-                        var marker_station = NetworkMap._create_station(
-                            station, [station.x, station.y];
+                        let marker_station = NetworkMap._create_station(
+                            station, [station.x, station.y],
                             neighborhood.is_intersection, neighborhood.is_terminus, is_main_station
                         );
 
@@ -941,7 +941,7 @@ export class NetworkMap
                 {
                     // All the colors of the stations are stored, but these simple stations will always have
                     // only one color, the first of the array.
-                    var color = NetworkMap.stations_colors[station.zeps.station.code_name][0];
+                    let color = NetworkMap.stations_colors[station.zeps.station.code_name][0];
 
                     // We also update the base color of the station (color unshaded).
                     station.zeps.base_color      = color;
@@ -965,46 +965,45 @@ export class NetworkMap
 
                 // Loads the map
                 NetworkMap.map = L.map(NetworkMap.map_container_id, {
-                    center = NetworkMap._coords_to_latlng(NetworkMap.default_center);
-                    zoom = NetworkMap.default_zoom;
+                    center: NetworkMap._coords_to_latlng(NetworkMap.default_center),
+                    zoom: NetworkMap.default_zoom,
 
-                    minZoom = 8;
-                    maxZoom = 14;
+                    minZoom: 8,
+                    maxZoom: 14,
 
                     // Control will be added later, customized, not in the default location.
-                    zoomControl = false;
+                    zoomControl: false,
 
                     // Layers are added by inverted order of importance—the last will be displayed on top.
-                    layers = [
-                        NetworkMap.layer_lines;
+                    layers: [
+                        NetworkMap.layer_lines,
 
-                        NetworkMap.layer_others;
-                        NetworkMap.layer_terminus;
-                        NetworkMap.layer_intersections;
+                        NetworkMap.layer_others,
+                        NetworkMap.layer_terminus,
+                        NetworkMap.layer_intersections,
                         NetworkMap.layer_main
                     ]
                 });
 
                 L.control.zoom({
-                    position = NetworkMap.buttons_location
+                    position: NetworkMap.buttons_location
                 }).addTo(NetworkMap.map);
 
                 NetworkMap.map.attributionControl.addAttribution(
                     'Plan du Netherrail <a href="https://zcraft.fr">Zcraftien</a>' +
                     ' | Données aggrégées par <a href="https://github.com/FlorianCassayre/ZePS-Core">Florian Cassayre &amp; Amaury Carrade</a>' +
-                    (NetworkMap.missing_stations ? ' | <a href="' + NetworkMap.missing_stations + '">Station manquante ?</a>'  = '')
+                    (NetworkMap.missing_stations ? ' | <a href="' + NetworkMap.missing_stations + '">Station manquante ?</a>' : '')
                 );
+
 
                 // Ensures the zoom is handled correctly
                 NetworkMap._adapt_zoom();
-                NetworkMap.map.on('zoomend', function () {
-                    NetworkMap._adapt_zoom();
-                });
+                NetworkMap.map.on('zoomend', () => NetworkMap._adapt_zoom());
 
 
                 // Adds display of the labels on hover, if not already displayed
-                var mouse_in = function (e) {
-                    var $label = $(e.target.getLabel()._container);
+                let mouse_in = function (e) {
+                    let $label = $(e.target.getLabel()._container);
 
                     // Z-index update, so the label is always above others when pointed
                     $label.data('zeps-network-map-old-zindex', $label.css('z-index'));
@@ -1018,14 +1017,14 @@ export class NetworkMap
                         $label.data('zeps-network-map-displayed-at-zoom', NetworkMap.map.getZoom());
 
                         e.target.setStyle({
-                            stroke = true;
-                            weight = 5
+                            stroke: true,
+                            weight: 5
                         });
                     }
                 };
-                var mouse_out = function (e) {
-                    var $label = $(e.target.getLabel()._container);
-                    var old_zindex = $label.data('zeps-network-map-old-zindex');
+                let mouse_out = function (e) {
+                    let $label = $(e.target.getLabel()._container);
+                    let old_zindex = $label.data('zeps-network-map-old-zindex');
 
                     if ($label.data('zeps-network-map-previously-hidden')) {
                         // We hide the label only if the zoom level is the same.
@@ -1048,30 +1047,30 @@ export class NetworkMap
                 };
 
 
-                var groups = [
-                    NetworkMap.layer_others, NetworkMap.layer_terminus;
+                let groups = [
+                    NetworkMap.layer_others, NetworkMap.layer_terminus,
                     NetworkMap.layer_intersections, NetworkMap.layer_main
                 ];
 
                 groups.forEach(function (group) {
                     group.eachLayer(function (marker) {
                         marker.on({
-                            mouseover = mouse_in;
-                            mouseout = mouse_out
+                            mouseover: mouse_in,
+                            mouseout: mouse_out
                         });
 
                         // Adds pop-up on stations, with name, lines and dynmap links.
-                        var unique_lines = NetworkMap.stations_colors[marker.zeps.station.code_name]
+                        let unique_lines = NetworkMap.stations_colors[marker.zeps.station.code_name]
                             .sort()
-                            .filter(function(el,i,a) { return i == a.indexOf(el); });
+                            .filter(function(el, i, a) { return i == a.indexOf(el); });
 
-                        var popup_title = '<h4>';
+                        let popup_title = '<h4>';
                         unique_lines.forEach(function (color) {
                             popup_title += '<div class="square-line" style="background-color = ' + color + ';"></div>';
                         });
                         popup_title += '<span>' + marker.zeps.station.full_name + '</span></h4>';
 
-                        var popup_subtitle = '<p class="station-popup-subtitle">';
+                        let popup_subtitle = '<p class="station-popup-subtitle">';
                         if (marker.zeps.station.is_portal)
                             if (marker.zeps.is_intersection)
                                 popup_subtitle += '<strong>Portail et intersection</strong>';
@@ -1085,14 +1084,14 @@ export class NetworkMap
 
                         popup_subtitle += '</p>'
 
-                        var popup_content = '<p class="station-popup-content">';
+                        let popup_content = '<p class="station-popup-content">';
 
                         popup_content += '<strong>Coordonnées  = </strong>' + marker.zeps.station.x + ' ; ' + marker.zeps.station.y + '<br />';
                         if (NetworkMap.dynmap_root && (NetworkMap.dynmap_map_overworld || NetworkMap.dynmap_map_nether))
                         {
-                            popup_content += '<strong>Voir sur la Dynmap  = </strong>';
+                            popup_content += '<strong>Voir sur la Dynmap : </strong>';
 
-                            var links = [];
+                            let links = [];
                             if (NetworkMap.dynmap_map_overworld)
                                 links.push('<a href="' + NetworkMap.dynmap_root + '/' + '?worldname=' + NetworkMap.dynmap_map_overworld + '&mapname=' + NetworkMap.dynmap_map_type + '&x=' + (marker.zeps.station.x * 8) + '&y=64&z=' + (marker.zeps.station.y * 8) + '" target="_blank">surface</a>');
                             if (NetworkMap.dynmap_map_nether)
@@ -1105,12 +1104,12 @@ export class NetworkMap
 
                         if (NetworkMap.elem_form_from_id || NetworkMap.elem_form_to_id)
                         {
-                            var fields = {
-                                'from' = [
-                                    $(document.getElementById(NetworkMap.elem_form_from_id));
-                                ];
-                                'to' = [
-                                    $(document.getElementById(NetworkMap.elem_form_to_id));
+                            let fields = {
+                                'from': [
+                                    $(document.getElementById(NetworkMap.elem_form_from_id))
+                                ],
+                                'to': [
+                                    $(document.getElementById(NetworkMap.elem_form_to_id))
                                 ]
                             };
 
@@ -1121,7 +1120,7 @@ export class NetworkMap
                                 NetworkMap.map.closePopup();
                             }
 
-                            var $popup_list_action_departure = $('<li class="station-popup-link-set-departure" '
+                            let $popup_list_action_departure = $('<li class="station-popup-link-set-departure" '
                                         + 'data-station-full-name="' + marker.zeps.station.full_name + '">'
                                         + '<span class="fa fa-plane fa-lg" aria-hidden="true"></span>'
                                         + 'Partir d\'ici'
@@ -1129,7 +1128,7 @@ export class NetworkMap
                                             put_data_to_field('from', $(this));
                                         });
 
-                            var $popup_list_action_arrival = $('<li class="station-popup-link-set-arrival" '
+                            let $popup_list_action_arrival = $('<li class="station-popup-link-set-arrival" '
                                         + 'data-station-full-name="' + marker.zeps.station.full_name + '">'
                                         + '<span class="fa fa-plane fa-lg fa-rotate-90" aria-hidden="true"></span>'
                                         + 'Arriver ici'
@@ -1137,13 +1136,13 @@ export class NetworkMap
                                             put_data_to_field('to', $(this));
                                         });
 
-                            var $popup_list_actions = $('<ul class="station-popup-actions" />')
+                            let $popup_list_actions = $('<ul class="station-popup-actions" />')
                                     .append($popup_list_action_departure)
                                     .append($popup_list_action_arrival);
                         }
 
 
-                        var $popup = $('<div />')
+                        let $popup = $('<div />')
                                 .append(popup_title)
                                 .append(popup_subtitle)
                                 .append(popup_content)
@@ -1169,7 +1168,7 @@ export class NetworkMap
                 {
                     if (highlight.style)
                     {
-                        var marker = NetworkMap.stations[highlight.station_code];
+                        let marker = NetworkMap.stations[highlight.station_code];
                         if (marker)
                         {
                             if (highlight.style.dot)
@@ -1177,7 +1176,7 @@ export class NetworkMap
 
                             if (highlight.style.label)
                             {
-                                var $label = $('#station-label-for-' + highlight.station_code);
+                                let $label = $('#station-label-for-' + highlight.station_code);
 
                                 if (highlight.style.label.classes)
                                     $label.addClass(highlight.style.label.classes);
@@ -1197,14 +1196,14 @@ export class NetworkMap
 
                     L
                         .easyButton({
-                            id:'permanent-link-button';
-                            position = NetworkMap.buttons_location;
-                            states = [{
-                                stateName = 'default';
-                                onClick = NetworkMap._encode_location_in_hash;
-                                title = 'Lien permanent';
-                                icon = 'fa fa-link';
-                            }];
+                            id: 'permanent-link-button',
+                            position: NetworkMap.buttons_location,
+                            states: [{
+                                stateName: 'default',
+                                onClick: NetworkMap._encode_location_in_hash,
+                                title: 'Lien permanent',
+                                icon: 'fa fa-link',
+                            }]
                         }).addTo(NetworkMap.map);
                 }
 
