@@ -42,15 +42,31 @@ rm -rf cache/*
 
 ## Deployment
 
+The front assets are built using webpack.
+
+In both cases, install the dependencies by running, inside of the root folder:
+
+```bash
+npm install --save-dev
+```
+
 ### Local test server
 
-Just use the PHP's integrated server.
+To launch the webpack development server plus the PHP server, run:
 ```bash
-php -S 0.0.0.0:8080 -t ./web/
+npm run dev
 ```
-The app should be accessible at [127.0.0.1:8080](http://127.0.0.1:8080), or at the same port using your local IP address from other devices (e.g. phones).
+The app should be accessible at [127.0.0.1:8888](http://127.0.0.1:8888), or at the same port using your local IP address from other devices (e.g. phones).
 
 ### Production server
+
+To generate production assets, run:
+
+```bash
+npm run prod
+```
+
+and you'll find them in the `web/dist` directory a few seconds later.
 
 The server serving the application must serve the `/web/` directory only.  
 By default, the service will be available through `https://root/index.php`, `https://root/index.php/plan`, etc. To remove the filename part, use a rewrite rule, like this one for Apache:
@@ -66,7 +82,7 @@ By default, the service will be available through `https://root/index.php`, `htt
         RewriteRule ^ index.php [L]
 </IfModule>
 ```
-(with all usual security features too, like no indexing, etc.).
+(with all usual security features too, like no indexing, etc.). [Use that if you prefer nginx.](https://silex.symfony.com/doc/2.0/web_servers.html#nginx)
 
 To enhance application performances, you can use the optimized autoloader—but if you do so, you'll have to re-update it for every release.
 ```bash
