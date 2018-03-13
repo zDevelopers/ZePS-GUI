@@ -134,7 +134,20 @@
                 {%- endif -%}
             </aside>
 
-            <section id="network_map" class="network-map section-fullscreen">
+            <section
+                id="network-map"
+                class="network-map section-fullscreen"
+                data-api-network="{{ path('zeps.api.stations_network') }}"
+                data-api-network-colors="{{ path('zeps.api.stations_network_colors') }}"
+                data-path-missing-stations="{{ path('zeps.missing') }}"
+                data-permanent-url-with-anchor="yes"
+                data-form-from-id="from"
+                data-form-to-id="to"
+                data-dynmap-root="{{ app.config.dynmap.root }}"
+                data-dynmap-map-overworld="{{ app.config.world_name_overworld }}"
+                data-dynmap-map-nether="{{ app.config.world_name_nether }}"
+                data-dynmap-map-type="{{ app.config.dynmap.map_type }}"
+                {% if route %}data-highlighted-route="{% for step in route.path %}{{ step.station.name}},{% endfor %}"{% endif %}>
                 {% if error != 'unreachable' %}
                     <div class="network_map_loader">
                         <h4>Chargement de la carte en cours...</h4>

@@ -33,5 +33,5 @@ $(function()
 	setup_routing();
 
 	// Setups the network map.
-	setup_network_map($('#network_map'));
+	setup_network_map($('#network-map'));
 });
