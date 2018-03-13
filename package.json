@@ -4,6 +4,12 @@
   "description": "The GUI of a path calculator for Minecraft",
   "main": "web/js/index.js",
   "scripts": {
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "webpack-server": "webpack-dev-server -d --hot --port 8080 --config webpack.config.js --watch",
+    "php-server": "WEBPACK_DEV_SERVER=\"http://127.0.0.1:8080\" php -S 127.0.0.1:8888 -t ./web/",
+    "dev": "npm-run-all --parallel php-server webpack-server",
+    "prod": "NODE_ENV=production webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -52,6 +58,7 @@
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "file-loader": "^1.1.11",
     "node-sass": "^4.7.2",
+    "npm-run-all": "^4.1.2",
     "optimize-css-assets-webpack-plugin": "^4.0.0",
     "postcss-loader": "^2.1.1",
     "sass-loader": "^6.0.7",

@@ -6,9 +6,11 @@ const path = require('path');
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
-module.exports = {
+const prod = process.env.NODE_ENV === 'production';
+
+let config = {
     context: path.resolve(__dirname, 'assets'),
-    mode: 'development',
+    mode: prod ? 'production' : 'development',
     entry: {
         'zeps-gui': './js/index.js'
     },
@@ -17,7 +19,6 @@ module.exports = {
         filename: '[name].min.js',
         publicPath: '/dist'
     },
-    devtool: 'source-map',
     resolve: {
         alias: {
             // For Leaflet… TODO find a better solution, that's pretty ugly.
@@ -27,7 +28,7 @@ module.exports = {
             './images/marker-icon-2x.png$': path.resolve(__dirname, './node_modules/leaflet/dist/images/marker-icon-2x.png'),
             './images/marker-shadow.png$': path.resolve(__dirname, './node_modules/leaflet/dist/images/marker-shadow.png')
         },
-        unsafeCache: true
+        unsafeCache: !prod
     },
     module: {
         rules: [
@@ -43,11 +44,11 @@ module.exports = {
                     use: [
                         {
                             loader: 'css-loader',
-                            options: { sourceMap: true }
+                            options: { sourceMap: !prod }
                         },
                         {
                             loader: 'sass-loader',
-                            options: { sourceMap: true }
+                            options: { sourceMap: !prod }
                         },
                         'postcss-loader'
                     ],
@@ -65,13 +66,8 @@ module.exports = {
     },
     plugins: [
         new ExtractTextWebpackPlugin('zeps-gui.min.css'),
-        new OptimizeCssAssetsPlugin({
-            cssProcessor: require('cssnano'),
-            cssProcessorOptions: { discardComments: { removeAll: true } },
-            canPrint: true
-        }),
         new webpack.LoaderOptionsPlugin({
-            debug: true
+            debug: !prod
         })
     ],
     optimization: {
@@ -85,6 +81,28 @@ module.exports = {
                 }
             }
         },
-        minimize: true
-    }
+        minimize: prod
+    },
+    devServer: {
+        contentBase: path.resolve(__dirname, './web'),
+        headers: {
+            'Access-Control-Allow-Origin': '*'
+        },
+        historyApiFallback: true,
+        inline: true,
+        open: false,
+        hot: true
+    },
+    devtool: prod ? undefined : 'eval-source-map'
 }
+
+if (prod)
+{
+    config.plugins.push(new OptimizeCssAssetsPlugin({
+        cssProcessor: require('cssnano'),
+        cssProcessorOptions: { discardComments: { removeAll: true } },
+        canPrint: true
+    }));
+}
+
+module.exports = config;

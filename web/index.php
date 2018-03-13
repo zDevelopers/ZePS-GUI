@@ -148,6 +148,14 @@ $app->before(function (Request $request, Application $app)
 }, Application::EARLY_EVENT);
 
 
+// Webpack support
+
+$app['twig']->addFunction(new Twig_SimpleFunction('static', function($context, $path)
+{
+    return (getenv('WEBPACK_DEV_SERVER') ? getenv('WEBPACK_DEV_SERVER') : $context['app']['request']->getBasePath()) . $path;
+}, ['needs_context' => true]));
+
+
 // Cache is revoked if the checksum changes or the purge parameter is given.
 
 $app->before(function (Request $request, Application $app)

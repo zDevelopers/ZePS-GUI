@@ -56,9 +56,8 @@
         nether_world = '{{ app.config.world_name_nether }}';
     </script>
 
-
-    <script type="text/javascript" src="{{ app.request.basePath }}/dist/vendor.min.js"></script>
-    <script type="text/javascript" src="{{ app.request.basePath }}/dist/zeps-gui.min.js"></script>
+    <script type="text/javascript" src="{{ static('/dist/vendor.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static('/dist/zeps-gui.min.js') }}"></script>
 {% endblock %}
 
 {% block content %}
