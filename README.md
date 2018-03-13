@@ -22,6 +22,9 @@ cd ZePS-GUI
 
 # Updates the dependencies
 php composer.phar install
+
+# And the front dependencies
+npm install --save-dev
 ```
 *[Composer installation documentation is available here](https://getcomposer.org/download/).*
 
@@ -33,6 +36,7 @@ git pull
 
 # Updates the dependencies (if needed)
 php composer.phar install
+npm install --save-dev
 
 # Clears the cache (always)
 # If you don't want to remove all the cache for the routing API (because it auto-clears when needed),
@@ -43,12 +47,6 @@ rm -rf cache/*
 ## Deployment
 
 The front assets are built using webpack.
-
-In both cases, install the dependencies by running, inside of the root folder:
-
-```bash
-npm install --save-dev
-```
 
 ### Local test server
 
