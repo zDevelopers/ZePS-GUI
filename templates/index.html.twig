@@ -5,47 +5,8 @@
 {% block main_title %}Itinéraire{% endblock %}
 
 {% block javascripts %}
-
     <script type="text/javascript">
-        $(function()
-        {
-            NetworkMap.network_api        = '{{ path('zeps.api.stations_network') }}';
-            NetworkMap.network_colors_api = '{{ path('zeps.api.stations_network_colors') }}';
-            NetworkMap.dynmap_root        = '{{ app.config.dynmap.root }}';
-            NetworkMap.main_stations      = '{{ main_stations|join(',') }}'.split(',');
-            NetworkMap.map_container_id   = 'network_map';
-
-            NetworkMap.elem_form_from_id      = 'from';
-            NetworkMap.elem_form_from_code_id = 'from_code_name';
-            NetworkMap.elem_form_to_id        = 'to';
-            NetworkMap.elem_form_to_code_id   = 'to_code_name';
-
-            NetworkMap.missing_stations   = '{{ path('zeps.missing') }}';
-
-            NetworkMap.permanent_url_with_anchor = true;
-
-            NetworkMap.dynmap_map_overworld      = '{{ app.config.world_name_overworld }}';
-            NetworkMap.dynmap_map_nether         = '{{ app.config.world_name_nether }}';
-            NetworkMap.dynmap_map_type           = '{{ app.config.dynmap.map_type }}';
-
-            {% if route %}
-            NetworkMap.shading_default = 0.8;
-
-            NetworkMap.highlight_path([{% for step in route.path %}'{{ step.station.name}}',{% endfor %}], 0);
-            NetworkMap.highlight_path_start('{{ route.firstStation.name }}');
-            NetworkMap.highlight_path_end('{{ route.lastStation.name }}');
-            {% endif %}
-
-            NetworkMap.init($('#still_nothing_loader'), function () {
-                {% if route %}
-                NetworkMap.center_on_highlighted_path(0);
-                {% endif %}
-            });
-        });
-    </script>
-
-    <script type="text/javascript">
-        routes = {
+        var routes = {
             'get_players': '{{ path('zeps.api.logged_in_players', {'world_names': app.config.overworld_and_nether_worlds|join(',')}) }}',
             'get_nearest': '{{ path('zeps.api.nearest_station', {'name': 'playerNamePlaceholder'}) }}',
             'get_head': '{{ path('zeps.player_head', {'name': 'playerNamePlaceholder'}) }}',
@@ -53,7 +14,7 @@
             'public_search_results': '{{ path('zeps.search_results', {'from': 'from_placeholer', 'to': 'to_placeholder', 'options': 'options_placeholder'}) }}'
         };
 
-        nether_world = '{{ app.config.world_name_nether }}';
+        var nether_world = '{{ app.config.world_name_nether }}';
     </script>
 
     <script type="text/javascript" src="{{ static('/dist/vendor.min.js') }}"></script>
@@ -143,6 +104,7 @@
                 data-permanent-url-with-anchor="yes"
                 data-form-from-id="from"
                 data-form-to-id="to"
+                data-main-stations="{{ main_stations|join(',') }}" {# Should be read from the API, not in the GUI config #}
                 data-dynmap-root="{{ app.config.dynmap.root }}"
                 data-dynmap-map-overworld="{{ app.config.world_name_overworld }}"
                 data-dynmap-map-nether="{{ app.config.world_name_nether }}"

@@ -20,7 +20,7 @@
 
 .station-label {
     transform-origin: 0 0;
-    transform: rotate(-38deg) translateY(-10px) translateX(-6px);
+    transform: rotate(-38deg) translateY(-10px) translateX(6px);
     font-size: 125%;
     text-shadow: 3px 3px 3px #fcf7ed, -3px -3px 3px #fcf7ed;
 
@@ -35,9 +35,17 @@
         font-weight: normal;
     }
 
+    &.station-label-main, &.station-label-intersection {
+        transform: rotate(-38deg) translateY(-10px) translateX(6px);
+    }
+
     &.label-force-display {
         display: block !important;
     }
+}
+
+.zoom-high .station-label:not(.station-label-main):not(.station-label-intersection) {
+    transform: rotate(-38deg) translateY(-16px) translateX(10px);
 }
 
 .square-line {
@@ -46,6 +54,21 @@
     height: 20px;
     margin-right: 3px;
     vertical-align: sub;
+}
+
+// Overrides Leaflet-Tooltips styles
+.leaflet-tooltip-pane {
+    .leaflet-tooltip {
+        padding: 0;
+        background-color: transparent;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+
+        &.leaflet-tooltip-right::before, &.leaflet-tooltip-left::before {
+            display: none;
+        }
+    }
 }
 
 .leaflet-popup-content {

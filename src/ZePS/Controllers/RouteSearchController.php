@@ -206,6 +206,7 @@ class RouteSearchController
             'options'      => array('official' => $official, 'accessible' => $accessible),
             'raw_options'  => $options,
             'stations'     => $stations,
+            'main_stations' => $app['zeps.routing']->get_main_stations(),
 
             'route'        => $route,
             'alternatives' => $alternatives,
