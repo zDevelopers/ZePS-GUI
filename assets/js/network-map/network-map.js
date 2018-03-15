@@ -85,6 +85,9 @@ export class NetworkMap
         // The raw network object returned by the API but indexed by station ID.
         this.network = {};
 
+        // The lines, to be able to re-colorize lines after.
+        this.lines = [];
+
         // The links already drawn, avoiding duplicated lines (better performances, plus visible in the dashed lines).
         this.lines_drawn = [];
 
@@ -99,7 +102,7 @@ export class NetworkMap
             let highlighted_stations = $map_container.data('highlighted-route').split(',').filter(station => station.length > 0);
             if (highlighted_stations.length > 0)
             {
-                this.highlight_path(highlighted_stations, 0);
+                this.highlight_path(highlighted_stations);
                 this.shading_default = 0.8;
             }
         }
@@ -134,7 +137,7 @@ export class NetworkMap
     _latlng_to_coords(latlng)
     {
         return [Math.round(latlng[1] * 1000), Math.round(-latlng[0] * 1000)];
-    };
+    }
 
     /**
      * Checks if the given station is an intersection or a terminus.
@@ -152,7 +155,7 @@ export class NetworkMap
             is_intersection: is_intersection,
             is_terminus: relations_count <= 1
         };
-    };
+    }
 
     /**
      * Shades a color.
@@ -199,7 +202,7 @@ export class NetworkMap
                     + (Math.round(((to >> 8 & 0x00FF) - G1) * n) + G1) * 0x100
                     + (Math.round(((to & 0x0000FF) - B1) * n) + B1)).toString(16).slice(1);
         }
-    };
+    }
 
 
     // -------------------- Map creation
@@ -280,15 +283,15 @@ export class NetworkMap
 
             base_color: outlineColor,
             base_fill_color: insideColor
-        };
+        }
 
 
-        // Updates the shading of the label (important = after metadata!)
+        // Updates the shading of the label (important: after metadata!)
         this._colorize_marker(station_marker, undefined, this._get_real_shading(station_marker));
 
 
         return station_marker;
-    };
+    }
 
     /**
      * Creates a line.
@@ -317,14 +320,14 @@ export class NetworkMap
             base_color: color
         };
 
-        // Important = after metadata
+        // Important: after metadata
         this._colorize_marker(line, color, this._get_real_shading(line));
 
         return line;
-    };
+    }
 
     /**
-     * Encodes a stations link in a string. Th string depends on the origin, destination and order.
+     * Encodes a stations link in a string. The string depends on the origin, destination and order.
      * This is used to draw each connection once.
      *
      * @param station1 The first station.
@@ -335,7 +338,7 @@ export class NetworkMap
     __encode_link(station1, station2)
     {
         return station1.x + ',' + station1.y + ';' + station2.x + ',' + station2.y;
-    };
+    }
 
     /**
      * Checks if a link exists between the given station (regardless of the order).
@@ -349,7 +352,7 @@ export class NetworkMap
     {
         return this.lines_drawn.indexOf(this.__encode_link(station1, station2)) > -1
             || this.lines_drawn.indexOf(this.__encode_link(station2, station1)) > -1;
-    };
+    }
 
     /**
      * Links two stations with a line, if possible.
@@ -418,7 +421,7 @@ export class NetworkMap
                 this.lines_drawn.push(this.__encode_link(station_base, station_other));
             }
         }
-    };
+    }
 
     /**
      * Updates the size of a circle marker.
@@ -430,7 +433,7 @@ export class NetworkMap
     _update_station_dot_size(marker, size)
     {
         marker.setRadius(size ? size : this.station_size_dot);
-    };
+    }
 
     /**
      * Updates the size of all circle markers in the given layer.
@@ -446,7 +449,7 @@ export class NetworkMap
         {
             self._update_station_dot_size(marker, size);
         });
-    };
+    }
 
     /**
      * Colorizes a station or a line.
@@ -531,7 +534,7 @@ export class NetworkMap
         }
 
         // Else, unsupported marker, no action.
-    };
+    }
 
     /**
      * Returns the real color to use for this marker, taking into account the highlighted path.
@@ -591,7 +594,7 @@ export class NetworkMap
 
             return shading;
         }
-    };
+    }
 
     /**
      * Adds a layer to the map, if not previously added.
@@ -603,7 +606,7 @@ export class NetworkMap
     {
         if (!this.map.hasLayer(layer))
             this.map.addLayer(layer);
-    };
+    }
 
 
     // -------------------- Zoom adaptation
@@ -687,7 +690,7 @@ export class NetworkMap
             $labels.hide();
             $label_main.show();
         }
-    };
+    }
 
 
     // -------------------- Permanent links with hashes
@@ -703,7 +706,7 @@ export class NetworkMap
         let zoom = this.map.getZoom();
 
         window.location.hash = center_coordinates[0] + ',' + center_coordinates[1] + ',' + zoom;
-    };
+    }
 
     /**
      * Loads a location from the URL hash.
@@ -727,7 +730,7 @@ export class NetworkMap
                     this.map.setView(center, zoom);
             }
         }
-    };
+    }
 
 
     // -------------------- Configuration methods
@@ -745,10 +748,13 @@ export class NetworkMap
      */
     highlight_path(path, shading)
     {
+        if (shading === undefined)
+            shading = 0;
+
         this.highlight_path_start(path[0]);
         this.highlight_path_end(path[path.length - 1]);
         return this.highlighted_paths.push({ path: path, shading: shading}) - 1;
-    };
+    }
 
     /**
      * Highlights a station, giving another style.
@@ -774,7 +780,7 @@ export class NetworkMap
                 }
             }
         });
-    };
+    }
 
     /**
      * Highlights a startup station, using a pre-determined style.
@@ -792,7 +798,7 @@ export class NetworkMap
             {},
             'main_station'
         );
-    };
+    }
 
 
     /**
@@ -811,7 +817,48 @@ export class NetworkMap
             {},
             'main_station'
         );
-    };
+    }
+
+    /**
+     * Removes the highlighting on a path.
+     *
+     * @param path_id The paths IDs, as returned by highlight_path. If undefined, removes all.
+     */
+    un_highlight_paths(...paths_ids)
+    {
+        if (paths_ids === undefined)
+            paths_ids = this.highlighted_paths.keys();
+
+        let stations_to_un_highlight = [];
+
+        paths_ids.forEach(path_id => {
+            let path = this.highlighted_paths[path_id];
+            stations_to_un_highlight.push(path.path[0]);
+            stations_to_un_highlight.push(path.path[path.lenght - 1]);
+        });
+
+        // We removes the paths and highlighted stations for this path.
+        this.highlighted_paths = this.highlighted_paths.filter((path, i) => !paths_ids.find(i));
+        this.un_highlight_stations(...stations_to_un_highlight);
+    }
+
+    /**
+     * Removes the highlighting on stations.
+     *
+     * @param ...stations_codes The stations code names. If undefined, removes all.
+     */
+    un_highlight_stations(...stations_codes)
+    {
+        if (stations_codes === undefined)
+        {
+            this.highlighted_stations = [];
+            return;
+        }
+
+        this.highlighted_stations = this.highlighted_stations.filter(
+            station => !stations_codes.find(station.station_code)
+        );
+    }
 
 
     // -------------------- Centering methods
@@ -872,14 +919,16 @@ export class NetworkMap
 
         if (this.map.getZoom() >= 11)
             this.map.setZoom(this.map.getZoom() - 1);
-    };
+    }
 
 
-    // -------------------- Initialization
+    // -------------------- Rendering
 
 
     /**
      * Renders the map.
+     * This method should be called for the initial render only. To update the map with a new path on it,
+     * use re_render_highlighted_path().
      */
     render(callback)
     {
@@ -917,7 +966,7 @@ export class NetworkMap
                 let markers_terminus = [];
                 let markers_others = [];
 
-                let lines = [];
+                self.lines = [];
 
 
                 // Creates the stations, and the lines between them
@@ -950,10 +999,10 @@ export class NetworkMap
                     }
 
                     if (station.network) {
-                        self._link_stations(lines, station, 'east');
-                        self._link_stations(lines, station, 'north');
-                        self._link_stations(lines, station, 'south');
-                        self._link_stations(lines, station, 'west');
+                        self._link_stations(self.lines, station, 'east');
+                        self._link_stations(self.lines, station, 'north');
+                        self._link_stations(self.lines, station, 'south');
+                        self._link_stations(self.lines, station, 'west');
                     }
                 });
 
@@ -978,7 +1027,7 @@ export class NetworkMap
                 self.layer_intersections = L.layerGroup(markers_intersections);
                 self.layer_terminus = L.layerGroup(markers_terminus);
                 self.layer_others = L.layerGroup(markers_others);
-                self.layer_lines = L.layerGroup(lines);
+                self.layer_lines = L.layerGroup(self.lines);
 
 
                 // Removes the loader
@@ -1044,6 +1093,7 @@ export class NetworkMap
                         });
                     }
                 };
+                
                 let mouse_out = function (e) {
                     let $label = $(e.target.getTooltip()._container);
                     let old_zindex = $label.data('zeps-network-map-old-zindex');
@@ -1257,4 +1307,20 @@ export class NetworkMap
             });
         });
     }
-};
+
+
+    /**
+     * Re-renders the colors and dot styles of the map according to the current path(s).
+     * render() must have been called before.
+     */
+    re_render_highlighted_path()
+    {
+        [this.layer_others, this.layer_terminus, this.layer_intersections, this.layer_main, this.layer_lines].forEach(layer =>
+        {
+            layer.eachLayer(marker =>
+            {
+                
+            });
+        });
+    }
+}
