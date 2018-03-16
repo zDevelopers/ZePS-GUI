@@ -1,4 +1,3 @@
-/* TODO replace Leaflet.Label with Leaflet.Tooltip as it's deprecated */
 'use strict';
 
 import 'leaflet';
@@ -67,7 +66,8 @@ export class NetworkMap
         // An object containing the station marker indexed by station's code name.
         this.stations = [];
 
-        // The default view of the map
+        // The default view of the map.
+        // TODO This should be retrieved from the core someway.
         this.default_center = [-80, -1306];
         this.default_zoom = 10;
 
@@ -109,6 +109,607 @@ export class NetworkMap
     }
 
 
+
+    // -------------------- Configuration methods
+
+
+    /**
+     * Highlights a path in the map.
+     *
+     * Must be called before the init method.
+     *
+     * @param path The path to highlight (ordered list of stations code names)
+     * @param shading The shading to apply to this path (default = 0, i.e. the normal color).
+     *
+     * @return {Number} The highlighted path ID.
+     */
+    highlight_path(path, shading)
+    {
+        if (shading === undefined)
+            shading = 0;
+
+        this.highlight_path_start(path[0]);
+        this.highlight_path_end(path[path.length - 1]);
+        return this.highlighted_paths.push({ path: path, shading: shading}) - 1;
+    }
+
+    /**
+     * Highlights a station, giving another style.
+     *
+     * These stations will be added to the main stations layer, so they will always be displayed, at every zoom
+     * levels. They will also by default inherits their styles from the main stations one (for both station dot
+     * and label).
+     *
+     * @param station_code_name The station's code name.
+     * @param dot_style The special style to give.
+     * @param label_style An object containing CSS properties to add to the label.
+     * @param label_classes A string containing space-separated classes to add to the label.
+     */
+    highlight_station(station_code_name, dot_style, label_style, label_classes)
+    {
+        this.highlighted_stations.push({
+            station_code: station_code_name,
+            style: {
+                dot: dot_style,
+                label: {
+                    css: label_style,
+                    classes: label_classes
+                }
+            }
+        });
+    }
+
+    /**
+     * Highlights a startup station, using a pre-determined style.
+     *
+     * @param station_code_name The station's code name.
+     */
+    highlight_path_start(station_code_name)
+    {
+        this.highlight_station(
+            station_code_name,
+            {
+                color: '#00BB00',
+                fillColor: '#00FF00'
+            },
+            {},
+            'main_station'
+        );
+    }
+
+
+    /**
+     * Highlights an end-of-path station, using a pre-determined style.
+     *
+     * @param station_code_name The station's code name.
+     */
+    highlight_path_end(station_code_name)
+    {
+        this.highlight_station(
+            station_code_name,
+            {
+                color: this.stations_color_dot_main,
+                fillColor: '#FF0000'
+            },
+            {},
+            'main_station'
+        );
+    }
+
+    /**
+     * Removes the highlighting on a path.
+     *
+     * @param paths_ids The paths IDs, as returned by highlight_path. If undefined, removes all.
+     */
+    un_highlight_paths(...paths_ids)
+    {
+        if (paths_ids === undefined)
+            paths_ids = this.highlighted_paths.keys();
+
+        let stations_to_un_highlight = [];
+
+        paths_ids.forEach(path_id => {
+            let path = this.highlighted_paths[path_id];
+            stations_to_un_highlight.push(path.path[0]);
+            stations_to_un_highlight.push(path.path[path.lenght - 1]);
+        });
+
+        // We removes the paths and highlighted stations for this path.
+        this.highlighted_paths = this.highlighted_paths.filter((path, i) => !paths_ids.find(i));
+        this.un_highlight_stations(...stations_to_un_highlight);
+    }
+
+    /**
+     * Removes the highlighting on stations.
+     *
+     * @param stations_codes The stations code names. If undefined, removes all.
+     */
+    un_highlight_stations(...stations_codes)
+    {
+        if (stations_codes === undefined)
+        {
+            this.highlighted_stations = [];
+            return;
+        }
+
+        this.highlighted_stations = this.highlighted_stations.filter(
+            station => !stations_codes.find(station.station_code)
+        );
+    }
+
+
+
+    // -------------------- Centering methods
+
+
+    /**
+     * Centers & adjust the map on an highlighted path.
+     *
+     * @param path_id The highlighted path ID. The first added is 0, then 1, 2, etc.
+     *                This ID is returned by the highlight_path method.
+     */
+    center_on_highlighted_path(path_id)
+    {
+        let self = this;
+
+        if (!this.map)
+        {
+            console.error('Cannot call NetworkMap.center_on_highlighted_path before the init method. Use it in the init callback.');
+            return;
+        }
+
+        let path = this.highlighted_paths[path_id];
+        if (!path) return;
+
+        let min_x, min_z, max_x, max_z;
+
+        // Comparison functions returning the other value if one is undefined
+        let comparison = function(comparison_function) {
+            return function (a, b) {
+                if (a === undefined && b === undefined)
+                    return NaN;
+                else if (a === undefined)
+                    return b;
+                else if (b === undefined)
+                    return a;
+                else
+                    return comparison_function(a, b);
+            }
+        };
+
+        let min = comparison(Math.min), max = comparison(Math.max);
+
+        path.path.forEach(function (station_code_name) {
+            let station = self.stations[station_code_name];
+            if (station && station.zeps)
+            {
+                min_x = min(min_x, station.zeps.station.x);
+                min_z = min(min_z, station.zeps.station.y);
+                max_x = max(max_x, station.zeps.station.x);
+                max_z = max(max_z, station.zeps.station.y);
+            }
+        });
+
+        if (min_x === undefined || min_z === undefined || max_x === undefined || max_z === undefined)
+            return;
+
+        this.map.fitBounds([this._coords_to_latlng([min_x, min_z]), this._coords_to_latlng([max_x, max_z])]);
+
+        if (this.map.getZoom() >= 11)
+            this.map.setZoom(this.map.getZoom() - 1);
+    }
+
+
+
+    // -------------------- Rendering
+
+
+    /**
+     * Renders the map.
+     * This method should be called for the initial render only. To update the map with a new path on it,
+     * use re_render_highlighted_path().
+     */
+    render(callback)
+    {
+        let self = this;
+        let $network_map = self.$map_container;
+
+        if (!self.network_api || !self.network_colors_api)
+        {
+            console.error('NetworkMap: network API not configured.');
+            return;
+        }
+
+        if (!self.map_container_id)
+        {
+            console.error('NetworkMap: container ID not configured.');
+            return;
+        }
+
+
+        $.getJSON(self.network_colors_api, function (network_colors)
+        {
+            self.lines_colors = network_colors;
+
+            $.getJSON(self.network_api, function (network_array)
+            {
+                let t0 = performance.now();
+
+                // Constructs a map by ID
+                network_array.forEach(function (station) {
+                    self.network[station.id] = station;
+                });
+
+                self._create_markers();
+                self._colorize_and_group_markers();
+
+                // - Create map and hide loader -
+                // - Call callback -
+
+
+                // Creates list of markers (will become layers later)
+                let markers_main = [];
+                let markers_intersections = [];
+                let markers_terminus = [];
+                let markers_others = [];
+
+                self.lines = [];
+
+
+                // Creates the stations, and the lines between them
+                network_array.forEach(function (station) {
+                    if (station.is_visible) {
+                        let neighborhood = self._get_neighborhood_infos(station);
+                        let is_main_station = self.main_stations.indexOf(station.code_name) > -1;
+
+                        // We check if the station is highlighted
+                        if (!is_main_station) {
+                            for (let i = 0; i < self.highlighted_stations.length; i++) {
+                                if (station.code_name == self.highlighted_stations[i].station_code) {
+                                    is_main_station = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        let marker_station = self._create_station(
+                            station, [station.x, station.y],
+                            neighborhood.is_intersection, neighborhood.is_terminus, is_main_station
+                        );
+
+                        if      (is_main_station)              markers_main.push(marker_station);
+                        else if (neighborhood.is_intersection) markers_intersections.push(marker_station);
+                        else if (neighborhood.is_terminus)     markers_terminus.push(marker_station);
+                        else                                   markers_others.push(marker_station);
+
+                        self.stations[station.code_name] = marker_station;
+                    }
+
+                    if (station.network) {
+                        self._link_stations(self.lines, station, 'east');
+                        self._link_stations(self.lines, station, 'north');
+                        self._link_stations(self.lines, station, 'south');
+                        self._link_stations(self.lines, station, 'west');
+                    }
+                });
+
+
+                // Attributes the colors of the dots, for basic stations
+                markers_others.forEach(function (station)
+                {
+                    // All the colors of the stations are stored, but these simple stations will always have
+                    // only one color, the first of the array.
+                    let color = self.stations_colors[station.zeps.station.code_name][0];
+
+                    // We also update the base color of the station (color unshaded).
+                    station.zeps.base_color      = color;
+                    station.zeps.base_fill_color = color;
+
+                    self._colorize_marker(station, color, self._get_real_shading(station));
+                });
+
+
+                // Creates the layers, and display them on the map
+                self.layer_main = L.layerGroup(markers_main);
+                self.layer_intersections = L.layerGroup(markers_intersections);
+                self.layer_terminus = L.layerGroup(markers_terminus);
+                self.layer_others = L.layerGroup(markers_others);
+                self.layer_lines = L.layerGroup(self.lines);
+
+
+                // Removes the loader
+                $network_map.empty();
+
+
+                // Loads the map
+                self.map = L.map(self.map_container_id, {
+                    center: self._coords_to_latlng(self.default_center),
+                    zoom: self.default_zoom,
+
+                    minZoom: 8,
+                    maxZoom: 14,
+
+                    // Control will be added later, customized, not in the default location.
+                    zoomControl: false,
+
+                    // Layers are added by inverted order of importance—the last will be displayed on top.
+                    layers: [
+                        self.layer_lines,
+
+                        self.layer_others,
+                        self.layer_terminus,
+                        self.layer_intersections,
+                        self.layer_main
+                    ]
+                });
+
+                L.control.zoom({
+                    position: self.buttons_location
+                }).addTo(self.map);
+
+                self.map.attributionControl.addAttribution(
+                    'Plan du Netherrail <a href="https://zcraft.fr">Zcraftien</a>' +
+                    ' | Données aggrégées par <a href="https://github.com/FlorianCassayre/ZePS-Core">Florian Cassayre &amp; Amaury Carrade</a>' +
+                    (self.missing_stations ? ' | <a href="' + self.missing_stations + '">Station manquante ?</a>' : '')
+                );
+
+
+                // Ensures the zoom is handled correctly
+                self._adapt_zoom();
+                self.map.on('zoomend', self._adapt_zoom.bind(self));
+
+
+                // Adds display of the labels on hover, if not already displayed
+                let mouse_in = function (e) {
+                    let $label = $(e.target.getTooltip()._container);
+
+                    // Z-index update, so the label is always above others when pointed
+                    $label.data('zeps-network-map-old-zindex', $label.css('z-index'));
+                    $label.css('z-index', 9001);
+
+                    if (!$label.is(":visible")) {
+                        $label.fadeIn(200);
+
+                        $label.data('zeps-network-map-previously-hidden', true);
+                        $label.data('zeps-network-map-previous-container-style', jQuery.extend(true, {}, e.target.options));
+                        $label.data('zeps-network-map-displayed-at-zoom', self.map.getZoom());
+
+                        e.target.setStyle({
+                            stroke: true,
+                            weight: 5
+                        });
+                    }
+                };
+
+                let mouse_out = function (e) {
+                    let $label = $(e.target.getTooltip()._container);
+                    let old_zindex = $label.data('zeps-network-map-old-zindex');
+
+                    if ($label.data('zeps-network-map-previously-hidden')) {
+                        // We hide the label only if the zoom level is the same.
+                        // Else, either the zoom level change hidden it, and we don't have to change that, or
+                        // it makes it always displayed, and again we don't have to change anything.
+                        if ($label.data('zeps-network-map-displayed-at-zoom') == self.map.getZoom())
+                            $label.fadeOut(200);
+
+                        e.target.setStyle($label.data('zeps-network-map-previous-container-style'));
+
+                        $label.removeData('zeps-network-map-previously-hidden');
+                        $label.removeData('zeps-network-map-previous-container-style');
+                    }
+
+                    if (old_zindex)
+                    {
+                        $label.css('z-index', old_zindex);
+                        $label.removeData('zeps-network-map-old-zindex');
+                    }
+                };
+
+
+                let groups = [
+                    self.layer_others, self.layer_terminus,
+                    self.layer_intersections, self.layer_main
+                ];
+
+                groups.forEach(function (group) {
+                    group.eachLayer(function (marker) {
+                        marker.on({
+                            mouseover: mouse_in,
+                            mouseout: mouse_out
+                        });
+
+                        // Adds pop-up on stations, with name, lines and dynmap links.
+                        let unique_lines = self.stations_colors[marker.zeps.station.code_name]
+                            .sort()
+                            .filter(function(el, i, a) { return i == a.indexOf(el); });
+
+                        let popup_title = '', popup_subtitle = '', popup_content = '', $popup_list_actions;
+
+                        // Popup title
+                        popup_title = '<h4>';
+                        unique_lines.forEach(function (color) {
+                            popup_title += '<div class="square-line" style="background-color: ' + color + ';"></div>';
+                        });
+                        popup_title += '<span>' + marker.zeps.station.full_name + '</span></h4>';
+
+                        // Popup subtitle
+                        popup_subtitle = '<p class="station-popup-subtitle">';
+                        if (marker.zeps.station.is_portal)
+                            if (marker.zeps.is_intersection)
+                                popup_subtitle += '<strong>Portail et intersection</strong>';
+                            else
+                                popup_subtitle += '<strong>Portail de sortie</strong>';
+                        else
+                            popup_subtitle += '<strong>Intersection</strong>';
+
+                        if (!marker.zeps.station.is_intersection)
+                            popup_subtitle += ' (sans arrêt)';
+
+                        popup_subtitle += '</p>'
+
+                        // Popup content
+                        popup_content = '<p class="station-popup-content">';
+
+                        popup_content += '<strong>Coordonnées : </strong>' + marker.zeps.station.x + ' ; ' + marker.zeps.station.y + '<br />';
+                        if (self.dynmap_root && (self.dynmap_map_overworld || self.dynmap_map_nether))
+                        {
+                            popup_content += '<strong>Voir sur la Dynmap : </strong>';
+
+                            let links = [];
+                            if (self.dynmap_map_overworld)
+                                links.push('<a href="' + self.dynmap_root + '/' + '?worldname=' + self.dynmap_map_overworld + '&mapname=' + self.dynmap_map_type + '&x=' + (marker.zeps.station.x * 8) + '&y=64&z=' + (marker.zeps.station.y * 8) + '" target="_blank">surface</a>');
+                            if (self.dynmap_map_nether)
+                                links.push('<a href="' + self.dynmap_root + '/' + '?worldname=' + self.dynmap_map_nether + '&mapname=' + self.dynmap_map_type + '&x=' + marker.zeps.station.x + '&y=64&z=' + marker.zeps.station.y + '&zoom=3" target="_blank">nether</a>');
+
+                            popup_content += links.join(', ');
+                        }
+
+                        popup_content += '</p>';
+
+                        // Popup actions
+                        if (self.elem_form_from_id || self.elem_form_to_id)
+                        {
+                            let fields = {
+                                'from': [
+                                    $(document.getElementById(self.elem_form_from_id))
+                                ],
+                                'to': [
+                                    $(document.getElementById(self.elem_form_to_id))
+                                ]
+                            };
+
+                            function put_data_to_field(field, $button_elem)
+                            {
+                                fields[field][0].val($button_elem.attr('data-station-full-name'));
+
+                                self.map.closePopup();
+                            }
+
+                            let $popup_list_action_departure = $('<li class="station-popup-link-set-departure" '
+                                + 'data-station-full-name="' + marker.zeps.station.full_name + '">'
+                                + '<span class="fa fa-plane fa-lg" aria-hidden="true"></span>'
+                                + 'Partir d\'ici'
+                                + '</li>').on('click', function() {
+                                put_data_to_field('from', $(this));
+                            });
+
+                            let $popup_list_action_arrival = $('<li class="station-popup-link-set-arrival" '
+                                + 'data-station-full-name="' + marker.zeps.station.full_name + '">'
+                                + '<span class="fa fa-plane fa-lg fa-rotate-90" aria-hidden="true"></span>'
+                                + 'Arriver ici'
+                                + '</li>').on('click', function() {
+                                put_data_to_field('to', $(this));
+                            });
+
+                            $popup_list_actions = $('<ul class="station-popup-actions" />')
+                                .append($popup_list_action_departure)
+                                .append($popup_list_action_arrival);
+                        }
+
+
+                        let $popup = $('<div />')
+                            .append(popup_title)
+                            .append(popup_subtitle)
+                            .append(popup_content)
+                            .append($popup_list_actions);
+
+                        marker.bindPopup($popup[0]);
+
+                        marker.on('click', function(e)
+                        {
+                            if (e.originalEvent.ctrlKey)
+                            {
+                                console.log(e);
+                                e.originalEvent.stopPropagation();
+                                alert('cc');
+                            }
+                        });
+                    });
+                });
+
+
+                // Updates the highlighted stations
+                self.highlighted_stations.forEach(function(highlight)
+                {
+                    if (highlight.style)
+                    {
+                        let marker = self.stations[highlight.station_code];
+                        if (marker)
+                        {
+                            if (highlight.style.dot)
+                                marker.setStyle(highlight.style.dot);
+
+                            if (highlight.style.label)
+                            {
+                                let $label = $('#station-label-for-' + highlight.station_code);
+
+                                if (highlight.style.label.classes)
+                                    $label.addClass(highlight.style.label.classes);
+
+                                if (highlight.style.label.css)
+                                    $label.css(highlight.style.label.css);
+                            }
+                        }
+                    }
+                });
+
+
+                // Updates the displayed location if needed
+                if (self.permanent_url_with_anchor)
+                {
+                    self._update_location_from_hash();
+
+                    L
+                        .easyButton({
+                            id: 'permanent-link-button',
+                            position: self.buttons_location,
+                            states: [{
+                                stateName: 'default',
+                                onClick: self._encode_location_in_hash.bind(self),
+                                title: 'Lien permanent',
+                                icon: 'fa fa-link',
+                            }]
+                        }).addTo(self.map);
+                }
+
+
+                // Updates labels colors
+                self.label_colors_waiting_for_update.forEach(function(update)
+                {
+                    document.getElementById(update.id).style.color = update.color;
+                });
+
+                self.label_colors_waiting_for_update = [];
+
+
+
+                // Centers on highlighted path, if any
+                if (self.highlighted_paths)
+                    self.center_on_highlighted_path(self.highlighted_paths.length - 1);
+
+
+                // Callback
+                if (callback)
+                    self.map.whenReady(function() { callback(self) });
+
+                let t1 = performance.now();
+                console.log("Map rendering took " + (t1 - t0) + " milliseconds.");
+            });
+        });
+    }
+
+
+    /**
+     * Re-renders the colors and dot styles of the map according to the current path(s).
+     * render() must have been called before.
+     */
+    re_render_highlighted_path()
+    {
+
+    }
+
+
+
     // -------------------- Utilities
 
 
@@ -143,7 +744,7 @@ export class NetworkMap
      * Checks if the given station is an intersection or a terminus.
      *
      * @param station The station.
-     * @returns {{is_intersection = boolean, is_terminus = boolean}}
+     * @returns {{is_intersection: boolean, is_terminus: boolean}}
      * @private
      */
     _get_neighborhood_infos(station)
@@ -203,6 +804,7 @@ export class NetworkMap
                     + (Math.round(((to & 0x0000FF) - B1) * n) + B1)).toString(16).slice(1);
         }
     }
+
 
 
     // -------------------- Map creation
@@ -283,7 +885,7 @@ export class NetworkMap
 
             base_color: outlineColor,
             base_fill_color: insideColor
-        }
+        };
 
 
         // Updates the shading of the label (important: after metadata!)
@@ -609,6 +1211,7 @@ export class NetworkMap
     }
 
 
+
     // -------------------- Zoom adaptation
 
 
@@ -693,6 +1296,7 @@ export class NetworkMap
     }
 
 
+
     // -------------------- Permanent links with hashes
 
 
@@ -730,597 +1334,5 @@ export class NetworkMap
                     this.map.setView(center, zoom);
             }
         }
-    }
-
-
-    // -------------------- Configuration methods
-
-
-    /**
-     * Highlights a path in the map.
-     *
-     * Must be called before the init method.
-     *
-     * @param path The path to highlight (ordered list of stations code names)
-     * @param shading The shading to apply to this path (default = 0, i.e. the normal color).
-     *
-     * @return {Number} The highlighted path ID.
-     */
-    highlight_path(path, shading)
-    {
-        if (shading === undefined)
-            shading = 0;
-
-        this.highlight_path_start(path[0]);
-        this.highlight_path_end(path[path.length - 1]);
-        return this.highlighted_paths.push({ path: path, shading: shading}) - 1;
-    }
-
-    /**
-     * Highlights a station, giving another style.
-     *
-     * These stations will be added to the main stations layer, so they will always be displayed, at every zoom
-     * levels. They will also by default inherits their styles from the main stations one (for both station dot
-     * and label).
-     *
-     * @param station_code_name The station's code name.
-     * @param dot_style The special style to give.
-     * @param label_style An object containing CSS properties to add to the label.
-     * @param label_classes A string containing space-separated classes to add to the label.
-     */
-    highlight_station(station_code_name, dot_style, label_style, label_classes)
-    {
-        this.highlighted_stations.push({
-            station_code: station_code_name,
-            style: {
-                dot: dot_style,
-                label: {
-                    css: label_style,
-                    classes: label_classes
-                }
-            }
-        });
-    }
-
-    /**
-     * Highlights a startup station, using a pre-determined style.
-     *
-     * @param station_code_name The station's code name.
-     */
-    highlight_path_start(station_code_name)
-    {
-        this.highlight_station(
-            station_code_name,
-            {
-                color: '#00BB00',
-                fillColor: '#00FF00'
-            },
-            {},
-            'main_station'
-        );
-    }
-
-
-    /**
-     * Highlights an end-of-path station, using a pre-determined style.
-     *
-     * @param station_code_name The station's code name.
-     */
-    highlight_path_end(station_code_name)
-    {
-        this.highlight_station(
-            station_code_name,
-            {
-                color: this.stations_color_dot_main,
-                fillColor: '#FF0000'
-            },
-            {},
-            'main_station'
-        );
-    }
-
-    /**
-     * Removes the highlighting on a path.
-     *
-     * @param path_id The paths IDs, as returned by highlight_path. If undefined, removes all.
-     */
-    un_highlight_paths(...paths_ids)
-    {
-        if (paths_ids === undefined)
-            paths_ids = this.highlighted_paths.keys();
-
-        let stations_to_un_highlight = [];
-
-        paths_ids.forEach(path_id => {
-            let path = this.highlighted_paths[path_id];
-            stations_to_un_highlight.push(path.path[0]);
-            stations_to_un_highlight.push(path.path[path.lenght - 1]);
-        });
-
-        // We removes the paths and highlighted stations for this path.
-        this.highlighted_paths = this.highlighted_paths.filter((path, i) => !paths_ids.find(i));
-        this.un_highlight_stations(...stations_to_un_highlight);
-    }
-
-    /**
-     * Removes the highlighting on stations.
-     *
-     * @param ...stations_codes The stations code names. If undefined, removes all.
-     */
-    un_highlight_stations(...stations_codes)
-    {
-        if (stations_codes === undefined)
-        {
-            this.highlighted_stations = [];
-            return;
-        }
-
-        this.highlighted_stations = this.highlighted_stations.filter(
-            station => !stations_codes.find(station.station_code)
-        );
-    }
-
-
-    // -------------------- Centering methods
-
-
-    /**
-     * Centers & adjust the map on an highlighted path.
-     *
-     * @param path_id The highlighted path ID. The first added is 0, then 1, 2, etc.
-     *                This ID is returned by the highlight_path method.
-     */
-    center_on_highlighted_path(path_id)
-    {
-        let self = this;
-
-        if (!this.map)
-        {
-            console.error('Cannot call NetworkMap.center_on_highlighted_path before the init method. Use it in the init callback.');
-            return;
-        }
-
-        let path = this.highlighted_paths[path_id];
-        if (!path) return;
-
-        let min_x, min_z, max_x, max_z;
-
-        // Comparison functions returning the other value if one is undefined
-        let comparison = function(comparison_function) {
-            return function (a, b) {
-                if (a === undefined && b === undefined)
-                    return NaN;
-                else if (a === undefined)
-                    return b;
-                else if (b === undefined)
-                    return a;
-                else
-                    return comparison_function(a, b);
-            }
-        };
-
-        let min = comparison(Math.min), max = comparison(Math.max);
-
-        path.path.forEach(function (station_code_name) {
-            let station = self.stations[station_code_name];
-            if (station && station.zeps)
-            {
-                min_x = min(min_x, station.zeps.station.x);
-                min_z = min(min_z, station.zeps.station.y);
-                max_x = max(max_x, station.zeps.station.x);
-                max_z = max(max_z, station.zeps.station.y);
-            }
-        });
-
-        if (min_x === undefined || min_z === undefined || max_x === undefined || max_z === undefined)
-            return;
-
-        this.map.fitBounds([this._coords_to_latlng([min_x, min_z]), this._coords_to_latlng([max_x, max_z])]);
-
-        if (this.map.getZoom() >= 11)
-            this.map.setZoom(this.map.getZoom() - 1);
-    }
-
-
-    // -------------------- Rendering
-
-
-    /**
-     * Renders the map.
-     * This method should be called for the initial render only. To update the map with a new path on it,
-     * use re_render_highlighted_path().
-     */
-    render(callback)
-    {
-        let self = this;
-        let $network_map = self.$map_container;
-
-        if (!self.network_api || !self.network_colors_api)
-        {
-            console.error('NetworkMap: network API not configured.');
-            return;
-        }
-
-        if (!self.map_container_id)
-        {
-            console.error('NetworkMap: container ID not configured.');
-            return;
-        }
-
-
-        $.getJSON(self.network_colors_api, function (network_colors)
-        {
-            self.lines_colors = network_colors;
-
-            $.getJSON(self.network_api, function (network_array)
-            {
-                // Constructs a map by ID
-                network_array.forEach(function (station) {
-                    self.network[station.id] = station;
-                });
-
-
-                // Creates list of markers (will become layers later)
-                let markers_main = [];
-                let markers_intersections = [];
-                let markers_terminus = [];
-                let markers_others = [];
-
-                self.lines = [];
-
-
-                // Creates the stations, and the lines between them
-                network_array.forEach(function (station) {
-                    if (station.is_visible) {
-                        let neighborhood = self._get_neighborhood_infos(station);
-                        let is_main_station = self.main_stations.indexOf(station.code_name) > -1;
-
-                        // We check if the station is highlighted
-                        if (!is_main_station) {
-                            for (let i = 0; i < self.highlighted_stations.length; i++) {
-                                if (station.code_name == self.highlighted_stations[i].station_code) {
-                                    is_main_station = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        let marker_station = self._create_station(
-                            station, [station.x, station.y],
-                            neighborhood.is_intersection, neighborhood.is_terminus, is_main_station
-                        );
-
-                        if      (is_main_station)              markers_main.push(marker_station);
-                        else if (neighborhood.is_intersection) markers_intersections.push(marker_station);
-                        else if (neighborhood.is_terminus)     markers_terminus.push(marker_station);
-                        else                                   markers_others.push(marker_station);
-
-                        self.stations[station.code_name] = marker_station;
-                    }
-
-                    if (station.network) {
-                        self._link_stations(self.lines, station, 'east');
-                        self._link_stations(self.lines, station, 'north');
-                        self._link_stations(self.lines, station, 'south');
-                        self._link_stations(self.lines, station, 'west');
-                    }
-                });
-
-
-                // Attributes the colors of the dots, for basic stations
-                markers_others.forEach(function (station)
-                {
-                    // All the colors of the stations are stored, but these simple stations will always have
-                    // only one color, the first of the array.
-                    let color = self.stations_colors[station.zeps.station.code_name][0];
-
-                    // We also update the base color of the station (color unshaded).
-                    station.zeps.base_color      = color;
-                    station.zeps.base_fill_color = color;
-
-                    self._colorize_marker(station, color, self._get_real_shading(station));
-                });
-
-
-                // Creates the layers, and display them on the map
-                self.layer_main = L.layerGroup(markers_main);
-                self.layer_intersections = L.layerGroup(markers_intersections);
-                self.layer_terminus = L.layerGroup(markers_terminus);
-                self.layer_others = L.layerGroup(markers_others);
-                self.layer_lines = L.layerGroup(self.lines);
-
-
-                // Removes the loader
-                $network_map.empty();
-
-
-                // Loads the map
-                self.map = L.map(self.map_container_id, {
-                    center: self._coords_to_latlng(self.default_center),
-                    zoom: self.default_zoom,
-
-                    minZoom: 8,
-                    maxZoom: 14,
-
-                    // Control will be added later, customized, not in the default location.
-                    zoomControl: false,
-
-                    // Layers are added by inverted order of importance—the last will be displayed on top.
-                    layers: [
-                        self.layer_lines,
-
-                        self.layer_others,
-                        self.layer_terminus,
-                        self.layer_intersections,
-                        self.layer_main
-                    ]
-                });
-
-                L.control.zoom({
-                    position: self.buttons_location
-                }).addTo(self.map);
-
-                self.map.attributionControl.addAttribution(
-                    'Plan du Netherrail <a href="https://zcraft.fr">Zcraftien</a>' +
-                    ' | Données aggrégées par <a href="https://github.com/FlorianCassayre/ZePS-Core">Florian Cassayre &amp; Amaury Carrade</a>' +
-                    (self.missing_stations ? ' | <a href="' + self.missing_stations + '">Station manquante ?</a>' : '')
-                );
-
-
-                // Ensures the zoom is handled correctly
-                self._adapt_zoom();
-                self.map.on('zoomend', self._adapt_zoom.bind(self));
-
-
-                // Adds display of the labels on hover, if not already displayed
-                let mouse_in = function (e) {
-                    let $label = $(e.target.getTooltip()._container);
-
-                    // Z-index update, so the label is always above others when pointed
-                    $label.data('zeps-network-map-old-zindex', $label.css('z-index'));
-                    $label.css('z-index', 9001);
-
-                    if (!$label.is(":visible")) {
-                        $label.fadeIn(200);
-
-                        $label.data('zeps-network-map-previously-hidden', true);
-                        $label.data('zeps-network-map-previous-container-style', jQuery.extend(true, {}, e.target.options));
-                        $label.data('zeps-network-map-displayed-at-zoom', self.map.getZoom());
-
-                        e.target.setStyle({
-                            stroke: true,
-                            weight: 5
-                        });
-                    }
-                };
-                
-                let mouse_out = function (e) {
-                    let $label = $(e.target.getTooltip()._container);
-                    let old_zindex = $label.data('zeps-network-map-old-zindex');
-
-                    if ($label.data('zeps-network-map-previously-hidden')) {
-                        // We hide the label only if the zoom level is the same.
-                        // Else, either the zoom level change hidden it, and we don't have to change that, or
-                        // it makes it always displayed, and again we don't have to change anything.
-                        if ($label.data('zeps-network-map-displayed-at-zoom') == self.map.getZoom())
-                            $label.fadeOut(200);
-
-                        e.target.setStyle($label.data('zeps-network-map-previous-container-style'));
-
-                        $label.removeData('zeps-network-map-previously-hidden');
-                        $label.removeData('zeps-network-map-previous-container-style');
-                    }
-
-                    if (old_zindex)
-                    {
-                        $label.css('z-index', old_zindex);
-                        $label.removeData('zeps-network-map-old-zindex');
-                    }
-                };
-
-
-                let groups = [
-                    self.layer_others, self.layer_terminus,
-                    self.layer_intersections, self.layer_main
-                ];
-
-                groups.forEach(function (group) {
-                    group.eachLayer(function (marker) {
-                        marker.on({
-                            mouseover: mouse_in,
-                            mouseout: mouse_out
-                        });
-
-                        // Adds pop-up on stations, with name, lines and dynmap links.
-                        let unique_lines = self.stations_colors[marker.zeps.station.code_name]
-                            .sort()
-                            .filter(function(el, i, a) { return i == a.indexOf(el); });
-
-                        let popup_title = '', popup_subtitle = '', popup_content = '', $popup_list_actions;
-
-                        // Popup title
-                        popup_title = '<h4>';
-                        unique_lines.forEach(function (color) {
-                            popup_title += '<div class="square-line" style="background-color: ' + color + ';"></div>';
-                        });
-                        popup_title += '<span>' + marker.zeps.station.full_name + '</span></h4>';
-
-                        // Popup subtitle
-                        popup_subtitle = '<p class="station-popup-subtitle">';
-                        if (marker.zeps.station.is_portal)
-                            if (marker.zeps.is_intersection)
-                                popup_subtitle += '<strong>Portail et intersection</strong>';
-                            else
-                                popup_subtitle += '<strong>Portail de sortie</strong>';
-                        else
-                            popup_subtitle += '<strong>Intersection</strong>';
-
-                        if (!marker.zeps.station.is_intersection)
-                            popup_subtitle += ' (sans arrêt)';
-
-                        popup_subtitle += '</p>'
-
-                        // Popup content
-                        popup_content = '<p class="station-popup-content">';
-
-                        popup_content += '<strong>Coordonnées : </strong>' + marker.zeps.station.x + ' ; ' + marker.zeps.station.y + '<br />';
-                        if (self.dynmap_root && (self.dynmap_map_overworld || self.dynmap_map_nether))
-                        {
-                            popup_content += '<strong>Voir sur la Dynmap : </strong>';
-
-                            let links = [];
-                            if (self.dynmap_map_overworld)
-                                links.push('<a href="' + self.dynmap_root + '/' + '?worldname=' + self.dynmap_map_overworld + '&mapname=' + self.dynmap_map_type + '&x=' + (marker.zeps.station.x * 8) + '&y=64&z=' + (marker.zeps.station.y * 8) + '" target="_blank">surface</a>');
-                            if (self.dynmap_map_nether)
-                                links.push('<a href="' + self.dynmap_root + '/' + '?worldname=' + self.dynmap_map_nether + '&mapname=' + self.dynmap_map_type + '&x=' + marker.zeps.station.x + '&y=64&z=' + marker.zeps.station.y + '&zoom=3" target="_blank">nether</a>');
-
-                            popup_content += links.join(', ');
-                        }
-
-                        popup_content += '</p>';
-
-                        // Popup actions
-                        if (self.elem_form_from_id || self.elem_form_to_id)
-                        {
-                            let fields = {
-                                'from': [
-                                    $(document.getElementById(self.elem_form_from_id))
-                                ],
-                                'to': [
-                                    $(document.getElementById(self.elem_form_to_id))
-                                ]
-                            };
-
-                            function put_data_to_field(field, $button_elem)
-                            {
-                                fields[field][0].val($button_elem.attr('data-station-full-name'));
-
-                                self.map.closePopup();
-                            }
-
-                            let $popup_list_action_departure = $('<li class="station-popup-link-set-departure" '
-                                        + 'data-station-full-name="' + marker.zeps.station.full_name + '">'
-                                        + '<span class="fa fa-plane fa-lg" aria-hidden="true"></span>'
-                                        + 'Partir d\'ici'
-                                        + '</li>').on('click', function() {
-                                            put_data_to_field('from', $(this));
-                                        });
-
-                            let $popup_list_action_arrival = $('<li class="station-popup-link-set-arrival" '
-                                        + 'data-station-full-name="' + marker.zeps.station.full_name + '">'
-                                        + '<span class="fa fa-plane fa-lg fa-rotate-90" aria-hidden="true"></span>'
-                                        + 'Arriver ici'
-                                        + '</li>').on('click', function() {
-                                            put_data_to_field('to', $(this));
-                                        });
-
-                            $popup_list_actions = $('<ul class="station-popup-actions" />')
-                                    .append($popup_list_action_departure)
-                                    .append($popup_list_action_arrival);
-                        }
-
-
-                        let $popup = $('<div />')
-                                .append(popup_title)
-                                .append(popup_subtitle)
-                                .append(popup_content)
-                                .append($popup_list_actions);
-
-                        marker.bindPopup($popup[0]);
-
-                        marker.on('click', function(e)
-                        {
-                            if (e.originalEvent.ctrlKey)
-                            {
-                                console.log(e);
-                                e.originalEvent.stopPropagation();
-                                alert('cc');
-                            }
-                        });
-                    });
-                });
-
-
-                // Updates the highlighted stations
-                self.highlighted_stations.forEach(function(highlight)
-                {
-                    if (highlight.style)
-                    {
-                        let marker = self.stations[highlight.station_code];
-                        if (marker)
-                        {
-                            if (highlight.style.dot)
-                                marker.setStyle(highlight.style.dot);
-
-                            if (highlight.style.label)
-                            {
-                                let $label = $('#station-label-for-' + highlight.station_code);
-
-                                if (highlight.style.label.classes)
-                                    $label.addClass(highlight.style.label.classes);
-
-                                if (highlight.style.label.css)
-                                    $label.css(highlight.style.label.css);
-                            }
-                        }
-                    }
-                });
-
-
-                // Updates the displayed location if needed
-                if (self.permanent_url_with_anchor)
-                {
-                    self._update_location_from_hash();
-
-                    L
-                        .easyButton({
-                            id: 'permanent-link-button',
-                            position: self.buttons_location,
-                            states: [{
-                                stateName: 'default',
-                                onClick: self._encode_location_in_hash.bind(self),
-                                title: 'Lien permanent',
-                                icon: 'fa fa-link',
-                            }]
-                        }).addTo(self.map);
-                }
-
-
-                // Updates labels colors
-                self.label_colors_waiting_for_update.forEach(function(update)
-                {
-                    document.getElementById(update.id).style.color = update.color;
-                });
-
-                self.label_colors_waiting_for_update = [];
-
-
-
-                // Centers on highlighted path, if any
-                if (self.highlighted_paths)
-                    self.center_on_highlighted_path(self.highlighted_paths.length - 1);
-
-
-                // Callback
-                if (callback)
-                    self.map.whenReady(function() { callback(self) });
-            });
-        });
-    }
-
-
-    /**
-     * Re-renders the colors and dot styles of the map according to the current path(s).
-     * render() must have been called before.
-     */
-    re_render_highlighted_path()
-    {
-        [this.layer_others, this.layer_terminus, this.layer_intersections, this.layer_main, this.layer_lines].forEach(layer =>
-        {
-            layer.eachLayer(marker =>
-            {
-                
-            });
-        });
     }
 }
