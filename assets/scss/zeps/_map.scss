@@ -18,34 +18,60 @@
     z-index: 2000;
 }
 
-.station-label {
-    transform-origin: 0 0;
-    transform: rotate(-38deg) translateY(-10px) translateX(6px);
-    font-size: 125%;
-    text-shadow: 3px 3px 3px #fcf7ed, -3px -3px 3px #fcf7ed;
-
-    &.station-label-intersection {
-        font-size: 130%;
-        font-weight: bolder;
-    }
-
-    &.station-label-main {
-        font-size: 160%;
-        text-transform: uppercase;
-        font-weight: normal;
-    }
-
-    &.station-label-main, &.station-label-intersection {
+.network-map {
+    .station-label {
+        transform-origin: 0 0;
         transform: rotate(-38deg) translateY(-10px) translateX(6px);
+        font-size: 125%;
+        text-shadow: 3px 3px 3px #fcf7ed, -3px -3px 3px #fcf7ed;
+
+        &.station-label-intersection {
+            font-size: 130%;
+            font-weight: bolder;
+        }
+
+        &.station-label-main {
+            font-size: 160%;
+            text-transform: uppercase;
+            font-weight: normal;
+        }
+
+        &.station-label-main, &.station-label-intersection {
+            transform: rotate(-38deg) translateY(-10px) translateX(6px);
+        }
+
+        &.label-force-display {
+            display: block !important;
+        }
     }
 
-    &.label-force-display {
-        display: block !important;
+    &.zoom-high, &.zoom-low {
+        .station-label:not(.station-label-main):not(.station-label-intersection) {
+            transform: rotate(-38deg) translateY(-16px) translateX(10px);
+        }
     }
-}
 
-.zoom-high .station-label:not(.station-label-main):not(.station-label-intersection) {
-    transform: rotate(-38deg) translateY(-16px) translateX(10px);
+    &.zoom-medium {
+        .station-label:not(.station-label-main):not(.station-label-intersection) {
+            transform: rotate(-38deg) translateY(-6px) translateX(8px);
+        }
+    }
+
+    &.zoom-low {
+        .station-label.station-label-intersection:not(.station-label-main) {
+            transform: rotate(-38deg) translateY(-8px) translateX(6px);
+        }
+    }
+
+    &.zoom-very-low .station-label {
+        &.station-label-intersection:not(.station-label-main) {
+            transform: rotate(-38deg) translateY(-16px) translateX(6px);
+        }
+
+        &.station-label-main {
+            transform: rotate(-38deg) translateY(-10px) translateX(2px);
+        }
+    }
 }
 
 .square-line {

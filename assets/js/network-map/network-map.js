@@ -465,7 +465,7 @@ export class NetworkMap
                     this.map.whenReady(function() { callback(this) });
 
                 let t1 = performance.now();
-                console.log("Map rendering took " + (t1 - t0) + " milliseconds.");
+                console.debug("Map rendering took " + (t1 - t0) + " milliseconds.");
             });
         });
     }
@@ -559,8 +559,10 @@ export class NetworkMap
         {
             let $label = $(e.target.getTooltip()._container);
 
-            // Z-index update, so the label is always above others when pointed
             $label.data('zeps-network-map-old-zindex', $label.css('z-index'));
+            $label.data('zeps-network-map-previous-container-style', jQuery.extend(true, {}, e.target.options));
+
+            // Z-index update, so the label is always above others when pointed
             $label.css('z-index', 9001);
 
             if (!$label.is(":visible"))
@@ -568,7 +570,6 @@ export class NetworkMap
                 $label.fadeIn(200);
 
                 $label.data('zeps-network-map-previously-hidden', true);
-                $label.data('zeps-network-map-previous-container-style', jQuery.extend(true, {}, e.target.options));
                 $label.data('zeps-network-map-displayed-at-zoom', this.map.getZoom());
 
                 e.target.setStyle({
@@ -583,18 +584,23 @@ export class NetworkMap
             let $label = $(e.target.getTooltip()._container);
             let old_zindex = $label.data('zeps-network-map-old-zindex');
 
+            // We ensure that the current radius is kept.
+            // Else, if the zoom level changes and the radius was updated because of that, on mouse out, this station dot
+            // will keep his old radius.
+            e.target.setStyle(jQuery.extend(true, $label.data('zeps-network-map-previous-container-style'), {radius: e.target.options.radius}));
+
             if ($label.data('zeps-network-map-previously-hidden'))
             {
                 // We hide the label only if the zoom level is the same.
                 // Else, either the zoom level change hidden it, and we don't have to change that, or
                 // it makes it always displayed, and again we don't have to change anything.
-                if ($label.data('zeps-network-map-displayed-at-zoom') === this.map.getZoom())
+                if ($label.data('zeps-network-map-displayed-at-zoom') === this.map.getZoom()) {
                     $label.fadeOut(200);
-
-                e.target.setStyle($label.data('zeps-network-map-previous-container-style'));
+                }
 
                 $label.removeData('zeps-network-map-previously-hidden');
                 $label.removeData('zeps-network-map-previous-container-style');
+                $label.removeData('zeps-network-map-displayed-at-zoom');
             }
 
             if (old_zindex)
@@ -655,8 +661,6 @@ export class NetworkMap
                 popup_subtitle += ' (sans arrêt)';
 
             popup_subtitle += '</p>';
-
-            if (station_marker.zeps.station.code_name === 'rive_blanche') console.log(station_marker.zeps);
 
             // The popup content (with coordinates, links…)
 
@@ -1120,7 +1124,6 @@ export class NetworkMap
 
         // We remove any existing layer
         this.map.eachLayer(layer => this.map.removeLayer(layer));
-        this.map.eachLayer(layer => console.debug(layer));
 
         // Then create the new one and attach it.
         let world = this.worlds[new_world];
@@ -1192,17 +1195,12 @@ export class NetworkMap
         let $label_terminus = $('.leaflet-tooltip.terminus-station');
         let $label_main = $('.leaflet-tooltip.main-station');
 
-        if (zoom_level >= 1)
-        {
-            this.$map_container.addClass('zoom-high');
-        }
-        else
-        {
-            this.$map_container.removeClass('zoom-high');
-        }
+        this.$map_container.removeClass('zoom-high zoom-medium zoom-low zoom-very-low');
 
         if (zoom_level >= 1)
         {
+            this.$map_container.addClass('zoom-high');
+
             this.current_world_layer.addLayer(this._current_world_layer('others'));
             this.current_world_layer.addLayer(this._current_world_layer('terminus'));
 
@@ -1215,6 +1213,8 @@ export class NetworkMap
         }
         else if (zoom_level === 0)
         {
+            this.$map_container.addClass('zoom-medium');
+
             this.current_world_layer.addLayer(this._current_world_layer('others'));
             this.current_world_layer.addLayer(this._current_world_layer('terminus'));
 
@@ -1230,6 +1230,8 @@ export class NetworkMap
         }
         else if (zoom_level === -1)
         {
+            this.$map_container.addClass('zoom-low');
+
             this.current_world_layer.addLayer(this._current_world_layer('others'));
             this.current_world_layer.addLayer(this._current_world_layer('terminus'));
 
@@ -1243,6 +1245,8 @@ export class NetworkMap
         }
         else if (zoom_level <= -2)
         {
+            this.$map_container.addClass('zoom-very-low');
+
             this.map.removeLayer(this._current_world_layer('others'));
             this.map.removeLayer(this._current_world_layer('terminus'));
 
