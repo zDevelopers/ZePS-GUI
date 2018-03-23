@@ -65,10 +65,7 @@
                 <p>
                     <strong>Rejoignez la capitale</strong> ({{ macros.station(attribute(stations.stations, spawn_station_id)) }}). Vous pouvez utiliser <code>/spawn</code>.
 
-                    {% if from != spawn_station_id %}
-                        <br />
-                        Ensuite, rendez-vous à <strong>{{ macros.station(route.getFirstStation()) }}</strong> via le portail de la capitale situé au sous-sol de la mairie{% if from != to %}, et entrez dans le Nether{% endif %}.
-                    {% elseif from != to %}
+                    {% if from == spawn_station_id and from != to %}
                         <br />
                         Ensuite, entrez dans le Nether. Le portail est situé au sous-sol de la mairie.
                         {# TODO These tips should not be hardcoded. #}
@@ -76,6 +73,18 @@
                 </p>
             </div>
         </li>
+        {% if from != spawn_station_id %}
+            <li class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <p class="heading">{{ macros.station(attribute(stations.stations, spawn_station_id)) }}</p>
+                    <p>
+                        Rendez-vous à <strong>{{ macros.station(route.getFirstStation()) }}</strong> via le portail de la capitale situé au sous-sol de la mairie{% if from != to %}, et entrez dans le Nether{% endif %}.
+                        {# TODO These tips should not be hardcoded. #}
+                    </p>
+                </div>
+            </li>
+        {% endif %}
     {% endif %}
 
     {% if from != to %}
@@ -91,6 +100,24 @@
         {% endif %}
 
         {% for step in route.compactPath %}
+            {% if step.previousStep != null and step.previousStep.isRail != step.isRail %}
+                <li class="timeline-header transportation-mode-switch">
+                    {% if step.isRail %}
+                    <span class="tag is-info tooltip is-tooltip-right" data-tooltip="Passage sur rails. Montez dans votre wagonnet.">
+                        <span class="icon is-medium">
+                                <span class="fa fa-lg fa-train"></span>
+                        </span>
+                    </span>
+                    {% else %}
+                    <span class="tag is-info tooltip is-tooltip-right" data-tooltip="Passage à pieds. Sautez du wagonnet.">
+                        <span class="icon is-medium">
+                                <span class="fa fa-lg fa-child"></span>
+                        </span>
+                    </span>
+                    {%  endif %}
+                </li>
+            {% endif %}
+
             <li class="timeline-item">
                 <div class="timeline-marker"></div>
                 <div class="timeline-content">
@@ -115,10 +142,11 @@
                     <p class="small-details">
                         {%- spaceless -%}
                             {{ step.length|number_format }} bloc{% if step.length > 1 %}s{% endif -%}
-                            {%- if step.steps|length >= 2 -%}
+                            {% set intermediate_steps = step.steps|length - step.noStopStepsCount %}
+                            {%- if intermediate_steps >= 2 -%}
                                 &nbsp;&middot;
                                 <span class="intermediate-stations">
-                                    {% if step.steps|length == 2 -%}
+                                    {% if intermediate_steps == 2 -%}
                                         Station intermédiaire
                                     {%- else -%}
                                         Stations intermédiaires
@@ -144,6 +172,15 @@
             <div class="timeline-content">
                 <p class="heading">{{ macros.station(attribute(stations.stations, to)) }}</p>
                 <p>Vous voilà à votre destination.</p>
+                {% if not attribute(stations.stations, to).isIntersection %}
+                <p class="small-details has-icon">
+                    <span class="icon is-small">
+                        <span class="fa fa-train"></span>
+                    </span>
+                    Le portail de destination n'est pas pourvu d'un arrêt.<br />
+                    Pensez à sauter du chariot.
+                </p>
+                {% endif %}
             </div>
         </li>
 

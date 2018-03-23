@@ -34,6 +34,23 @@
     }
 
     .results-details {
+        .timeline-header {
+            &.transportation-mode-switch {
+                .tag {
+                    position: relative;
+                    left: .05em;
+                }
+                .fa {
+                    position: relative;
+
+                    &.fa-train {
+                        top: .05em;
+                        font-size: 1.2em;
+                    }
+                }
+            }
+        }
+
         .timeline-item {
             padding-bottom: 1em;
             p.heading {
@@ -50,6 +67,17 @@
                 cursor: pointer;
                 &:hover {
                     color: #666;
+                }
+            }
+
+            &.has-icon {
+                position: relative;
+                padding-left: 1.05rem;
+
+                .icon:first-child {
+                    position: absolute;
+                    left: -.1rem;
+                    top: .06rem;
                 }
             }
         }

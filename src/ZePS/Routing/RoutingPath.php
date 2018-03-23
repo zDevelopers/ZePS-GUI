@@ -132,7 +132,7 @@ class RoutingPath
         foreach ($this->path as $step)
         {
             // New direction?
-            if ($current_compact_step === null || $step->getDirection() !== $current_compact_step->getDirection())
+            if ($current_compact_step === null || $step->getDirection() !== $current_compact_step->getDirection() || $step->isRail() != $current_compact_step->isRail())
             {
                 if ($current_compact_step !== null)
                 {
@@ -145,7 +145,9 @@ class RoutingPath
                 {
                     $current_compact_step = new RoutingPathCompactStep(
                         $step->getStation(),
-                        $step->getDirection()
+                        $step->getDirection(),
+                        $step->isRail(),
+                        $current_compact_step
                     );
                 }
                 else

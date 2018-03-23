@@ -4,8 +4,8 @@ namespace ZePS\Routing;
 
 
 /**
- * Represents a compacted step of a route: all consecutive steps in the same direction are merged into one stored
- * in an instance of this class.
+ * Represents a compacted step of a route: all consecutive steps in the same direction and with the same path type
+ * are merged into one stored in an instance of this class.
  *
  * @package ZePS\Routing
  */
@@ -15,22 +15,29 @@ class RoutingPathCompactStep
     private $station_to = null;
 
     private $direction;
+    private $is_rail;
     private $length = 0;
 
     private $steps = array();
     private $no_stop_steps_count = 0;
+
+    private $previous_step = null;
 
 
     /**
      * RoutingPathCompactStep constructor.
      *
      * @param Station $station_from The first station of this compacted step.
-     * @param string  $direction    The step direction. Must be a RoutingPath's direction constant.
+     * @param string $direction The step direction. Must be a RoutingPath's direction constant.
+     * @param $is_rail boolean The step's path type.
+     * @param $previous_step RoutingPathCompactStep The previous step, for linking in the template. NULL if no previous step.
      */
-    public function __construct($station_from, $direction)
+    public function __construct($station_from, $direction, $is_rail, $previous_step)
     {
         $this->station_from = $station_from;
         $this->direction = $direction;
+        $this->is_rail = $is_rail;
+        $this->previous_step = $previous_step;
     }
 
     /**
@@ -93,6 +100,14 @@ class RoutingPathCompactStep
     }
 
     /**
+     * @return bool
+     */
+    public function isRail()
+    {
+        return $this->is_rail;
+    }
+
+    /**
      * @return int
      */
     public function getLength()
@@ -124,5 +139,13 @@ class RoutingPathCompactStep
     public function getNoStopStepsCount()
     {
         return $this->no_stop_steps_count;
+    }
+
+    /**
+     * @return null|RoutingPathCompactStep
+     */
+    public function getPreviousStep()
+    {
+        return $this->previous_step;
     }
 }
