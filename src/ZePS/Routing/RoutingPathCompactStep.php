@@ -53,7 +53,7 @@ class RoutingPathCompactStep
         if ($step->getDirection() !== $this->direction && $step->getDirection() !== null)
             throw new \InvalidArgumentException('Trying to add a step to a compact one but the added step is not in the same direction as the compact step.');
 
-        if ($step->getStation()->isIntersection())
+        if ($step->getStation()->isIntersection() && $step->getStation()->isVisible())
             $this->steps[] = $step;
         else
             $this->no_stop_steps_count++;
@@ -131,6 +131,14 @@ class RoutingPathCompactStep
     public function getSteps()
     {
         return $this->steps;
+    }
+
+    /**
+     * @return RoutingPathStep[]
+     */
+    public function getIntermediateSteps()
+    {
+        return array_slice($this->steps, 1);
     }
 
     /**

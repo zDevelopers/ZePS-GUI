@@ -139,14 +139,14 @@
                             {%- endif -%}
                         </strong>
                     </p>
+                    {% set intermediate_steps = step.intermediateSteps %}
                     <p class="small-details">
                         {%- spaceless -%}
                             {{ step.length|number_format }} bloc{% if step.length > 1 %}s{% endif -%}
-                            {% set intermediate_steps = step.steps|length - step.noStopStepsCount %}
-                            {%- if intermediate_steps >= 1 -%}
+                            {%- if intermediate_steps|length >= 1 -%}
                                 &nbsp;&middot;
                                 <span class="intermediate-stations">
-                                    {% if intermediate_steps == 1 -%}
+                                    {% if intermediate_steps|length == 1 -%}
                                         Station intermédiaire
                                     {%- else -%}
                                         Stations intermédiaires
@@ -154,12 +154,10 @@
                             {%- endif -%}
                         {%- endspaceless -%}
                     </p>
-                    {%- if step.steps|length >= 2 -%}
+                    {%- if intermediate_steps|length >= 1 -%}
                         <ul class="intermediate-stations-list">
-                            {% for substep in step.steps %}
-                                {% if substep.station.id != step.stationFrom.id and substep.station.isVisible %}
-                                    <li>{{ macros.station(substep.station) }}</li>
-                                {% endif %}
+                            {% for substep in intermediate_steps %}
+                                <li>{{ macros.station(substep.station) }}</li>
                             {% endfor %}
                         </ul>
                     {%- endif -%}
