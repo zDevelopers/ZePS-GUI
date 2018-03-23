@@ -13,9 +13,14 @@ window.$ = window.jQuery = jQuery;
 
 $(function()
 {
-	// Avoids double tooltop but keeps titles attributes for
+	// Avoids double tooltips but keeps titles attributes for
     // assistive engines.
-    $('.home-search-form header > ul > li').attr('title', '');
+    $('.tooltip').each((i, tooltip) =>
+    {
+        let $tooltip = $(tooltip);
+        $tooltip.attr('aria-label', $tooltip.attr('title'));
+        $tooltip.attr('title', '');
+    });
 
     // Setups close interactions for all modals.
 	setup_modals_interaction();

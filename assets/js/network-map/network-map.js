@@ -5,7 +5,8 @@ import 'leaflet-easybutton';
 
 import {toTransformation} from "leaflet/src/geometry/Transformation";
 
-import {shade_color} from "./shading";
+import {shade_color} from "../utils/colors";
+import {is_mobile} from "../utils/responsive";
 
 
 const yx = L.latLng;
@@ -103,7 +104,7 @@ export class NetworkMap
         // The default view of the map.
         // TODO This should be retrieved from the core someway.
         this.default_center = [-80, -1306];
-        this.default_zoom = -1;
+        this.default_zoom = 0;
 
         // The map color shading (to enhance a path).
         this.shading_default = 0;
@@ -329,17 +330,19 @@ export class NetworkMap
         if (min_x === undefined || min_z === undefined || max_x === undefined || max_z === undefined)
             return;
 
+        let boundsOptions = {
+            paddingTopLeft: this.map.containerPointToLayerPoint(is_mobile() ? [150, 0] : [432, 12]),
+            paddingBottomRight: this.map.containerPointToLayerPoint([12, 12])
+        };
+
         if (fly)
         {
-            this.map.flyToBounds([xy([min_x, min_z]), xy([max_x, max_z])]);
+            this.map.flyToBounds([xy([min_x, min_z]), xy([max_x, max_z])], boundsOptions);
         }
         else
         {
-            this.map.fitBounds([xy([min_x, min_z]), xy([max_x, max_z])]);
+            this.map.fitBounds([xy([min_x, min_z]), xy([max_x, max_z])], boundsOptions);
         }
-
-        if (this.map.getZoom() >= 11)
-            this.map.setZoom(this.map.getZoom() - 1);
     }
 
 
