@@ -143,10 +143,10 @@
                         {%- spaceless -%}
                             {{ step.length|number_format }} bloc{% if step.length > 1 %}s{% endif -%}
                             {% set intermediate_steps = step.steps|length - step.noStopStepsCount %}
-                            {%- if intermediate_steps >= 2 -%}
+                            {%- if intermediate_steps >= 1 -%}
                                 &nbsp;&middot;
                                 <span class="intermediate-stations">
-                                    {% if intermediate_steps == 2 -%}
+                                    {% if intermediate_steps == 1 -%}
                                         Station intermédiaire
                                     {%- else -%}
                                         Stations intermédiaires
