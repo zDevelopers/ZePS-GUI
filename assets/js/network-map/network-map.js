@@ -432,6 +432,16 @@ export class NetworkMap
                 }).addTo(this.map);
 
 
+                // And the attributions
+                // This removes the “Leaflet” attribution but no fear! It is added back on the about pane.
+                let links = [
+                    '<a href="#oublis" id="missing-stations-handle">Station manquante ?</a>',
+                    '<a href="#statistiques" id="statistics-handle">Statistiques</a>',
+                    '<a href="#about" id="about-handle">À propos</a>'
+                ];
+                this.map.attributionControl.setPrefix(links.join('&nbsp;&middot;&nbsp;'));
+
+
                 // Updates the displayed location if needed,
                 // and adds the button for it
                 if (this.permanent_url_with_anchor)
@@ -940,7 +950,14 @@ export class NetworkMap
             intersections: L.layerGroup(markers_intersections),
             terminus: L.layerGroup(markers_terminus),
             others: L.layerGroup(markers_others),
-            lines: L.layerGroup(this.lines)
+            lines: L.layerGroup(this.lines),
+
+            // TODO This should be in the core data file
+            name: 'Netherrail',
+            data_attribution: [
+                {name: 'Florian Cassayre', url: 'https://florian.cassayre.me'},
+                {name: 'Amaury Carrade', url: 'https://amaury.carrade.eu'}
+            ]
         };
     }
 
@@ -1156,6 +1173,29 @@ export class NetworkMap
         // Then create the new one and attach it.
         let world = this.worlds[new_world];
 
+        // We build the attribution before
+        let attribution = world.name;
+        console.log(world.data_attribution);
+
+        if (world.data_attribution)
+        {
+            attribution += ' | Aggrégation des données : ';
+
+            world.data_attribution.forEach(person =>
+            {
+                if (person.url)
+                    attribution += '<a href="' + person.url + '">' + person.name + '</a>'
+                else
+                    attribution += person.name;
+
+                attribution += ', ';
+            });
+
+            attribution = attribution.substr(0, attribution.length - 2);
+        }
+
+        attribution = attribution.trim();
+
         // The layers inside must be added by reverse order of importance
         let layer = L.layerGroup([
             world.lines,
@@ -1163,7 +1203,7 @@ export class NetworkMap
             world.terminus,
             world.intersections,
             world.main,
-        ]);
+        ], {attribution: attribution});
 
         this.map.addLayer(layer);
         this.map.current_world = new_world;
