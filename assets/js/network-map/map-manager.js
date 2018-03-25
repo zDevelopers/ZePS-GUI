@@ -9,9 +9,12 @@ export function setup_network_map($map)
 
     document.addEventListener('zeps-route-erased', () =>
     {
-        network_map.un_highlight_paths();
-        network_map.shading_default = 0;
-        network_map.re_render_highlighted_path();
+        if (network_map.has_highlighted_paths())
+        {
+            network_map.un_highlight_paths();
+            network_map.shading_default = 0;
+            network_map.re_render_highlighted_path();
+        }
     });
 
     document.addEventListener('zeps-route-updated', e =>

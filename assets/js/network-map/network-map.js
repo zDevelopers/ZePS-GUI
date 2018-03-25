@@ -273,6 +273,14 @@ export class NetworkMap
         );
     }
 
+    /**
+     * Returns true if there is highlighted paths currently.
+     */
+    has_highlighted_paths()
+    {
+        return this.highlighted_paths.length > 0;
+    }
+
 
 
     // -------------------- Centering methods

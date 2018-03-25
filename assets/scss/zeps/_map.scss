@@ -77,6 +77,7 @@
 
     &.is-reloading {
         opacity: .2;
+        cursor: wait;
         transition: opacity .2s ease-in-out;
     }
 }
