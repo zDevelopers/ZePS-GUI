@@ -2,7 +2,23 @@
 
 export function setup_routing()
 {
-    $('#home-search-form-results .results-details ul.intermediate-stations-list').hide();
+    let $form_results = $('#home-search-form-results');
+    let $reduce_button = $('#home-search-form-reduce');
+
+    bind_events_on_results($form_results);
+
+    $reduce_button.on('click', () =>
+    {
+        $form_results.slideToggle({
+            duration: 'fast',
+            always: () => update_mobile_reduce_button($form_results, $reduce_button)
+        });
+    });
+}
+
+export function bind_events_on_results($form_results)
+{
+    $form_results.find('.results-details ul.intermediate-stations-list').hide();
 
     $('.intermediate-stations').on('click', function()
     {
@@ -14,21 +30,31 @@ export function setup_routing()
         $(this).siblings('.results-alternatives-details').slideToggle('fast');
         $(this).find('.fa').toggleClass('fa-caret-down').toggleClass('fa-caret-right');
     });
+}
 
-    var $reduce_button = $('#home-search-form-reduce');
-    var $reduce_icons = $reduce_button.find('.fa');
-    var $reduce_text = $reduce_button.find('.reduce-text');
-    var $results = $('#home-search-form-results');
+export function display_mobile_reduce_button($reduce_button)
+{
+    $reduce_button.removeClass('is-always-hidden');
+}
 
-    $reduce_button.on('click', function(e)
+export function hide_mobile_reduce_button($reduce_button)
+{
+    $reduce_button.addClass('is-always-hidden');
+}
+
+export function update_mobile_reduce_button($form_results, $reduce_button)
+{
+    let $reduce_icons = $reduce_button.find('.fa');
+    let $reduce_text = $reduce_button.find('.reduce-text');
+
+    if ($form_results.is(':visible'))
     {
-        $results.slideToggle('fast');
-        $reduce_icons.toggleClass('fa-angle-double-up').toggleClass('fa-angle-double-down');
-        
-        var other_text = $reduce_text.data('other-text');
-        var previous_text = $reduce_text.text();
-
-        $reduce_text.text(other_text);
-        $reduce_text.data('other-text', previous_text);
-    });
+        $reduce_icons.removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
+        $reduce_text.text($reduce_text.data('text-route-visible'));
+    }
+    else
+    {
+        $reduce_icons.removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
+        $reduce_text.text($reduce_text.data('text-route-hidden'));
+    }
 }

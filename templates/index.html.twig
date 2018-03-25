@@ -2,7 +2,11 @@
 
 {% import "_macros.html.twig" as macros %}
 
-{% block main_title %}Itinéraire{% endblock %}
+{% block main_title %}
+    {%- if route -%}
+        {{ attribute(stations.stations, from).displayName }} →  {{ attribute(stations.stations, to).displayName }}&nbsp;&middot;&nbsp;
+    {%- endif -%}
+{% endblock %}
 
 {% block javascripts %}
     <script type="text/javascript">
@@ -25,9 +29,9 @@
     {% if not error or error != 'unreachable' %}
         <div class="container-fullscreen">
             <aside class="home-search-form">
-                <form action="{{ path('zeps.homepage') }}">
+                <form action="{{ path('zeps.homepage') }}" id="search-form">
                     <header>
-                        <h1>Z<em>é</em>PS</h1>
+                        <h1><a href="{{ path('zeps.homepage') }}">Z<em>é</em>PS</a></h1>
                         <ul>
                             <li title="Stations officielles uniquement" class="tooltip is-tooltip-bottom" data-tooltip="Stations officielles uniquement">
                                 <input type="checkbox" name="official" id="options_official"{% if options.official %} checked="checked"{% endif %} />
@@ -78,6 +82,7 @@
                     </button>
                 </form>
                 <div id="home-search-form-autocomplete"></div>
+                <div id="home-search-form-error" class="alert alert-danger" style="display: none;"></div>
                 <div id="home-search-form-loading" style="display: none;">
                     <div class="loading-dot"></div>
                 </div>
@@ -86,13 +91,11 @@
                         {% include 'includes/search_results.html.twig' with {'route': route, 'error': error} %}
                     {%- endif -%}
                 </div>
-                {%- if route -%}
-                    <div id="home-search-form-reduce" aria-hidden="true">
-                        <span class="icon"><span class="fa fa-angle-double-up"></span></span>
-                        <span class="reduce-text" data-other-text="Afficher l'itinéraire">Afficher la carte</span>
-                        <span class="icon"><span class="fa fa-angle-double-up"></span></span>
-                    </div>
-                {%- endif -%}
+                <div id="home-search-form-reduce" aria-hidden="true"{%- if not route -%} class="is-always-hidden"{% endif %}>
+                    <span class="icon"><span class="fa fa-angle-double-up"></span></span>
+                    <span class="reduce-text" data-text-route-hidden="Afficher l'itinéraire" data-text-route-visible="Afficher la carte">Afficher la carte</span>
+                    <span class="icon"><span class="fa fa-angle-double-up"></span></span>
+                </div>
             </aside>
 
             <section
@@ -109,7 +112,7 @@
                 data-dynmap-map-overworld="{{ app.config.world_name_overworld }}"
                 data-dynmap-map-nether="{{ app.config.world_name_nether }}"
                 data-dynmap-map-type="{{ app.config.dynmap.map_type }}"
-                {% if route %}data-highlighted-route="{% for step in route.path %}{{ step.station.name}},{% endfor %}"{% endif %}>
+                {% if route %}data-highlighted-route="{% for step in route.path %}{{ step.station.name }},{% endfor %}"{% endif %}>
                 {% if error != 'unreachable' %}
                     <div class="network_map_loader">
                         <h4>Chargement de la carte en cours...</h4>

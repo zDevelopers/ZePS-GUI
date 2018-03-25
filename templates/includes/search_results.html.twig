@@ -1,3 +1,5 @@
+{% import "_macros.html.twig" as macros %}
+
 <div class="results-overview">
     <div class="columns is-mobile">
         <div class="column is-half">
@@ -36,7 +38,7 @@
                 }) %}
                 <li>
                     <h5>
-                        <a href="{{ alternative_url }}">
+                        <a href="{{ alternative_url }}" class="results-alternatives-link">
                             {% if alternative.name == 'direct' %}
                                 Trajet direct sans téléportation
                             {% elseif alternative.name == 'spawn' %}
@@ -47,7 +49,7 @@
                         </a>
                     </h5>
                     <p>
-                        <a href="{{ alternative_url }}">{{ alternative.userFriendlyLengthDiff }}</a>
+                        <a href="{{ alternative_url }}" class="results-alternatives-link">{{ alternative.userFriendlyLengthDiff }}</a>
                     </p>
                 </li>
             {% endfor %}

@@ -72,6 +72,13 @@
             transform: rotate(-38deg) translateY(-10px) translateX(2px);
         }
     }
+
+    transition: opacity .4s ease-in-out;
+
+    &.is-reloading {
+        opacity: .2;
+        transition: opacity .2s ease-in-out;
+    }
 }
 
 .square-line {

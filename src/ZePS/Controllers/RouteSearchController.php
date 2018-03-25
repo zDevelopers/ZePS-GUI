@@ -41,11 +41,18 @@ class RouteSearchController
 
             $options = trim($options, '-');
 
-            return $app->redirect($app['url_generator']->generate('zeps.search_results', array(
-                'from'    => $from_station != null ? $from_station->getName() : $from,
-                'to'      => $to_station != null ? $to_station->getName() : $to,
+            $path_options = [
+                'from' => $from_station != null ? $from_station->getName() : $from,
+                'to' => $to_station != null ? $to_station->getName() : $to,
                 'options' => $options
-            )), Response::HTTP_MOVED_PERMANENTLY);
+            ];
+
+            if ($app['request']->query->has('ajax'))
+            {
+                $path_options['ajax'] = true;
+            }
+
+            return $app->redirect($app['url_generator']->generate('zeps.search_results', $path_options), Response::HTTP_MOVED_PERMANENTLY);
         }
 
 
@@ -191,35 +198,60 @@ class RouteSearchController
             catch(\RuntimeException $e)
             {
                 if ($e->getMessage() == 'Path not found.')
-                    $error = 'no_path';
+                    $error = 'unreachable';
                 else
                     $error = 'unknown';
             }
         }
 
-        return new Response($app['twig']->render('index.html.twig', array(
-            'valid'        => $valid,
-            'error'        => $error,
-            'raw_error'    => $raw_error,
-            'from'         => $from,
-            'to'           => $to,
-            'options'      => array('official' => $official, 'accessible' => $accessible),
-            'raw_options'  => $options,
-            'stations'     => $stations,
+        $template_context = [
+            'valid' => $valid,
+            'error' => $error,
+            'raw_error' => $raw_error,
+            'from' => $from,
+            'to' => $to,
+            'options' => array('official' => $official, 'accessible' => $accessible),
+            'raw_options' => $options,
+            'stations' => $stations,
             'main_stations' => $app['zeps.routing']->get_main_stations(),
 
-            'route'        => $route,
+            'route' => $route,
             'alternatives' => $alternatives,
 
             'from_overworld' => $from_overworld,
-            'nether_portal'  => $nether_portal,
+            'nether_portal' => $nether_portal,
 
-            'through_spawn'  => $through_spawn,
+            'through_spawn' => $through_spawn,
 
             'directions_translations' => $directions_translations,
 
-            'spawn_station'    => $app['zeps.routing']->get_spawn_station(),
+            'spawn_station' => $app['zeps.routing']->get_spawn_station(),
             'spawn_station_id' => $app['zeps.routing']->station_name_to_id($app['zeps.routing']->get_spawn_station())
-        )));
+        ];
+
+        if ($app['request']->isXmlHttpRequest() || $app['request']->query->has('ajax'))
+        {
+            $highlighted_route = [];
+            foreach ($route->getPath() as $step)
+                $highlighted_route[] = $step->getStation()->getName();
+
+            return $app->json([
+                'title' => $route->getFirstStation()->getDisplayName() . ' → ' . $route->getLastStation()->getDisplayName() . ' ⋅ ZéPS',
+                'canonical_url' => $app['url_generator']->generate('zeps.search_results', [
+                    'from' => $app['zeps.routing']->get_station_by_id($from)->getName(),
+                    'to' => $app['zeps.routing']->get_station_by_id($to)->getName(),
+                    'options' => $options
+                ]),
+                'error' => $error,
+                'search_results_html' => $app['twig']->render('includes/search_results.html.twig', $template_context),
+                'highlighted_route' => $highlighted_route,
+                'real_from' => $app['zeps.routing']->get_station_by_id($from)->getDisplayName(),
+                'real_to' => $app['zeps.routing']->get_station_by_id($to)->getDisplayName()
+            ]);
+        }
+        else
+        {
+            return new Response($app['twig']->render('index.html.twig', $template_context));
+        }
     }
 }

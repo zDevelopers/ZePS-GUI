@@ -103,7 +103,7 @@ export class NetworkMap
 
         // The default view of the map.
         // TODO This should be retrieved from the core someway.
-        this.default_center = [-80, -1306];
+        this.default_center = [-111, -1111];
         this.default_zoom = 0;
 
         // The map color shading (to enhance a path).
@@ -395,7 +395,7 @@ export class NetworkMap
                 // Loads the map
                 this.map = L.map(this.map_container_id, {
                     center: xy(this.default_center),
-                    zoom: this.default_zoom,
+                    zoom: is_mobile() ? this.default_zoom - 1 : this.default_zoom,
 
                     crs: ZePSCRS,
 
@@ -462,7 +462,7 @@ export class NetworkMap
 
                 // Callback
                 if (callback)
-                    this.map.whenReady(function() { callback(this) });
+                    this.map.whenReady(() => callback(this));
 
                 let t1 = performance.now();
                 console.debug("Map rendering took " + (t1 - t0) + " milliseconds.");
@@ -474,25 +474,45 @@ export class NetworkMap
      * Re-renders the colors and dot styles of the map according to the current path(s).
      * render() must have been called before.
      */
-    re_render_highlighted_path()
+    re_render_highlighted_path(callback)
     {
-        let t0 = performance.now();
+        // We add a loading indicator (the opacity is reduced while the map is reloading)
+        this.$map_container.addClass('is-reloading');
 
-        // We first re-generate the markers
-        this._colorize_and_group_markers();
+        // We wait a little bit while the animation finishes, as the re-rendering
+        // freezes the animations.
+        // TODO find a way to re-render the map (or at least, the markers metadata) asynchronously.
+        setTimeout(() =>
+        {
+            let t0 = performance.now();
 
-        // Then we update the layers on the leaflet map
-        this.switch_world(this.current_world());
+            // We first re-generate the markers
+            this._colorize_and_group_markers();
 
-        // And we ensure the labels and such are correctly displayed.
-        this._adapt_zoom();
+            // Then we update the layers on the leaflet map
+            this.switch_world(this.current_world());
 
-        let t1 = performance.now();
-        console.debug("Map re-rendering took " + (t1 - t0) + " milliseconds.");
+            // And we ensure the labels and such are correctly displayed.
+            this._adapt_zoom();
 
-        // After a little bit, we update the labels colors.
-        // This must be
-        setTimeout(() => this._update_label_colors(), 50);
+            let t1 = performance.now();
+            console.debug("Map re-rendering took " + (t1 - t0) + " milliseconds.");
+
+            // After a little bit, we update the labels colors.
+            // This must be set after a little while, because the HTML elements must be fully loaded
+            // into the DOM.
+            setTimeout(() =>
+            {
+                this._update_label_colors();
+
+                // And we remove the loading indicator.
+                this.$map_container.removeClass('is-reloading');
+
+                // And we call the callback.
+                if (callback)
+                    callback(this);
+            }, 50);
+        }, 200);
     }
 
 

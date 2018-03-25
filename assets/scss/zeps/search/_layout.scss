@@ -30,9 +30,14 @@ aside.home-search-form {
 
         h1 {
             flex-grow: 5;
-            font-family: Lato;
+            font-family: Lato, sans-serif;
             font-size: 1.15em;
             letter-spacing: .05em;
+
+            a, a:hover {
+                color: white;
+                text-decoration: none;
+            }
         }
 
         ul {

@@ -46,5 +46,9 @@
         &:hover, &:focus, &:active {
             background: #eee;
         }
+
+        &.is-always-hidden {
+            display: none;
+        }
     }
 }
