@@ -534,6 +534,9 @@ export class NetworkMap
                 // And we call the callback.
                 if (callback)
                     callback(this);
+
+                // And the event.
+                document.dispatchEvent(new CustomEvent('zeps-map-reloaded', { detail: this }));
             }, 50);
         }, 200);
     }

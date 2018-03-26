@@ -15,16 +15,29 @@ export function setup_sub_pages($sub_pages_modal)
         $sub_pages_modal.addClass('is-active');
     }
 
-    document.addEventListener('zeps-map-loaded', () =>
+    // The events are added when the map is loaded, because else the links are not there yet
+    // and when the map is reloaded, because it appears Leaflet re-generates completely the attribution pane when it changes.
+    document.addEventListener('zeps-map-loaded',   () => setup_links_events($sub_pages_modal, $links_li, $pages));
+    document.addEventListener('zeps-map-reloaded', () => setup_links_events($sub_pages_modal, $links_li, $pages));
+
+    document.addEventListener('zeps-modal-closed', e =>
     {
-        $('a.sub-pages-handle').on('click', e =>
+        if (e.detail.prop('id') === $sub_pages_modal.prop('id'))
         {
-            if ($links_li.find('a[href="' + e.currentTarget.attributes.href.value + '"]'))
-            {
-                $sub_pages_modal.addClass('is-active');
-                switch_to_tab(e.currentTarget.attributes.href.value, $links_li, $pages);
-            }
-        });
+            window.location.hash = '';
+        }
+    });
+}
+
+function setup_links_events($sub_pages_modal, $links_li, $pages)
+{
+    $('a.sub-pages-handle').on('click', e =>
+    {
+        if ($links_li.find('a[href="' + e.currentTarget.attributes.href.value + '"]'))
+        {
+            $sub_pages_modal.addClass('is-active');
+            switch_to_tab(e.currentTarget.attributes.href.value, $links_li, $pages);
+        }
     });
 }
 
