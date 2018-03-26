@@ -9,14 +9,6 @@ use ZePS\Routing\RoutesManager;
 
 class NetworkMapController
 {
-    public function network_map(Application $app)
-    {
-        return new Response($app['twig']->render('network_map.html.twig', array(
-            'section' => 'network_map',
-            'main_stations' => $app['zeps.routing']->get_main_stations()
-        )));
-    }
-
     public function network_json(Application $app)
     {
         $network = $app['zeps.routing']->get_netherrail_network();
