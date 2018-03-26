@@ -300,11 +300,11 @@ $app
     ->bind('zeps.redirects.from_location');
 
 
-// Network map
+// Network map (legacy URL)
 
-$app
-    ->get('/plan', 'ZePS\\Controllers\\NetworkMapController::network_map')
-    ->bind('zeps.network_map');
+$app->get('/plan', function () use ($app) {
+    return $app->redirect($app['url_generator']->generate('zeps.homepage'));
+})->bind('zeps.network_map');
 
 
 // Route search pages
