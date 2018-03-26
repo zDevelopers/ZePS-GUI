@@ -63,10 +63,15 @@ class APIController
     }
 
 
+    private function remove_special_characters($string)
+    {
+        return iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $string);
+    }
+
     public function autocomplete(Application $app)
     {
         $original_input = $app['request']->query->get('input');
-        $input = strtolower(trim($original_input));
+        $input = $this->remove_special_characters(strtolower(trim($original_input)));
 
         if (empty($input))
         {
@@ -78,7 +83,7 @@ class APIController
 
         foreach ($app['zeps.routing']->get_netherrail_stations()['stations'] as $station)
         {
-            $station_name = trim($station->getDisplayName());
+            $station_name = $this->remove_special_characters(trim($station->getDisplayName()));
             $station_name_lower = strtolower($station_name);
             $strpos_input = strpos($station_name_lower, $input);
 

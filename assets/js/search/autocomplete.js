@@ -10,6 +10,7 @@ export function setup_autocomplete($fields, results_container_id)
             url: function(input) {
                 return $field.data('autocomplete-api').replace('{input}', input);
             },
+
             getValue: 'display_name',
             listLocation: 'items',
             matchResponseProperty: 'input',
@@ -18,7 +19,9 @@ export function setup_autocomplete($fields, results_container_id)
 
             list: {
                 match: {
-                    enabled: true
+                    // As we return fuzzy results, we don't want to match items,
+                    // else all fuzzy results will be hidden.
+                    enabled: false
                 }
             },
 

@@ -50,7 +50,7 @@ $app['config'] = array
                                                 // shorter by this amount of seconds at least, it is ignored.
 
     'autocompletion' => array(
-        'max_results' => 10,
+        'max_results' => 12,
         'weights' => array(
             'beginning_station_name' => 50,
             'beginning_word' => 10,
