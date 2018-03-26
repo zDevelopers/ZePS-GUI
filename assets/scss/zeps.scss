@@ -9,6 +9,18 @@ $primary: #3f9718;
 
 $font_header: 'Lato';
 
+$family-monospace: 'Source Code Pro', monospace;
+
+$tabs-link-color: $white;
+$tabs-link-hover-color: lighten($primary, 80%);
+$tabs-link-active-border-bottom-color: white;
+$tabs-link-hover-border-bottom-color: white;
+$tabs-link-active-color: white;
+$tabs-border-bottom-color: $primary;
+
+$tabs-links-padding-bottom: .5em;
+$tabs-link-padding: $tabs-links-padding-bottom 1em;
+
 @import '~font-awesome/css/font-awesome';
 @import '~bulma/bulma';
 

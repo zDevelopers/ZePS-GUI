@@ -103,7 +103,6 @@
                 class="network-map section-fullscreen"
                 data-api-network="{{ path('zeps.api.stations_network') }}"
                 data-api-network-colors="{{ path('zeps.api.stations_network_colors') }}"
-                data-path-missing-stations="{{ path('zeps.missing') }}"
                 data-permanent-url-with-anchor="yes"
                 data-form-from-id="from"
                 data-form-to-id="to"
@@ -169,6 +168,41 @@
                     </div>
                 </div>
                 <button class="modal-close"></button>
+            </div>
+
+            <div class="modal" tabindex="-1" role="dialog" id="sub-pages-modal">
+                <div class="modal-background modal-close-handler"></div>
+                <div class="modal-content">
+                    <header>
+                        <div class="columns is-mobile">
+                            <div class="column is-10"><h2>Z<em>é</em>PS</h2></div>
+                            <div class="column is-2"><button class="delete is-large modal-close-handler" aria-label="close"></button></div>
+                        </div>
+                        <div class="tabs">
+                            <ul>
+                                <li class="is-active"><a href="#a-propos">À propos</a></li>
+                                <li><a href="#statistiques">Statistiques</a></li>
+                                <li><a href="#oublis">Signaler un oubli</a></li>
+                            </ul>
+                        </div>
+                    </header>
+                    <article id="loading">
+                        <div class="loading-dot"></div>
+                    </article>
+                    <article id="error">
+                        <p><span class="fa fa-map-o" aria-hidden="true"></span></p>
+                        <p>Impossible de charger la page.</p>
+                        <p class="reason timeout">Votre connexion à internet semble être interrompue.</p>
+                        <p class="reason abort">La connexion a été réinitialisée. Veuillez réessayer.</p>
+                        <div class="reason http">
+                            <p>Quelque chose semble être cassé de notre côté&nbsp;; veuillez réessayer plus tard.</p>
+                            <p class="error-code"></p>
+                        </div>
+                    </article>
+                    <article id="a-propos" class="content" data-source="{{ path('zeps.sub-pages.about') }}" style="display: none;"></article>
+                    <article id="statistiques" data-source="{{ path('zeps.sub-pages.statistics') }}" style="display: none;"></article>
+                    <article id="oublis" data-source="{{ path('zeps.sub-pages.missings') }}" data-has-events="true" style="display: none;"></article>
+                </div>
             </div>
         </div>
     {% endif %}

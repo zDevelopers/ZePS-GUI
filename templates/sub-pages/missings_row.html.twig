@@ -1,0 +1,25 @@
+<tr>
+    <td style="width: 25%">{{ missing.name }}</td>
+    <td style="width: 15%">{{ missing.location.x }} ; {{ missing.location.z }}</td>
+    <td>
+        <ul>
+            {% for neighbor in missing.neighbors %}
+                <li>
+                    {% if neighbor is empty %}
+                        <em>Non renseigné</em>
+                    {% else %}
+                        {{ neighbor }}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </td>
+    <td style="width: 30%">
+        {% if missing.notes %}
+            <p style="margin: 0; padding: 0">{{ missing.notes|nl2br }}</p>
+        {% endif %}
+        {% if missing.link %}
+            <p style="margin: 0; padding: 0"><a href="{{ missing.link }}">Page associée</a></p>
+        {% endif %}
+    </td>
+</tr>

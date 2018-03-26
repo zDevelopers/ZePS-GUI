@@ -9,6 +9,7 @@ import { setup_invert_fields } from './search/invert-stations';
 import { setup_routing } from './search/routing-results';
 import { setup_live_results } from './search/live-results';
 import { setup_network_map } from './network-map/map-manager';
+import { setup_sub_pages } from "./sub-pages";
 
 window.$ = window.jQuery = jQuery;
 
@@ -28,6 +29,9 @@ $(function()
 
     // Setups close interactions for all modals.
 	setup_modals_interaction();
+
+    // Setups the sub-pages
+    setup_sub_pages($('#sub-pages-modal'));
 
 	// Setups the geolocation component.
 	setup_geolocation($('#open-geolocation-icon'), $('#geo-geolocation-modal'), $from, $('#from_overworld'));

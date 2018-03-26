@@ -1,52 +1,61 @@
-.geolocation-modal-main-text {
-    margin-top: 50px;
-    margin-bottom: 50px;
-    text-align: center;
-}
-
-.geolocation-modal-main-selector {
-    margin-bottom: 16px;
-}
-
-#geolocation-modal-footer-message {
-    text-align: center;
-    font-size: small;
-    color: #888;
-}
-
-#geolocation-modal-selector {
-    display: none;
-}
-
-#geolocation-modal-error-nether-empty {
-    display: none;
-}
-
-#geolocation-modal-error-cannot-retrieve {
-    display: none;
-}
-
-.geolocation-modal-selector-list-item {
-    margin: .3em;
-    padding: .4em;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    height: calc(32px +.8em);
-    text-align: left;
-    cursor: pointer;
-    img {
-        position: relative;
-        top: -2px;
-        width: 32px;
-        height: 32px;
+#geo-geolocation-modal {
+    .geolocation-modal-main-text {
+        margin-top: 50px;
+        margin-bottom: 50px;
+        text-align: center;
     }
-    span {
-        position: relative;
-        top: -12px;
-        left: .8em;
+
+    .geolocation-modal-main-selector {
+        margin-bottom: 16px;
     }
-    &:hover {
-        box-shadow: inset 1px 1px 2px 0 #cfcfcf;
-        filter: progid:dximagetransform.microsoft.shadow(color=#cfcfcf, direction=134, strength=2);
+
+    #geolocation-modal-footer-message {
+        text-align: center;
+        font-size: small;
+        color: #888;
+    }
+
+    #geolocation-modal-selector {
+        display: none;
+    }
+
+    #geolocation-modal-error-nether-empty {
+        display: none;
+    }
+
+    #geolocation-modal-error-cannot-retrieve {
+        display: none;
+    }
+
+    .geolocation-modal-selector-list-item {
+        margin: .3em;
+        padding: .4em;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        height: calc(32px + .8em);
+        text-align: left;
+        cursor: pointer;
+
+        @include unselectable;
+
+        img {
+            position: relative;
+            top: -2px;
+            width: 32px;
+            height: 32px;
+        }
+        span {
+            position: relative;
+            top: -12px;
+            left: .8em;
+        }
+        &:hover {
+            box-shadow: inset 1px 1px 2px 0 #cfcfcf;
+            filter: progid:dximagetransform.microsoft.shadow(color=#cfcfcf, direction=134, strength=2);
+        }
+    }
+
+    header, footer, .geolocation-modal-footer-message {
+        @include unselectable;
     }
 }

@@ -28,6 +28,8 @@ aside.home-search-form {
         background-color: $primary;
         color: white;
 
+        @include unselectable;
+
         h1 {
             flex-grow: 5;
             font-family: Lato, sans-serif;

@@ -435,9 +435,9 @@ export class NetworkMap
                 // And the attributions
                 // This removes the “Leaflet” attribution but no fear! It is added back on the about pane.
                 let links = [
-                    '<a href="#oublis" id="missing-stations-handle">Station manquante ?</a>',
-                    '<a href="#statistiques" id="statistics-handle">Statistiques</a>',
-                    '<a href="#about" id="about-handle">À propos</a>'
+                    '<a href="#a-propos" class="sub-pages-handle">À propos</a>',
+                    '<a href="#statistiques" class="sub-pages-handle">Statistiques</a>',
+                    '<a href="#oublis" class="sub-pages-handle"><strong>Station manquante ?</strong></a>'
                 ];
                 this.map.attributionControl.setPrefix(links.join('&nbsp;&middot;&nbsp;'));
 
@@ -478,9 +478,14 @@ export class NetworkMap
                 }
 
 
-                // Callback
-                if (callback)
-                    this.map.whenReady(() => callback(this));
+                this.map.whenReady(() => {
+                    // Callback
+                    if (callback)
+                        callback(this);
+
+                    // Event
+                    document.dispatchEvent(new CustomEvent('zeps-map-loaded', { detail: this }));
+                });
 
                 let t1 = performance.now();
                 console.debug("Map rendering took " + (t1 - t0) + " milliseconds.");
@@ -1175,7 +1180,6 @@ export class NetworkMap
 
         // We build the attribution before
         let attribution = world.name;
-        console.log(world.data_attribution);
 
         if (world.data_attribution)
         {

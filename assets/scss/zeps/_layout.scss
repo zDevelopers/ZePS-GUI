@@ -75,9 +75,12 @@ body, .container-fullscreen {
     }
 }
 
-
-.input-group-addon {
-    cursor: default;
+form {
+    .input, .textarea {
+        @include placeholder {
+            color: rgba($input-color, 0.6);
+        }
+    }
 }
 
 .cliquable-icon {

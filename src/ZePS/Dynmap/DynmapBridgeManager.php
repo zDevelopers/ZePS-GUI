@@ -33,8 +33,9 @@ class DynmapBridgeManager extends NetworkManager
     /**
      * Returns the online players locations.
      *
-     * @return array An array containing the players logged in, each entry being an array with keys "name",
-     * "display_name", "world", "x", "y" and "z".
+     * @return array|int An array containing the players logged in, each entry being an array with keys "name",
+     * "display_name", "world", "x", "y" and "z", or an integer representing the error, if any (see <code>ERROR_*</code>
+     * constants).
      */
     public function get_logged_in_players()
     {
@@ -74,7 +75,7 @@ class DynmapBridgeManager extends NetworkManager
      *
      * @param string $player_name The player name to localize.
      *
-     * @return array An array following the format below, or an integer representing the error, if any (see <code>ERROR_*</code>
+     * @return array|int An array following the format below, or an integer representing the error, if any (see <code>ERROR_*</code>
      * constants).
      * @internal param Application $app The Silex application (needed to retrieve config).
      */

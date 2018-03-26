@@ -1,0 +1,105 @@
+{% import "_macros.html.twig" as macros %}
+
+<section>
+    <p>
+        Le réseau comporte <strong>{{ statistics.stations.all - statistics.stations.hidden }} stations</strong> en tout,
+        réparties sur <strong>{{ statistics.network.lines }} lignes</strong>. On trouve, plus précisément…
+    </p>
+
+    <aside>
+        <div class="level is-wide has-huge-numbers">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="title">
+                        {{- statistics.stations.main -}}
+                    </p>
+                    <p class="heading">capitales</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="title">
+                        {{- statistics.stations.portal -}}
+                    </p>
+                    <p class="heading">portails</p>
+                </div>
+            </div>
+        </div>
+        <div class="level is-wide has-huge-numbers">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="title">
+                        {{- statistics.stations.no_stop -}}
+                    </p>
+                    <p class="heading">stations sans arrêt</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="title">
+                        {{- statistics.stations.dangerous -}}
+                    </p>
+                    <p class="heading">stations dangereuses</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="title">
+                        {{- statistics.stations.hidden -}}
+                    </p>
+                    <p class="heading">
+                        stations masquées
+                        <span
+                           class="fa fa-question-circle"
+                           title="Les stations masquées ont une utilité technique mais n'existent pas réellement en tant qu'arrêt. Elles se cachent aux angles du réseau ne comportant pas de station.">
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="level is-wide has-medium-numbers">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="title">
+                        {{ (statistics.network.all / 1000)|number_format(2, ',') }} <small title="Kilomètres (ou, milliers de blocs)">km</small>
+                    </p>
+                    <p class="heading">en tout</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="title">
+                        {{ (statistics.network.rail / 1000)|number_format(2, ',') }} <small title="Kilomètres (ou, milliers de blocs)">km</small>
+                    </p>
+                    <p class="heading">
+                        en train
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="title">
+                        {{ (statistics.network.walk / 1000)|number_format(2, ',') }} <small title="Kilomètres (ou, milliers de blocs)">km</small>
+                    </p>
+                    <p class="heading">
+                        à pied
+                    </p>
+                </div>
+            </div>
+        </div>
+    </aside>
+</section>
+
+
+<section class="cache-statistics">
+    <p>
+        Pour optimiser le site, lorsqu'une requête d'itinéraire est envoyée pour la première fois, l'itinéraire est stocké
+        et la copie, accessible quasi instantanément, est utilisée par la suite.
+    </p>
+    <p>
+        Le cache des requêtes d'itinéraire occupe <strong>{{ macros.bytesToSize(statistics.cache.space_used) }}</strong>.
+    </p>
+</section>

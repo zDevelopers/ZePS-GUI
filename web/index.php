@@ -5,6 +5,7 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use ZePS\Dynmap\DynmapBridgeManager;
 use ZePS\Misc\APIChecksumChecker;
+use ZePS\Misc\StatisticsManager;
 use ZePS\Quotes\QuotesManager;
 use ZePS\Routing\RoutesManager;
 
@@ -72,6 +73,7 @@ $app['config'] = array
 
         'cache_suffix_routing'  => 'routingcache',    // The suffix of the routing API cache
         'cache_suffix_uuid' => 'uuidcache',           // The suffix of the player<>UUID cache
+        'cache_suffix_misc' => 'misccache',           // The suffix for everything else being cached
 
         'cache_uuid_lifetime' => 604800,              // The UUID cache lifetime in seconds. 604800 = a week.
 
@@ -130,6 +132,7 @@ $app['twig']->addFilter(new Twig_SimpleFilter('time_format', function ($seconds,
 
 $app['cache.routing'] = $app->share(function($app) { return new FilesystemCache($app['config']['cache']['directory'], '.' . $app['config']['cache']['cache_suffix_routing'] . '.data'); });
 $app['cache.uuid']    = $app->share(function($app) { return new FilesystemCache($app['config']['cache']['directory'], '.' . $app['config']['cache']['cache_suffix_uuid'] . '.data'); });
+$app['cache.misc']    = $app->share(function($app) { return new FilesystemCache($app['config']['cache']['directory'], '.' . $app['config']['cache']['cache_suffix_misc'] . '.data'); });
 
 
 // Internal services
@@ -137,6 +140,7 @@ $app['cache.uuid']    = $app->share(function($app) { return new FilesystemCache(
 $app['zeps.routing'] = $app->share(function($app) { return new RoutesManager($app); });
 $app['zeps.dynmap']  = $app->share(function($app) { return new DynmapBridgeManager($app); });
 $app['zeps.quotes']  = $app->share(function($app) { return new QuotesManager(); });
+$app['zeps.stats']   = $app->share(function($app) { return new StatisticsManager($app); });
 
 
 // Maintenance mode
@@ -200,6 +204,15 @@ $app->before(function (Request $request, Application $app)
     }
 });
 
+$app->before(function (Request $request, Application $app)
+{
+    if ($request->query->has('purge'))
+    {
+        $app['cache.uuid']->flushAll();
+        $app['cache.misc']->flushAll();
+    }
+});
+
 
 // Internal API first due to the genericity of the last URL (search_results).
 
@@ -238,11 +251,46 @@ $app
     ->bind('zeps.player_head');
 
 
-// Statistics
+// Sub pages
 
 $app
-    ->get('/statistiques', 'ZePS\\Controllers\\StatisticsController::statistics')
-    ->bind('zeps.stats');
+    ->get('/sub-pages/about', 'ZePS\\Controllers\\SubPagesController::about')
+    ->bind('zeps.sub-pages.about');
+
+$app
+    ->get('/sub-pages/statistics', 'ZePS\\Controllers\\SubPagesController::statistics')
+    ->bind('zeps.sub-pages.statistics');
+
+$app
+    ->get('/sub-pages/missings', 'ZePS\\Controllers\\SubPagesController::missings')
+    ->bind('zeps.sub-pages.missings');
+
+$app
+    ->post('/sub-pages/missings', 'ZePS\\Controllers\\SubPagesController::submit_missings')
+    ->bind('zeps.sub-pages.missing.submit');
+
+$app
+    ->get('/oublis', 'ZePS\\Controllers\\SubPagesController::legacy')
+    ->value('sub_page', 'oublis')
+    ->bind('zeps.missing');
+$app
+    ->get('/missings', 'ZePS\\Controllers\\SubPagesController::legacy')
+    ->value('sub_page', 'oublis');
+$app
+    ->get('/stats', 'ZePS\\Controllers\\SubPagesController::legacy')
+    ->value('sub_page', 'statistiques');
+$app
+    ->get('/statistiques', 'ZePS\\Controllers\\SubPagesController::legacy')
+    ->value('sub_page', 'statistiques');
+$app
+    ->get('/statistics', 'ZePS\\Controllers\\SubPagesController::legacy')
+    ->value('sub_page', 'statistiques');
+$app
+    ->get('/a-propos', 'ZePS\\Controllers\\SubPagesController::legacy')
+    ->value('sub_page', 'a-propos');
+$app
+    ->get('/about', 'ZePS\\Controllers\\SubPagesController::legacy')
+    ->value('sub_page', 'a-propos');
 
 
 // Redirect pages
@@ -257,17 +305,6 @@ $app
 $app
     ->get('/plan', 'ZePS\\Controllers\\NetworkMapController::network_map')
     ->bind('zeps.network_map');
-
-
-// Missing stations
-
-$app
-    ->get('/oublis', 'ZePS\\Controllers\\MissingController::missings')
-    ->bind('zeps.missing');
-
-$app
-    ->post('/oublis', 'ZePS\\Controllers\\MissingController::submit_missings')
-    ->bind('zeps.missing.submit');
 
 
 // Route search pages

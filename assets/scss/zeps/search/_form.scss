@@ -38,6 +38,8 @@
         color: #888;
         cursor: pointer;
 
+        @include unselectable;
+
         .fa {
             position: relative;
             top: .12em;
