@@ -44,3 +44,21 @@
         {% endif %}
     {% endspaceless %}
 {% endmacro %}
+
+{% macro person(person) %}
+    {% spaceless %}
+        {% if person.homepage or person.email %}
+            <a href="{% if person.homepage %}{{ person.homepage }}{% else %}{{ person.email }}{% endif %}">
+        {% endif %}
+        {% if (person.homepage and person.email) or person.role %}
+        <span title="{% if person.homepage and person.email %}{{ person.email }}{% if person.role %} – {% endif %}{% endif %}{% if person.role %}{{ person.role }}{% endif %}">
+        {% endif %}
+        {{ person.name }}
+        {% if (person.homepage and person.email) or person.role %}
+        </span>
+        {% endif %}
+        {% if person.homepage or person.email %}
+            </a>
+        {% endif %}
+    {% endspaceless %}
+{% endmacro %}

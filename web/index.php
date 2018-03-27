@@ -17,7 +17,7 @@ $app = new Silex\Application();
 
 // Application configuration
 
-$app['version'] = '1.2';
+$app['version'] = '1.8.0';
 
 $app['config'] = array
 (
@@ -141,6 +141,7 @@ $app['zeps.routing'] = $app->share(function($app) { return new RoutesManager($ap
 $app['zeps.dynmap']  = $app->share(function($app) { return new DynmapBridgeManager($app); });
 $app['zeps.quotes']  = $app->share(function($app) { return new QuotesManager(); });
 $app['zeps.stats']   = $app->share(function($app) { return new StatisticsManager($app); });
+$app['zeps.check']   = $app->share(function($app) { return new APIChecksumChecker($app); });
 
 
 // Maintenance mode
@@ -165,7 +166,7 @@ $app['twig']->addFunction(new Twig_SimpleFunction('static', function($context, $
 $app->before(function (Request $request, Application $app)
 {
     $stored_checksum = $app['cache.routing']->fetch($app['config']['cache']['checksum_cache_key']);
-    $remote_checksum = (new APIChecksumChecker($app))->get_checksum();
+    $remote_checksum = $app['zeps.check']->get_checksum();
 
     if ($request->query->has('purge'))
     {

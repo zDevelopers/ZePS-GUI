@@ -10,8 +10,16 @@ class SubPagesController
 {
     public function about(Application $app)
     {
+        $composer_json = json_decode(file_get_contents($app['root_directory'] . '/composer.json'), true);
+
         return $app['twig']->render('sub-pages/about.html.twig', [
-            'last_updates' => $app['zeps.stats']->get_update_infos()
+            'last_updates' => $app['zeps.stats']->get_update_infos(),
+            'authors' => $this->normalize_people($composer_json['authors']),
+            'versions' => [
+                'core' => $this->normalize_version($app['zeps.check']->get_version()),
+                'gui'  => $this->normalize_version($composer_json['version'])
+            ],
+            'thanks' => $this->normalize_people($composer_json['extra']['thanks'], true)
         ]);
     }
 
@@ -84,5 +92,65 @@ class SubPagesController
     public function legacy(Application $app, $sub_page)
     {
         return $app->redirect($app['url_generator']->generate('zeps.homepage', array(), 301) . '#' . $sub_page);
+    }
+
+
+    private function normalize_people($raw_people, $sort = false)
+    {
+        $normalized_people = [];
+
+        foreach ($raw_people as $person)
+        {
+            if (!$person) continue;
+
+            if (is_string($person))
+            {
+                $normalized_people[] = [
+                    'name'     => $person,
+                    'email'    => null,
+                    'homepage' => null,
+                    'role'     => null
+                ];
+            }
+            else if (is_array($person))
+            {
+                if (!isset($person['name']) || empty($person['name'])) continue;
+
+                $normalized_people[] = [
+                    'name'     => $person['name'],
+                    'email'    => isset($person['email'])    ? $person['email']    : null,
+                    'homepage' => isset($person['homepage']) ? $person['homepage'] : null,
+                    'role'     => isset($person['role'])     ? $person['role']     : null,
+                ];
+            }
+        }
+
+        if ($sort)
+        {
+            uasort($normalized_people, function ($a, $b)
+            {
+                return strnatcmp(strtolower($a['name']), strtolower($b['name']));
+            });
+        }
+
+        return $normalized_people;
+    }
+
+    private function normalize_version($version)
+    {
+        $raw_version = is_array($version) ? $version['version'] : $version;
+        $version_parts = explode('.', $raw_version);
+        $version_parts_length = count($version_parts);
+
+        $normalized_version_parts = [
+            $version_parts_length > 0 ? $version_parts[0] : 0,
+            $version_parts_length > 1 ? $version_parts[1] : 0,
+            $version_parts_length > 2 ? $version_parts[2] : 0,
+        ];
+
+        if (is_array($version)) $version['version'] = implode('.', $normalized_version_parts);
+        else                    $version            = implode('.', $normalized_version_parts);
+
+        return $version;
     }
 }

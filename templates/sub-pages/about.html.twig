@@ -1,11 +1,12 @@
+{% import '_macros.html.twig' as macros %}
+
 <p>
     Le ZéPS est un logiciel libre distribué sous <a
         href="http://cecill.info/licences/Licence_CeCILL-B_V1-fr.html">licence CeCILL-B</a>.
 </p>
 <p>
-    Il est développé par <a href="https://florian.cassayre.me">Florian Cassayre</a>, <a
-        href="https://amaury.carrade.eu">Amaury Carrade</a>,
-    <a href="https://github.com/ProkopyL">Adrien Prokopowicz</a>, ainsi que d'autres contributeurs du
+    Il est développé par {% for author in authors %}{{ macros.person(author) }}, {% endfor %}ainsi que d'autres
+    contributeurs du
     <a href="https://github.com/zDevelopers/ZePS-Core/graphs/contributors">cœur</a> (le moteur d'itinéraire) et de
     <a href="https://github.com/zDevelopers/ZePS-GUI/graphs/contributors">l'interface</a> (ce que vous avez sous les
     yeux).
@@ -20,6 +21,8 @@
                     <span class="icon is-large"><span class="fa fa-github fa-lg"></span></span>
                 </a>
             </p>
+            <p class="heading is-light" {% if version.core.snapshot %} title="Version bêta" {% endif %}>
+                {{ versions.core.version }}</p>
         </div>
     </div>
     <div class="level-item has-text-centered">
@@ -30,6 +33,7 @@
                     <span class="icon is-large"><span class="fa fa-github fa-lg"></span></span>
                 </a>
             </p>
+            <p class="heading is-light">{{ versions.gui }}</p>
         </div>
     </div>
 </aside>
@@ -110,11 +114,14 @@
 
 <h3>Remerciements</h3>
 
+{% if thanks %}
 <p>
-    Remerciements à CheshireScrat, Vayquor, Swaps, Étholie, Jenjeur, Pileurs, Vayan, infinity, Black_Lizard, Tyrano,
-    Bambellop, et tous ceux que j'aurais oublié (désolé), pour leurs contributions plus ou moins directes à
+    Remerciements à {% for thank in thanks %}{{ macros.person(thank) }}, {% endfor %}et tous ceux que j'aurais oublié
+    (désolé), pour leurs contributions plus ou moins directes à
     l'amélioration du ZéPS.
 </p>
+{% endif %}
+
 <p>
     Remerciements à <a href="https://jenkins.io/">Jenkins</a>, serveur d'intégration continue utilisé par le ZéPS.
 </p>

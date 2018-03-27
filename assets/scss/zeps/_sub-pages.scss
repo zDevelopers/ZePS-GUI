@@ -178,12 +178,20 @@
                     }
                 }
 
-                p.title small {
-                    position: relative;
-                    top: -.05em;
+                p.title {
+                    margin-bottom: .3em;
 
-                    color: $grey-dark;
-                    font-size: .8em;
+                    small {
+                        position: relative;
+                        top: -.05em;
+
+                        color: $grey-dark;
+                        font-size: .8em;
+                    }
+                }
+
+                p.heading.is-light {
+                    color: $grey-light;
                 }
             }
 
