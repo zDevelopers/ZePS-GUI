@@ -95,6 +95,11 @@ class SubPagesController
     }
 
 
+    private function remove_special_characters($string)
+    {
+        return iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $string);
+    }
+
     private function normalize_people($raw_people, $sort = false)
     {
         $normalized_people = [];
@@ -129,7 +134,10 @@ class SubPagesController
         {
             uasort($normalized_people, function ($a, $b)
             {
-                return strnatcmp(strtolower($a['name']), strtolower($b['name']));
+                return strnatcmp(
+                    strtolower($this->remove_special_characters($a['name'])),
+                    strtolower($this->remove_special_characters($b['name']))
+                );
             });
         }
 
