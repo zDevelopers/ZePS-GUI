@@ -923,7 +923,7 @@ var EasyAutocomplete = (function(scope) {
 		};
 
 		this.getWrapper = function() {
-			if (config.get("externalContainer") && config.get("externalContainer") != "") {
+			if (config.get("externalContainer") && config.get("externalContainer") !== "") {
 				return $("#" + config.get("externalContainer"));
 			}
 
@@ -950,6 +950,10 @@ var EasyAutocomplete = (function(scope) {
 		this.getSelectedItemData = function() {
 			return this.getItemData(selectedElement);
 		};
+
+		this.resetItems = function () {
+			elementsList = [];
+		}
 
 		this.build = function() {
 			prepareField();
@@ -1657,3 +1661,6 @@ var EasyAutocomplete = (function(scope) {
 	};
 
 })(jQuery);
+
+
+module.exports = EasyAutocomplete;
