@@ -58,6 +58,10 @@ function bind_events_on_form($form, $from, $to, alternate_handles_selector, $res
     $form.on('submit', e =>
     {
         e.preventDefault();
+    
+        if ($from.val().trim().length === 0 || $to.val().trim().length === 0)
+            return;
+
         start_loading($results_container, $loader_container, $errors_container, $reduce_button);
 
         $.ajax({
