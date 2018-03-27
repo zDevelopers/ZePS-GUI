@@ -29,19 +29,20 @@ export function setup_search_form($from, $to, $invert_handle, $autocomplete_cont
     });
 
     $from.on('keydown', e =>
-    {
+    {     
         if (!was_enter_pressed(e))
         {
             return;
         }
-        else if ($from.val().trim().length === 0)
+
+        e.preventDefault();
+
+        if ($from.val().trim().length === 0)
         {
             // Error, let's shake
             shake_for_error($from);
             return;
         }
-
-        e.preventDefault();
 
         document.dispatchEvent(new CustomEvent('zeps-station-selected-for-highlight', {detail: $from.val()}));
         $to.focus();
