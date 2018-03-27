@@ -84,13 +84,21 @@ aside.home-search-form {
         input[type="text"] {
             display: block;
             width: 100%;
+            transform: translate3d(0, 0, 0);
             border: none;
-            border-bottom: 1px solid #ddd;
             padding: .8em;
         }
 
-        div {
+        > div {
             position: relative;
+            overflow: hidden;
+            
+            border-bottom: 1px solid #ddd;
+
+            &:first-of-type input[type="text"] {
+                position: relative;
+                top: -1px;
+            }
         }
 
         button {
@@ -112,7 +120,7 @@ aside.home-search-form {
             &.invert-from-to {
                 position: absolute;
                 right: 52px;
-                top: 67px;
+                top: 69px;
                 background: white;
                 border: solid 1px #ddd;
                 border-radius: 100%;

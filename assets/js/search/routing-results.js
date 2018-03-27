@@ -1,10 +1,7 @@
 'use strict';
 
-export function setup_routing()
+export function setup_routing($form_results, $reduce_button)
 {
-    let $form_results = $('#home-search-form-results');
-    let $reduce_button = $('#home-search-form-reduce');
-
     bind_events_on_results($form_results);
 
     $reduce_button.on('click', () =>

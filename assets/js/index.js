@@ -5,7 +5,7 @@ import jQuery from 'jquery';
 import { setup_modals_interaction } from './utils/modals';
 import { setup_geolocation } from './search/geolocation';
 import { setup_autocomplete } from './search/autocomplete';
-import { setup_invert_fields } from './search/invert-stations';
+import { setup_search_form } from './search/routing-search';
 import { setup_routing } from './search/routing-results';
 import { setup_live_results } from './search/live-results';
 import { setup_network_map } from './network-map/map-manager';
@@ -39,11 +39,11 @@ $(function()
 	// Setups autocompletion for both search fields.
 	setup_autocomplete([$from, $to], 'home-search-form-autocomplete');
 
-	// Setups inversion button.
-	setup_invert_fields($('#invert-from-to'), $from, $to);
+	// Setups inversion button and other search-form-related interactions.
+	setup_search_form($from, $to, $('#invert-from-to'), $('#home-search-form-autocomplete'));
 
 	// Setups everything else in the routing pane.
-	setup_routing();
+	setup_routing($('#home-search-form-results'), $('#home-search-form-reduce'));
 
 	// Setups the network map.
 	setup_network_map($('#network-map'));

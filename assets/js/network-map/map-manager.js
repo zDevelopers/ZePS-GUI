@@ -25,4 +25,9 @@ export function setup_network_map($map)
         let path_id = network_map.highlight_path(e.detail);
         network_map.re_render_highlighted_path(() => network_map.center_on_highlighted_path(path_id, true));
     });
+
+    document.addEventListener('zeps-station-selected-for-highlight', e =>
+    {
+        network_map.fly_to_station(e.detail, true);
+    });
 }

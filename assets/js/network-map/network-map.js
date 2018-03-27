@@ -353,6 +353,42 @@ export class NetworkMap
         }
     }
 
+    /**
+     * Flies to the given station, adapting the zoom if too low.
+     * 
+     * @param station_name Either the code name or display name of the station to fly to.
+     * @param is_display_name If true, the first parameter will be interpreted as a station display name.
+     *
+     * @return the fixed station name if the operation was successful (station found and map movement started), undefined else.
+     */
+    fly_to_station(station_name, is_display_name)
+    {
+        let station = undefined;
+        if (is_display_name)
+        {
+            let lower_station_name = station_name.toLowerCase().trim();
+
+            // We have to lookup for this station
+            Object.keys(this.stations).map(k => this.stations[k]).forEach(station_marker =>
+            {
+                if (station_marker.zeps.station.full_name.toLowerCase().trim() === lower_station_name)
+                {
+                    station = station_marker;
+                }
+            });
+        }
+        else
+        {
+            station = this.stations[station_name];
+        }
+
+        if (!station) return undefined;
+
+        this.map.flyTo(station.getLatLng(), 1);
+
+        return is_display_name ? station.zeps.full_name : station.zeps.code_name;
+    }
+
 
 
     // -------------------- Rendering

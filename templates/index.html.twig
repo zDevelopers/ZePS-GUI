@@ -54,12 +54,12 @@
                             type="text"
                             name="from"
                             id="from"
-                            placeholder="Point de départ"
+                            placeholder="Point de départ ou recherche"
                             autocomplete="off"
                             tabindex="10"
                             value="{{ attribute(stations.stations, from).displayName }}"
                             data-autocomplete-api="{{ path('zeps.api.autocomplete') }}?input={input}" />
-                        <button class="search-over-button" id="open-geolocation-icon" title="Me géolocaliser" aria-haspopup="true"></button>
+                        <button class="search-over-button" id="open-geolocation-icon" type="button" title="Me géolocaliser" aria-haspopup="true" tabindex="-1"></button>
                     </div>
                     <div>
                         <input
@@ -76,7 +76,7 @@
                             <span class="sr-only">Rechercher l'itinéraire</span>
                         </button>
                     </div>
-                    <button class="invert-from-to" id="invert-from-to" title="Inverser le point de départ et la destination">
+                    <button class="invert-from-to" id="invert-from-to" title="Inverser le point de départ et la destination" tabindex="40">
                         <span class="fa fa-exchange fa-rotate-90" aria-hidden="true"></span>
                         <span class="sr-only">Inverser le point de départ et la destination</span>
                     </button>
