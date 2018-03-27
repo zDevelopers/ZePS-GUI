@@ -23,7 +23,9 @@
         "twig/twig": "~1.0",
         "symfony/twig-bridge": "^2.0",
         "doctrine/cache": "^1.6",
-        "cpliakas/git-wrapper": "~1.0"
+        "cpliakas/git-wrapper": "~1.0",
+        "ext-curl": "*",
+        "ext-iconv": "*"
     },
 
     "autoload": {
