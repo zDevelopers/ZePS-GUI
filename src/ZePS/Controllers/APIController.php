@@ -71,7 +71,7 @@ class APIController
     public function autocomplete(Application $app)
     {
         $original_input = $app['request']->query->get('input');
-        $input = $this->remove_special_characters(strtolower(trim($original_input)));
+        $input = strtolower($this->remove_special_characters(trim($original_input)));
 
         if (empty($input))
         {
