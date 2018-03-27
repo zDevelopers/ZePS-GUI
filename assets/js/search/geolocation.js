@@ -41,10 +41,8 @@ export function setup_geolocation($handle, $modal, $from, $from_overworld)
 
     $('#open-geolocation-icon, .geolocation-modal-retry').click(open_geolocation_dialog);
 
-    $from_input.on('change', function () {
-        if (this.value == "")
-            open_geolocation_dialog();
-        else
+    $from_input.on('change', function() {
+        if (this.value.length !== 0)
             $from_overworld_field.val('false');
     });
 
