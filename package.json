@@ -1,13 +1,13 @@
 {
   "name": "zeps-gui",
-  "version": "1.4.0",
+  "version": "1.8.0",
   "description": "The GUI of a path calculator for Minecraft",
   "main": "web/js/index.js",
   "scripts": {
     "build": "webpack",
     "watch": "webpack serve --watch",
-    "webpack-server": "webpack-dev-server",
-    "php-server": "WEBPACK_DEV_SERVER=\"http://127.0.0.1:8080\" php -S 127.0.0.1:8888 -t ./web/",
+    "webpack-server": "webpack-dev-server -d --hot --port 8080 --host 0.0.0.0 --config webpack.config.js --watch",
+    "php-server": "WEBPACK_DEV_SERVER=\"8080\" php -S 0.0.0.0:8888 -t ./web/",
     "dev": "npm-run-all --parallel php-server webpack-server",
     "prod": "rm -rf web/dist && NODE_ENV=production webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
