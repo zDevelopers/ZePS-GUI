@@ -1290,8 +1290,9 @@ var EasyAutocomplete = (function(scope) {
 				$field
 				.off("keyup")
 				.keyup(function(event) {
+					let key_code = getRealKeyCode(event);
 
-					switch(event.keyCode) {
+					switch(key_code) {
 
 						case 27:
 
@@ -1332,11 +1333,11 @@ var EasyAutocomplete = (function(scope) {
 
 						default:
 
-							if (event.keyCode > 40 || event.keyCode === 8) {
+							if (key_code > 40 || key_code === 8) {
 
 								var inputPhrase = $field.val();
 
-								if (!(config.get("list").hideOnEmptyPhrase === true && event.keyCode === 8 && inputPhrase === "")) {
+								if (!(config.get("list").hideOnEmptyPhrase === true && key_code === 8 && inputPhrase === "")) {
 
 									if (config.get("requestDelay") > 0) {
 										if (requestDelayTimeoutId !== undefined) {
@@ -1479,15 +1480,15 @@ var EasyAutocomplete = (function(scope) {
 				$field
 					.on("keydown", function(evt) {
 	        		    evt = evt || window.event;
-	        		    var keyCode = evt.keyCode;
-	        		    if (keyCode === 38) {
+                        let keyCode = getRealKeyCode(evt);
+                        if (keyCode === 38) {
 	        		        suppressKeypress = true;
 	        		        return false;
 	        		    }
 		        	})
 					.keydown(function(event) {
-
-						if (event.keyCode === 13 && selectedElement > -1) {
+					    let keyCode = getRealKeyCode(event);
+						if (keyCode === 13 && selectedElement > -1) {
 
 							$field.val(config.get("getValue")(elementsList[selectedElement]));
 
@@ -1533,6 +1534,17 @@ var EasyAutocomplete = (function(scope) {
 				$field.attr("autocomplete","off");
 			}
 
+			function getRealKeyCode(event) {
+                // On Android devices (both Chrome and Firefox), the event.keyCode is always either 0 or 229.
+                // We must use this trick to get the real character code.
+                let keyCode = event.keyCode || event.which;
+                if (keyCode === 0 || keyCode === 229)
+                {
+                    let value = event.target.value;
+                    keyCode = value.charCodeAt(value.length - 1);
+                }
+                return keyCode;
+            }
 		}
 
 		function showContainer() {
