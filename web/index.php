@@ -157,7 +157,17 @@ $app->before(function (Request $request, Application $app)
 
 $app['twig']->addFunction(new Twig_SimpleFunction('static', function($context, $path)
 {
-    return (getenv('WEBPACK_DEV_SERVER') ? getenv('WEBPACK_DEV_SERVER') : $context['app']['request']->getBasePath()) . $path;
+    $webpack_path = getenv('WEBPACK_DEV_SERVER');
+
+    // Is that only a port? If so we use the same IP as this server.
+    if ($webpack_path && strpos($webpack_path, 'http') === false)
+    {
+        $webpack_path = 'http://' . explode(':', $_SERVER['HTTP_HOST'])[0] . ':' . $webpack_path;
+    }
+
+    $str = ($webpack_path ? $webpack_path : $context['app']['request']->getBasePath()) . $path;
+    error_log($str);
+    return $str;
 }, ['needs_context' => true]));
 
 

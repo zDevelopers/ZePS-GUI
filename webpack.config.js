@@ -94,7 +94,7 @@ let config = {
         hot: true
     },
     devtool: prod ? undefined : 'eval-source-map'
-}
+};
 
 if (prod)
 {

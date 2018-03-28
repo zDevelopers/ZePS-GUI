@@ -8,7 +8,7 @@ L'interface d'un outil de calcul d'itinéraire dans le Nether Zcraftien, et peut
 
 ## Installation & update
 
-### Installation
+### Install
 
 PHP 5.5+ is required to run this application.
 
@@ -38,13 +38,13 @@ git pull
 php composer.phar install
 npm install --save-dev
 
-# Clears the cache (always)
+# Clears the cache (always, especially in production)
 # If you don't want to remove all the cache for the routing API (because it auto-clears when needed),
 # you should delete the cache/twig/ directory only (but, delete it!): rm -rf cache/twig/*
 rm -rf cache/*
 ```
 
-## Deployment
+## Run
 
 The front assets are built using webpack.
 
@@ -54,7 +54,16 @@ To launch the webpack development server plus the PHP server, run:
 ```bash
 npm run dev
 ```
-The app should be accessible at [127.0.0.1:8888](http://127.0.0.1:8888), or at the same port using your local IP address from other devices (e.g. phones).
+The app should be accessible at [127.0.0.1:8888](http://127.0.0.1:8888).
+
+To debug from other devices, such as phones, use
+```bash
+npm run dev-remote
+```
+so the webpack dev server will listen from any IP, not only localhost, and the PHP server configured to lookup for webpack at the correct IP. As long as _both_ 8080 and 8888 ports are open, you'll be able to access the app using [http://networkIP:8888](http://networkIP:8888).
+
+In both cases, these commands enable webpack's hot-reload.
+
 
 ### Production server
 
@@ -82,7 +91,7 @@ By default, the service will be available through `https://root/index.php`, `htt
 ```
 (with all usual security features too, like no indexing, etc.). [Use that if you prefer nginx.](https://silex.symfony.com/doc/2.0/web_servers.html#nginx)
 
-To enhance application performances, you can use the optimized autoloader—but if you do so, you'll have to re-update it for every release.
+To enhance application performances, you can use the optimized autoloader (I even recommend it)—but if you do so, you'll have to re-update it for every release.
 ```bash
 php composer.phar dump-autoload -a
 ```
