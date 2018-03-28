@@ -1479,15 +1479,15 @@ var EasyAutocomplete = (function(scope) {
 			function bindKeydown() {
 				$field
 					.on("keydown", function(evt) {
-	        		    evt = evt || window.event;
-                        let keyCode = getRealKeyCode(evt);
-                        if (keyCode === 38) {
-	        		        suppressKeypress = true;
-	        		        return false;
-	        		    }
-		        	})
+						evt = evt || window.event;
+						let keyCode = getRealKeyCode(evt);
+						if (keyCode === 38) {
+							suppressKeypress = true;
+							return false;
+						}
+					})
 					.keydown(function(event) {
-					    let keyCode = getRealKeyCode(event);
+						let keyCode = getRealKeyCode(event);
 						if (keyCode === 13 && selectedElement > -1) {
 
 							$field.val(config.get("getValue")(elementsList[selectedElement]));
@@ -1535,16 +1535,16 @@ var EasyAutocomplete = (function(scope) {
 			}
 
 			function getRealKeyCode(event) {
-                // On Android devices (both Chrome and Firefox), the event.keyCode is always either 0 or 229.
-                // We must use this trick to get the real character code.
-                let keyCode = event.keyCode || event.which;
-                if (keyCode === 0 || keyCode === 229)
-                {
-                    let value = event.target.value;
-                    keyCode = value.charCodeAt(value.length - 1);
-                }
-                return keyCode;
-            }
+				// On Android devices (both Chrome and Firefox), the event.keyCode is always either 0 or 229.
+				// We must use this trick to get the real character code.
+				let keyCode = event.keyCode || event.which;
+				if (keyCode === 0 || keyCode === 229)
+				{
+					let value = event.target.value;
+					keyCode = value.charCodeAt(value.length - 1);
+				}
+				return keyCode;
+			}
 		}
 
 		function showContainer() {
