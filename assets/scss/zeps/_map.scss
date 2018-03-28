@@ -184,4 +184,30 @@
             left: -1px;
         }
     }
+
+    @include mobile {
+        .leaflet-control-attribution {
+            width: 100vw;
+            text-align: center;
+
+            .leaflet-control-attribution-prefix-separator {
+                display: none;
+            }
+
+            .leaflet-control-attribution-prefix, .leaflet-control-attribution-attributions {
+                display: block;
+                width: 100%;
+            }
+        }
+
+        .leaflet-bottom.leaflet-left {
+            bottom: 2.7em;
+        }
+    }
+
+    @include until(370px) {
+        .leaflet-bottom.leaflet-left {
+            bottom: 4.1em;
+        }
+    }
 }

@@ -121,6 +121,11 @@ aside.home-search-form {
                 position: absolute;
                 right: 52px;
                 top: 69px;
+
+                @include mobile {
+                    top: 64px;
+                }
+
                 background: white;
                 border: solid 1px #ddd;
                 border-radius: 100%;
