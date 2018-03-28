@@ -3,34 +3,9 @@
 import 'leaflet';
 import 'leaflet-easybutton';
 
-import {toTransformation} from "leaflet/src/geometry/Transformation";
-
-import {shade_color} from "../utils/colors";
-import {is_mobile} from "../utils/responsive";
-
-
-const yx = L.latLng;
-
-const xy = function (x, y)
-{
-    // When doing xy([x, y]);
-    if (L.Util.isArray(x))
-    {
-        return yx(x[1], x[0]);
-    }
-
-    // When doing xy(x, y);
-    return yx(y, x);
-};
-
-
-/**
- * A CRS adapted to our maps, same as the Simple CRS but with Ys
- * from the top to the bottom.
- */
-const ZePSCRS = L.Util.extend({}, L.CRS.Simple, {
-    transformation: toTransformation(1, 0, 1, 0)
-});
+import { shade_color } from '../utils/colors';
+import { is_mobile } from '../utils/responsive';
+import { xy, yx, ZePSCRS, ZePSAttribution } from "./leaflet-addons";
 
 
 // TODO Currently in a constant for the 1.6, but this is meant to be external in V2.
@@ -447,12 +422,31 @@ export class NetworkMap
                     maxZoom: 8,
 
                     // Control will be added later, customized, not in the default location.
-                    zoomControl: false
+                    zoomControl: false,
+
+                    // We'll add our own attribution control.
+                    attributionControl: false
                 });
 
 
                 // Initializes the layers
                 this.switch_world(WORLD_NAME);
+
+
+                // And the attributions
+                // This removes the “Leaflet” attribution but no fear! It is added back on the about pane.
+                // Please also note that this must be added *first* in its “block” (like bottomright), else
+                // it will not be at the bottom of the page.
+                new ZePSAttribution({
+                    attributionsSeparator: ' | '
+                }).addTo(this.map);
+
+                let links = [
+                    '<a href="#a-propos" class="sub-pages-handle">À propos</a>',
+                    '<a href="#statistiques" class="sub-pages-handle">Statistiques</a>',
+                    '<a href="#oublis" class="sub-pages-handle"><strong>Station manquante ?</strong></a>'
+                ];
+                this.map.attributionControl.setPrefix(links.join('&nbsp;&middot;&nbsp;'));
 
 
                 // And the zoom controls
@@ -466,16 +460,6 @@ export class NetworkMap
                     maxWidth: 128,
                     imperial: false  // None of this on my map!
                 }).addTo(this.map);
-
-
-                // And the attributions
-                // This removes the “Leaflet” attribution but no fear! It is added back on the about pane.
-                let links = [
-                    '<a href="#a-propos" class="sub-pages-handle">À propos</a>',
-                    '<a href="#statistiques" class="sub-pages-handle">Statistiques</a>',
-                    '<a href="#oublis" class="sub-pages-handle"><strong>Station manquante ?</strong></a>'
-                ];
-                this.map.attributionControl.setPrefix(links.join('&nbsp;&middot;&nbsp;'));
 
 
                 // Updates the displayed location if needed,
@@ -1218,11 +1202,11 @@ export class NetworkMap
         let world = this.worlds[new_world];
 
         // We build the attribution before
-        let attribution = world.name;
+        let attribution = '';
 
         if (world.data_attribution)
         {
-            attribution += ' | Aggrégation des données : ';
+            attribution += 'Aggrégation des données : ';
 
             world.data_attribution.forEach(person =>
             {
@@ -1246,7 +1230,7 @@ export class NetworkMap
             world.terminus,
             world.intersections,
             world.main,
-        ], {attribution: attribution});
+        ], {attribution: [world.name, attribution]});
 
         this.map.addLayer(layer);
         this.map.current_world = new_world;
