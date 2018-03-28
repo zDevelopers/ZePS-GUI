@@ -67,6 +67,7 @@ export function setup_search_form($from, $to, $invert_handle, $autocomplete_cont
         }
 
         $to.parents('form').submit();
+        $to.blur();
     });
 }
 
