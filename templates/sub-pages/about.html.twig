@@ -53,9 +53,9 @@
                 —
                 {%- if last_updates.zeps.signed -%}<span class="fa fa-lock" title="Commit signé"></span>{% endif %}
                 Le {{ last_updates.zeps.date|date("d/m/Y à H:i") }} par {{ last_updates.zeps.author }}
-                (<a href="{{ app.config.git.web_commit_url|format(last_updates.zeps.commit)}}" class="git-hash">
+                &nbsp;&middot;&nbsp;&nbsp;<a href="{{ app.config.git.web_commit_url|format(last_updates.zeps.commit)}}" class="git-hash">
                     {{- last_updates.zeps.commit|slice(0, 7) -}}
-                </a>)
+                </a>
             </p>
         </blockquote>
         <p class="all-history">
@@ -64,6 +64,48 @@
         </p>
     {% endif %}
 {% endif %}
+
+
+{% if app.config.roleplay.partners %}
+<h3>Nos partenaires</h3>
+
+<div class="columns is-multiline partners">
+    {% for partner in app.config.roleplay.partners %}
+        <div class="column is-half">
+            <figure>
+                <div class="logo{% if partner.logo_css_classes %} {{ partner.logo_css_classes }}{% endif %}">
+                    <a href="{{ partner.link }}"{% if partner.tooltip %} title="{{ partner.tooltip }}"{% endif %}>
+                        <img src="{{ partner.logo }}" alt="{{ partner.name }}" />
+                    </a>
+                </div>
+                <figcaption>
+                    {% if partner.name_displayed %}
+                        <h4>{{ partner.name }}</h4>
+                    {% endif %}
+                    {% if partner.description %}
+                        <p>{{ partner.description }}</p>
+                    {% endif %}
+                </figcaption>
+            </figure>
+        </div>
+    {% endfor %}
+</div>
+
+{% endif %}
+
+
+<h3>Remerciements</h3>
+
+{% if thanks %}
+<p>
+    Remerciements à {% for thank in thanks %}{{ macros.person(thank) }}, {% endfor %}et tous ceux que j'aurais oublié (désolé), pour leurs contributions plus ou moins directes à
+    l'amélioration du ZéPS.
+</p>
+{% endif %}
+
+<p>
+    Remerciements à <a href="https://jenkins.io/">Jenkins</a>, serveur d'intégration continue utilisé par le ZéPS.
+</p>
 
 
 <h3>Bibliothèques</h3>
@@ -103,20 +145,6 @@
         </ul>
     </div>
 </div>
-
-
-<h3>Remerciements</h3>
-
-{% if thanks %}
-<p>
-    Remerciements à {% for thank in thanks %}{{ macros.person(thank) }}, {% endfor %}et tous ceux que j'aurais oublié (désolé), pour leurs contributions plus ou moins directes à
-    l'amélioration du ZéPS.
-</p>
-{% endif %}
-
-<p>
-    Remerciements à <a href="https://jenkins.io/">Jenkins</a>, serveur d'intégration continue utilisé par le ZéPS.
-</p>
 
 
 <h3>Dernière note</h3>
