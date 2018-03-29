@@ -42,7 +42,7 @@
             Dernière mise à jour du réseau <strong>le {{ last_updates.network|date("d/m/Y à H:i") }}</strong>.{% if last_updates.zeps %}<br />{% endif %}
         {% endif %}
         {% if last_updates.zeps %}
-            Dernière mise à jour de l'interface <strong>{{ last_updates.zeps.date|date("d/m/Y à H:i") }}</strong>.
+            Dernière mise à jour de l'interface <strong>le {{ last_updates.zeps.date|date("d/m/Y à H:i") }}</strong>.
         {% endif %}
     </p>
 
