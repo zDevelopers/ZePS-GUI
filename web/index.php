@@ -85,7 +85,22 @@ $app['config'] = array
 
     'git' => array(
         'web_commit_url' => 'https://github.com/zDevelopers/ZePS-GUI/commit/%s' // The URL to a commit. %s is the hash.
-    )
+    ),
+
+    'roleplay' => [
+        // If not empty, a list of partners displayed on the about page.
+        'partners' => [
+//            [
+//                'name' => 'Trainline',
+//                'name_displayed' => false,  // Could be omitted (default false)
+//                'logo' => '/img/zcraft/trainline.svg',
+//                'description' => 'En tant qu\'outil développé essentiellement dans le train, le ZéPS salue le soutien précieux de Trainline, son fournisseur officiel de billets et d\'espaces de travail à grande vitesse.',
+//                'logo_css_classes' => '',  // Could be omitted (default nothing)
+//                'link' => 'https://trainline.fr',
+//                'tooltip' => '(Bon ok, en vrai on a pas de partenariat officiel. Mais le reste reste vrai !)'  // Tooltip attached to the logo.
+//            ]
+        ]
+    ]
 );
 
 $app['root_directory'] = __DIR__ . '/../';

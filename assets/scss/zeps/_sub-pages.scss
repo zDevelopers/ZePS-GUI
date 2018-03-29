@@ -225,6 +225,68 @@
                 font-style: italic;
             }
 
+            .partners {
+                padding: 1em .4em;
+
+                .column {
+                    &:hover div.logo, &:hover div.logo.is-lighter {
+                        filter: grayscale(0%) brightness(1);
+                    }
+
+                    figure {
+                        margin-left: .8em;
+                        margin-right: .5em;
+
+                        div.logo {
+                            height: 6em;
+                            position: relative;
+
+                            filter: grayscale(100%) brightness(.6);
+                            transition: filter .3s ease-in-out;
+
+                            a {
+                                display: block;
+                                position: absolute;
+                                top: calc(50% - (1.8em / 2));
+
+                                width: 100%;
+                                text-align: center;
+                                text-decoration: none;
+
+                                &:hover {
+                                    text-decoration: none;
+                                }
+
+                                img {
+                                    height: 1.8em;
+                                }
+                            }
+
+                            &.is-tall a {
+                                top: calc(50% - (6.2em / 2));
+
+                                img {
+                                    height: 6.2em;
+                                }
+                            }
+
+                            &.is-lighter {
+                                filter: grayscale(100%) brightness(.85);
+                            }
+                        }
+
+                        p {
+                            margin-top: 1.4em;
+                            font-size: .9em;
+                            font-style: italic;
+                            text-align: justify;
+                            text-align-last: center;
+                            cursor: normal;
+                        }
+                    }
+                }
+            }
+
             .cache-statistics p {
                 text-align: justify;
                 font-size: .96em;
