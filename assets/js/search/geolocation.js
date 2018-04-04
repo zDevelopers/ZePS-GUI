@@ -15,6 +15,8 @@ let $geolocation_modal_button;
 
 let $from_input, $from_overworld_field;
 
+let routes = {};
+
 export function setup_geolocation($handle, $modal, $from, $from_overworld)
 {
     $geolocation_handle = $handle;
@@ -38,6 +40,12 @@ export function setup_geolocation($handle, $modal, $from, $from_overworld)
 
     $from_input           = $from;
     $from_overworld_field = $from_overworld;
+
+    routes = {
+        'get_players': $modal.data('route-get-players'),
+        'get_nearest': $modal.data('route-get-nearest'),
+        'get_head': $modal.data('route-get-head')
+    };
 
     $('#open-geolocation-icon, .geolocation-modal-retry').click(open_geolocation_dialog);
 
@@ -99,13 +107,13 @@ function open_geolocation_dialog(e)
 
     $(document).on('keydown.zeps.geolocation', function(e)
     {
-        e.which == 27 && $geolocation_handle.removeClass('is-active');
+        e.which === 27 && $geolocation_handle.removeClass('is-active');
     });
 
     // Then we load players in the nether and display them
     $.getJSON(routes.get_players, function (players)
     {
-        if (players.length == 0)
+        if (players.length === 0)
         {
             $geolocation_modal_loading.hide();
             $geolocation_modal_error_nether_empty.show();
@@ -116,7 +124,7 @@ function open_geolocation_dialog(e)
         }
         else
         {
-            var list_content = '';
+            let list_content = '';
 
             players.forEach(function (player) {
                 list_content += '<div class="column is-half"><div class="geolocation-modal-selector-list-item" data-player-name="' + player.name + '"><img src="' + routes.get_head.replace('playerNamePlaceholder', player.name) + '" alt="[Avatar]" aria-hidden="true" /><span>' + player.name + '</span></div></div>';
