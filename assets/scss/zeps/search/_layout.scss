@@ -5,7 +5,7 @@ aside.home-search-form {
 
     z-index: 1000;
 
-    width: 400px;
+    width: $search-form-width;
 
     @include mobile {
         width: calc(100% - 1.6em);

@@ -226,7 +226,9 @@ class RouteSearchController
             'directions_translations' => $directions_translations,
 
             'spawn_station' => $app['zeps.routing']->get_spawn_station(),
-            'spawn_station_id' => $app['zeps.routing']->station_name_to_id($app['zeps.routing']->get_spawn_station())
+            'spawn_station_id' => $app['zeps.routing']->station_name_to_id($app['zeps.routing']->get_spawn_station()),
+
+            'quote' => $app['zeps.quotes']->get_random_quote()
         ];
 
         if ($app['request']->isXmlHttpRequest() || $app['request']->query->has('ajax'))

@@ -101,11 +101,18 @@
                 data-dynmap-map-type="{{ app.config.dynmap.map_type }}"
                 {% if route %}data-highlighted-route="{% for step in route.path %}{{ step.station.name }},{% endfor %}"{% endif %}>
                 {% if error != 'unreachable' %}
-                    <div class="network_map_loader">
+                    <div class="network-map-loader">
+                        <p>
+                            <span class="fa fa-map-o"></span>
+                        </p>
                         <h4>Chargement de la carte en cours...</h4>
-                        <p class="is-hidden" id="still_nothing_loader">
+                        <p id="still_nothing_loader">
                             Toujours rien ? Vérifiez que vous n'avez pas perdu votre accès internet entre temps.
                         </p>
+                        <blockquote cite="{{ quote.author }}">
+                            <p>{{ quote.quote }}</p>
+                            <cite>— {{ quote.author }}</cite>
+                        </blockquote>
                     </div>
                 {% endif %}
             </section>
