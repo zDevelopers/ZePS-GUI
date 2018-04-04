@@ -2,7 +2,7 @@
     "name": "zdevelopers/zeps-gui",
     "description": "A route generator, GPS and map displayer for a Minecraft Netherrail network, initially designed for the zcraft server.",
     "homepage": "http://zeps.carrade.eu",
-    "version": "1.8.1",
+    "version": "1.8.2",
     "license": "CECILL-B",
     "type": "project",
 

@@ -17,22 +17,20 @@
     </head>
 
     <body>
-        <section>
-            {% if error == 'unreachable' %}
-                <div class="alert alert-danger">
-                    <strong>L'API de recherche est injoignable.</strong>
-                    Il s'agit certainement d'un problème temporaire. Réessayez dans quelques minutes.
+        {% if error == 'unreachable' %}
+            <div class="alert alert-danger">
+                <strong>Le service de recherche d'itinéraire est injoignable.</strong>
+                Il s'agit certainement d'un problème temporaire. Réessayez dans quelques minutes.
+            </div>
+        {% else %}
+            <noscript>
+                <div class="alert alert-warning">
+                    <strong>Javascript est désactivé.</strong>
+                    Certaines fonctionnalités (plan, géolocalisation...) ne marcheront pas.
+                    <a href="http://www.enable-javascript.com/fr/">Cliquez ici pour apprendre comment activer Javascript</a>.
                 </div>
-            {% else %}
-                <noscript>
-                    <div class="alert alert-warning">
-                        <strong>Javascript est désactivé.</strong>
-                        Certaines fonctionnalités (plan, géolocalisation...) ne marcheront pas.
-                        <a href="http://www.enable-javascript.com/fr/">Cliquez ici pour apprendre comment activer Javascript</a>.
-                    </div>
-                </noscript>
-            {% endif %}
-        </section>
+            </noscript>
+        {% endif %}
 
         {% block content %}{% endblock %}
 

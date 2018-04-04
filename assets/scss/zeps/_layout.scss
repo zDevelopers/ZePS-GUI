@@ -44,34 +44,39 @@ body, .container-fullscreen {
     text-align: center;
 
     &.alert-danger {
-        background-color: #ec2020;
+        background-color: #E61414;
         color: white;
         strong, a, a:hover, a:active, a:focus {
-            background-color: #ec2020;
+            background-color: #E61414;
             color: white;
         }
     }
 
     &.alert-warning {
-        background-color: #ff9000;
+        background-color: #CC7400;
         color: white;
         strong, a, a:hover, a:active, a:focus {
-            background-color: #ff9000;
+            background-color: #CC7400;
             color: white;
         }
     }
 
     &.alert-info {
-        background-color: #0054ff;
+        background-color: #0054FF;
         color: white;
         strong, a, a:hover, a:active, a:focus {
-            background-color: #0054ff;
+            background-color: #0054FF;
             color: white;
         }
     }
 
-    a:hover {
-        text-decoration: underline;
+    a {
+        text-decoration: none;
+        border-bottom: solid #ddd 1px;
+
+        &:hover {
+            border-bottom-color: #fff;
+        }
     }
 }
 

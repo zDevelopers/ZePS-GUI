@@ -17,7 +17,7 @@ $app = new Silex\Application();
 
 // Application configuration
 
-$app['version'] = '1.8.0';
+$app['version'] = '1.8.2';
 
 $app['config'] = array
 (

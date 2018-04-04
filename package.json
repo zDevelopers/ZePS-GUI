@@ -1,6 +1,6 @@
 {
   "name": "zeps-gui",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "description": "The GUI of a path calculator for Minecraft",
   "main": "web/js/index.js",
   "scripts": {
