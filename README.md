@@ -25,6 +25,8 @@ php composer.phar install
 
 # And the front dependencies
 npm install --save-dev
+
+# Then build the front according to the Run section below
 ```
 *[Composer installation documentation is available here](https://getcomposer.org/download/).*
 
@@ -42,6 +44,8 @@ npm install --save-dev
 # If you don't want to remove all the cache for the routing API (because it auto-clears when needed),
 # you should delete the cache/twig/ directory only (but, delete it!): rm -rf cache/twig/*
 rm -rf cache/*
+
+# Then build the front according to the Run section below
 ```
 
 ## Run
@@ -76,7 +80,7 @@ npm run prod
 and you'll find them in the `web/dist` directory a few seconds later.
 
 The server serving the application must serve the `/web/` directory only.  
-By default, the service will be available through `https://root/index.php`, `https://root/index.php/plan`, etc. To remove the filename part, use a rewrite rule, like this one for Apache:
+By default, the service will be available through `https://root/index.php`, `https://root/index.php/about`, etc. To remove the filename part, use a rewrite rule, like this one for Apache:
 
 ```apache
 <IfModule mod_rewrite.c>
