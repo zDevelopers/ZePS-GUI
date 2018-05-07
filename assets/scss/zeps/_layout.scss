@@ -11,6 +11,10 @@ body {
     > .container-fullscreen > section.section-fullscreen {
         flex: 1 1 auto;
     }
+
+    &.has-modal > .container-fullscreen {
+        filter: blur(.6rem);
+    }
 }
 
 body, .container-fullscreen {
@@ -103,14 +107,24 @@ form {
     }
 }
 
-.modal-body {
-    margin-top: 50px;
-    margin-bottom: 50px;
-    text-align: center;
-}
+.modal {
+    .modal-background {
+        background-color: rgba(10, 10, 10, .69);
+    }
 
-.modal-footer .pull-left {
-    max-width: 50%;
+    .modal-content {
+        box-shadow: 0 0 15px rgba($primary, .18), 8px 8px 20px rgba($primary, .14), 5px 5px 15px rgba(black, .08);
+    }
+
+    .modal-body {
+        margin-top: 50px;
+        margin-bottom: 50px;
+        text-align: center;
+    }
+
+    .modal-footer .pull-left {
+        max-width: 50%;
+    }
 }
 
 a {

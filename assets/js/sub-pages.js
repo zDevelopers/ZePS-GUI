@@ -13,6 +13,7 @@ export function setup_sub_pages($sub_pages_modal)
     {
         switch_to_tab(initial_selector, $links_li, $pages);
         $sub_pages_modal.addClass('is-active');
+        $('body').addClass('has-modal');
     }
 
     // The events are added when the map is loaded, because else the links are not there yet
@@ -36,6 +37,7 @@ function setup_links_events($sub_pages_modal, $links_li, $pages)
         if ($links_li.find('a[href="' + e.currentTarget.attributes.href.value + '"]'))
         {
             $sub_pages_modal.addClass('is-active');
+            $('body').addClass('has-modal');
             switch_to_tab(e.currentTarget.attributes.href.value, $links_li, $pages);
         }
     });

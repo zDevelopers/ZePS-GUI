@@ -1,22 +1,24 @@
 'use strict';
 
+function close_modal($modal)
+{
+    $modal.removeClass('is-active');
+    $('body').removeClass('has-modal');
+    document.dispatchEvent(new CustomEvent('zeps-modal-closed', { detail: $modal }));
+}
+
 export function setup_modals_interaction()
 {
     $('.modal-close, .modal-background, .modal-close-handler').on('click', function()
     {
-        let $modal = $(this).parents('.modal');
-
-        $modal.removeClass('is-active');
-        document.dispatchEvent(new CustomEvent('zeps-modal-closed', { detail: $modal }));
+        close_modal($(this).parents('.modal'));
     });
 
     $(document).on('keydown', function(e)
     {
-        if (e.which === 27) {
-            let $modal = $('.modal.is-active');
-
-            $modal.removeClass('is-active');
-            document.dispatchEvent(new CustomEvent('zeps-modal-closed', { detail: $modal }));
+        if (e.which === 27)
+        {
+            close_modal($('.modal.is-active'));
         }
     });
 }

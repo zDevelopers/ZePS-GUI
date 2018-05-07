@@ -15,6 +15,8 @@
 
 {% block content %}
     {% if not error or error != 'unreachable' %}
+        <!-- PAGE CONTENT -->
+
         <div class="container-fullscreen">
             <aside class="home-search-form">
                 <form action="{{ path('zeps.homepage') }}" id="search-form">
@@ -79,7 +81,7 @@
                         {% include 'includes/search_results.html.twig' with {'route': route, 'error': error} %}
                     {%- endif -%}
                 </div>
-                <div id="home-search-form-reduce" aria-hidden="true"{%- if not route -%} class="is-always-hidden"{% endif %}>
+                <div id="home-search-form-reduce" aria-hidden="true"{% if not route %} class="is-always-hidden"{% endif %}>
                     <span class="icon"><span class="fa fa-angle-double-up"></span></span>
                     <span class="reduce-text" data-text-route-hidden="Afficher l'itinéraire" data-text-route-visible="Afficher la carte">Afficher la carte</span>
                     <span class="icon"><span class="fa fa-angle-double-up"></span></span>
@@ -116,95 +118,98 @@
                     </div>
                 {% endif %}
             </section>
+        </div>
 
-            <div
-                id="geo-geolocation-modal"
-                class="modal"
-                tabindex="-1"
-                role="dialog"
-                data-route-get-players="{{ path('zeps.api.logged_in_players', {'world_names': app.config.overworld_and_nether_worlds|join(',')}) }}"
-                data-route-get-nearest="{{ path('zeps.api.nearest_station', {'name': 'playerNamePlaceholder'}) }}"
-                data-route-get-head="{{ path('zeps.player_head', {'name': 'playerNamePlaceholder'}) }}">
-                <div class="modal-background modal-close-handler"></div>
-                <div class="modal-content">
-                    <div class="card">
-                        <header class="card-header">
-                            <p class="card-header-title geolocation-modal-title">
-                                Chargement...
-                            </p>
-                        </header>
-                        <div class="card-content">
-                            <div class="geolocation-modal-main-text geolocation-modal-loading">
-                                <img src="{{ app.request.basePath }}/img/loading.gif" alt="Chargement en cours, patientez une seconde..." />
-                            </div>
 
-                            <div class="geolocation-modal-main-selector geolocation-modal-selector">
-                                <div class="columns is-multiline is-mobile geolocation-modal-selector-list"></div>
-                            </div>
+        <!-- MODALS -->
 
-                            <div class="geolocation-modal-main-text geolocation-modal-error-nether-empty">
-                                <p>
-                                    <strong>Il n'y a personne dans un monde survie.</strong><br />
-                                    Allez au préalable dans l'un d'entre eux puis <a href="#" class="geolocation-modal-retry">réessayez</a>.
-                                </p>
-                            </div>
-
-                            <div class="geolocation-modal-main-text geolocation-modal-error-cannot-retrieve">
-                                <p>
-                                    <strong>Impossible de récupérer la station.</strong><br />
-                                    Le serveur a retourné une erreur.
-                                </p>
-                                <p class="text-muted">
-                                    Erreur <span class="geolocation-modal-error-cannot-retrieve-error-id"></span>&nbsp;:
-                                    «&nbsp;<span class="geolocation-modal-error-cannot-retrieve-error-message"></span>&nbsp;»
-                                </p>
-                            </div>
-
-                            <p class="geolocation-modal-footer-message">
-                                <a href="#" class="geolocation-modal-retry" title="Cliquez pour réessayer">Pas dans la liste ?</a> Vérifiez que vous êtes dans un monde survie (et hors de l'End).
-                            </p>
-                        </div>
-                        <footer class="card-footer">
-                            <a class="card-footer-item geolocation-modal-retry" disabled>Actualiser la liste des connectés</a>
-                        </footer>
-                    </div>
-                </div>
-                <button class="modal-close"></button>
-            </div>
-
-            <div class="modal" tabindex="-1" role="dialog" id="sub-pages-modal">
-                <div class="modal-background modal-close-handler"></div>
-                <div class="modal-content">
-                    <header>
-                        <div class="columns is-mobile">
-                            <div class="column is-10"><h2>Z<em>é</em>PS</h2></div>
-                            <div class="column is-2"><button class="delete is-large modal-close-handler" aria-label="close"></button></div>
-                        </div>
-                        <div class="tabs">
-                            <ul>
-                                <li class="is-active"><a href="#a-propos">À propos</a></li>
-                                <li><a href="#statistiques">Statistiques</a></li>
-                                <li><a href="#oublis">Signaler un oubli</a></li>
-                            </ul>
-                        </div>
+        <div
+            id="geo-geolocation-modal"
+            class="modal"
+            tabindex="-1"
+            role="dialog"
+            data-route-get-players="{{ path('zeps.api.logged_in_players', {'world_names': app.config.overworld_and_nether_worlds|join(',')}) }}"
+            data-route-get-nearest="{{ path('zeps.api.nearest_station', {'name': 'playerNamePlaceholder'}) }}"
+            data-route-get-head="{{ path('zeps.player_head', {'name': 'playerNamePlaceholder'}) }}">
+            <div class="modal-background modal-close-handler"></div>
+            <div class="modal-content">
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title geolocation-modal-title">
+                            Chargement...
+                        </p>
                     </header>
-                    <article id="loading">
-                        <div class="loading-dot"></div>
-                    </article>
-                    <article id="error">
-                        <p><span class="fa fa-map-o" aria-hidden="true"></span></p>
-                        <p>Impossible de charger la page.</p>
-                        <p class="reason timeout">Votre connexion à internet semble être interrompue.</p>
-                        <p class="reason abort">La connexion a été réinitialisée. Veuillez réessayer.</p>
-                        <div class="reason http">
-                            <p>Quelque chose semble être cassé de notre côté&nbsp;; veuillez réessayer plus tard.</p>
-                            <p class="error-code"></p>
+                    <div class="card-content">
+                        <div class="geolocation-modal-main-text geolocation-modal-loading">
+                            <img src="{{ app.request.basePath }}/img/loading.gif" alt="Chargement en cours, patientez une seconde..." />
                         </div>
-                    </article>
-                    <article id="a-propos" class="content" data-source="{{ path('zeps.sub-pages.about') }}" style="display: none;"></article>
-                    <article id="statistiques" data-source="{{ path('zeps.sub-pages.statistics') }}" style="display: none;"></article>
-                    <article id="oublis" data-source="{{ path('zeps.sub-pages.missings') }}" data-has-events="true" style="display: none;"></article>
+
+                        <div class="geolocation-modal-main-selector geolocation-modal-selector">
+                            <div class="columns is-multiline is-mobile geolocation-modal-selector-list"></div>
+                        </div>
+
+                        <div class="geolocation-modal-main-text geolocation-modal-error-nether-empty">
+                            <p>
+                                <strong>Il n'y a personne dans un monde survie.</strong><br />
+                                Allez au préalable dans l'un d'entre eux puis <a href="#" class="geolocation-modal-retry">réessayez</a>.
+                            </p>
+                        </div>
+
+                        <div class="geolocation-modal-main-text geolocation-modal-error-cannot-retrieve">
+                            <p>
+                                <strong>Impossible de récupérer la station.</strong><br />
+                                Le serveur a retourné une erreur.
+                            </p>
+                            <p class="text-muted">
+                                Erreur <span class="geolocation-modal-error-cannot-retrieve-error-id"></span>&nbsp;:
+                                «&nbsp;<span class="geolocation-modal-error-cannot-retrieve-error-message"></span>&nbsp;»
+                            </p>
+                        </div>
+
+                        <p class="geolocation-modal-footer-message">
+                            <a href="#" class="geolocation-modal-retry" title="Cliquez pour réessayer">Pas dans la liste ?</a> Vérifiez que vous êtes dans un monde survie (et hors de l'End).
+                        </p>
+                    </div>
+                    <footer class="card-footer">
+                        <a class="card-footer-item geolocation-modal-retry" disabled>Actualiser la liste des connectés</a>
+                    </footer>
                 </div>
+            </div>
+            <button class="modal-close"></button>
+        </div>
+
+        <div class="modal" tabindex="-1" role="dialog" id="sub-pages-modal">
+            <div class="modal-background modal-close-handler"></div>
+            <div class="modal-content">
+                <header>
+                    <div class="columns is-mobile">
+                        <div class="column is-10"><h2>Z<em>é</em>PS</h2></div>
+                        <div class="column is-2"><button class="delete is-large modal-close-handler" aria-label="close"></button></div>
+                    </div>
+                    <div class="tabs">
+                        <ul>
+                            <li class="is-active"><a href="#a-propos">À propos</a></li>
+                            <li><a href="#statistiques">Statistiques</a></li>
+                            <li><a href="#oublis">Signaler un oubli</a></li>
+                        </ul>
+                    </div>
+                </header>
+                <article id="loading">
+                    <div class="loading-dot"></div>
+                </article>
+                <article id="error">
+                    <p><span class="fa fa-map-o" aria-hidden="true"></span></p>
+                    <p>Impossible de charger la page.</p>
+                    <p class="reason timeout">Votre connexion à internet semble être interrompue.</p>
+                    <p class="reason abort">La connexion a été réinitialisée. Veuillez réessayer.</p>
+                    <div class="reason http">
+                        <p>Quelque chose semble être cassé de notre côté&nbsp;; veuillez réessayer plus tard.</p>
+                        <p class="error-code"></p>
+                    </div>
+                </article>
+                <article id="a-propos" class="content" data-source="{{ path('zeps.sub-pages.about') }}" style="display: none;"></article>
+                <article id="statistiques" data-source="{{ path('zeps.sub-pages.statistics') }}" style="display: none;"></article>
+                <article id="oublis" data-source="{{ path('zeps.sub-pages.missings') }}" data-has-events="true" style="display: none;"></article>
             </div>
         </div>
     {% endif %}

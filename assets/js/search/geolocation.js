@@ -77,6 +77,7 @@ function retrieve_nearest_station(player_name)
             $from_overworld_field.val('true');
 
         $geolocation_modal.removeClass('is-active');
+        $('body').removeClass('has-modal');
         $(document).off('keydown.zeps.geolocation');
         $geolocation_modal.find('.geolocation-modal-selector-list-item').off('click.zeps.geolocation_list');
     })
@@ -104,6 +105,7 @@ function open_geolocation_dialog(e)
     $geolocation_modal_button.attr('disabled', true);
 
     $geolocation_modal.addClass('is-active');
+    $('body').addClass('has-modal');
 
     $(document).on('keydown.zeps.geolocation', function(e)
     {
