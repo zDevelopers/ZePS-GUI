@@ -21,7 +21,7 @@ $app['version'] = '1.8.2';
 
 $app['config'] = array
 (
-    'api_root' => 'http://127.0.0.1:5000',// The root of the ZePS routing API (without trailing slash)
+    'api_root' => 'https://core.zeps.zcraft.fr', // The root of the ZePS routing API (without trailing slash)
 
     'stations' => array(
         'spawn' => 'north_capital',                // The name of the station located at the spawn point.
