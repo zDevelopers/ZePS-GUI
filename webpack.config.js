@@ -3,7 +3,7 @@
 const webpack = require('webpack');
 const path = require('path');
 
-const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const prod = process.env.NODE_ENV === 'production';
@@ -16,10 +16,11 @@ let config = {
     },
     output: {
         path: path.resolve(__dirname, './web/dist'),
-        filename: '[name].min.js',
+        filename: prod ? '[name].[hash].min.js' : '[name].min.js',
         publicPath: '/dist'
     },
     resolve: {
+        extensions: ['.js', '.scss', '.sass'],
         alias: {
             // For Leaflet… TODO find a better solution, that's pretty ugly.
             './images/layers.png$': path.resolve(__dirname, './node_modules/leaflet/dist/images/layers.png'),
@@ -38,34 +39,57 @@ let config = {
                 loader: 'babel-loader'
             },
             {
-                test: /\.scss$/,
-                use: ExtractTextWebpackPlugin.extract({
-                    fallback: 'style-loader',
-                    use: [
-                        {
-                            loader: 'css-loader',
-                            options: { sourceMap: !prod }
-                        },
-                        {
-                            loader: 'sass-loader',
-                            options: { sourceMap: !prod }
-                        },
-                        'postcss-loader'
-                    ],
-                })
+                test: /\.s(a|c)ss$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            sourceMap: !prod
+                        }
+                    },
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            sourceMap: !prod
+                        }
+                    }
+                ]
+                // loader: [
+                //     prod ? MiniCssExtractPlugin.loader : 'style-loader',
+                //     'css-loader',
+                //     {
+                //         loader: 'sass-loader',
+                //         options: {
+                //             sourceMap: !prod,
+                //             filename: prod ? '[name].[hash].min.css' : '[name].min.css',
+                //         }
+                //     }
+                // ]
             },
             {
                 test: /\.(eot|svg|ttf|woff|woff2)$/,
-                loader: 'file-loader?name=/fonts/[name].[ext]'
+                loader: 'file-loader',
+                options: {
+                    name: '/fonts/[name].[ext]'
+                }
             },
             {
                 test: /\.(png|jpe?g|gif)$/,
-                loader: 'file-loader?name=/images/[name].[ext]'
+                loader: 'file-loader',
+                options: {
+                    name: '/images/[name].[ext]'
+                }
             }
         ]
     },
     plugins: [
-        new ExtractTextWebpackPlugin('zeps-gui.min.css'),
+        new MiniCssExtractPlugin({
+            filename: prod ? '[name].[hash].min.css' : '[name].min.css',
+            chunkFilename: prod ? '[id].[hash].min.css' : '[id].min.css'
+        }),
         new webpack.LoaderOptionsPlugin({
             debug: !prod
         })
@@ -76,7 +100,7 @@ let config = {
                 commons: {
                     test: /[\\/]node_modules[\\/]/,
                     name: 'vendor',
-                    filename: '[name].min.js',
+                    filename: prod ? '[name].[hash].min.js' : '[name].min.js',
                     chunks: 'all',
                 }
             }
@@ -85,6 +109,7 @@ let config = {
     },
     devServer: {
         contentBase: path.resolve(__dirname, './web'),
+        publicPath: '/dist/',
         headers: {
             'Access-Control-Allow-Origin': '*'
         },

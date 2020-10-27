@@ -24,9 +24,9 @@ $app['config'] = array
     'api_root' => 'https://core.zeps.zcraft.fr',// The root of the ZePS routing API (without trailing slash)
 
     'stations' => array(
-        'spawn' => 'tentacles',                // The name of the station located at the spawn point.
-        'main' => array('tentacles', 'nouvea', 'vaalon') // The name of the stations accessible through a portal
-                                                         // via the spawn.
+        'spawn' => 'north_capital',                // The name of the station located at the spawn point.
+        'main' => array('tentacles', 'nouvea', 'vaalon', 'north_capital') // The name of the stations accessible
+                                                                          // through a portal via the spawn.
     ),
 
     'world_name_nether' => 'V5_nether',        // The name of the world where the netherrail is in

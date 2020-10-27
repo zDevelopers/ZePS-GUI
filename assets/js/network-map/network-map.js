@@ -355,7 +355,7 @@ export class NetworkMap
 
     /**
      * Flies to the given station, adapting the zoom if too low.
-     * 
+     *
      * @param station_name Either the code name or display name of the station to fly to.
      * @param is_display_name If true, the first parameter will be interpreted as a station display name.
      *
@@ -447,7 +447,9 @@ export class NetworkMap
                     maxZoom: 8,
 
                     // Control will be added later, customized, not in the default location.
-                    zoomControl: false
+                    zoomControl: false,
+
+                    preferCanvas: true
                 });
 
 

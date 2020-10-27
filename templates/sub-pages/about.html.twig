@@ -1,11 +1,14 @@
 <p>
-    Le ZéPS est un logiciel libre distribué sous <a href="http://cecill.info/licences/Licence_CeCILL-B_V1-fr.html">licence CeCILL-B</a>.
+    Le ZéPS est un logiciel libre distribué sous <a
+        href="http://cecill.info/licences/Licence_CeCILL-B_V1-fr.html">licence CeCILL-B</a>.
 </p>
 <p>
-    Il est développé par <a href="https://florian.cassayre.me">Florian Cassayre</a>, <a href="https://amaury.carrade.eu">Amaury Carrade</a>,
+    Il est développé par <a href="https://florian.cassayre.me">Florian Cassayre</a>, <a
+        href="https://amaury.carrade.eu">Amaury Carrade</a>,
     <a href="https://github.com/ProkopyL">Adrien Prokopowicz</a>, ainsi que d'autres contributeurs du
     <a href="https://github.com/zDevelopers/ZePS-Core/graphs/contributors">cœur</a> (le moteur d'itinéraire) et de
-    <a href="https://github.com/zDevelopers/ZePS-GUI/graphs/contributors">l'interface</a> (ce que vous avez sous les yeux).
+    <a href="https://github.com/zDevelopers/ZePS-GUI/graphs/contributors">l'interface</a> (ce que vous avez sous les
+    yeux).
 </p>
 
 <aside class="level is-mobile">
@@ -32,40 +35,42 @@
 </aside>
 
 {% if last_updates.network or last_updates.zeps %}
-    <h3>Dernières mises à jour</h3>
+<h3>Dernières mises à jour</h3>
 
-    <p>
-        {% if last_updates.network %}
-            Dernière mise à jour du réseau <strong>le {{ last_updates.network|date("d/m/Y à H:i") }}</strong>.{% if last_updates.zeps %}<br />{% endif %}
-        {% endif %}
-        {% if last_updates.zeps %}
-            Dernière mise à jour de l'interface <strong>{{ last_updates.zeps.date|date("d/m/Y à H:i") }}</strong>.
-        {% endif %}
-    </p>
-
-    {% if last_updates.zeps %}
-        <blockquote class="git-commit">
-            <p class="commit-message">{{ last_updates.zeps.message|trim|raw|nl2br }}</p>
-            <p class="source">
-                —
-                {%- if last_updates.zeps.signed -%}<span class="fa fa-lock" title="Commit signé"></span>{% endif %}
-                Le {{ last_updates.zeps.date|date("d/m/Y à H:i") }} par {{ last_updates.zeps.author }}
-                (<a href="{{ app.config.git.web_commit_url|format(last_updates.zeps.commit)}}" class="git-hash">
-                    {{- last_updates.zeps.commit|slice(0, 7) -}}
-                </a>)
-            </p>
-        </blockquote>
-        <p class="all-history">
-            Voir tout l'historique <a href="https://github.com/zDevelopers/ZePS-Core/commits/master">du cœur</a> et
-            <a href="https://github.com/zDevelopers/ZePS-GUI/commits/master">de l'interface</a>.
-        </p>
+<p>
+    {% if last_updates.network %}
+    Dernière mise à jour du réseau le
+    <strong>{{ last_updates.network|date("d/m/Y à H:i") }}</strong>.{% if last_updates.zeps %}<br />{% endif %}
     {% endif %}
+    {% if last_updates.zeps %}
+    Dernière mise à jour de l'interface le <strong>{{ last_updates.zeps.date|date("d/m/Y à H:i") }}</strong>.
+    {% endif %}
+</p>
+
+{% if last_updates.zeps %}
+<blockquote class="git-commit">
+    <p class="commit-message">{{ last_updates.zeps.message|trim|raw|nl2br }}</p>
+    <p class="source">
+        —
+        {%- if last_updates.zeps.signed -%}<span class="fa fa-lock" title="Commit signé"></span>{% endif %}
+        Le {{ last_updates.zeps.date|date("d/m/Y à H:i") }} par {{ last_updates.zeps.author }}
+        (<a href="{{ app.config.git.web_commit_url|format(last_updates.zeps.commit)}}" class="git-hash">
+            {{- last_updates.zeps.commit|slice(0, 7) -}}
+        </a>)
+    </p>
+</blockquote>
+<p class="all-history">
+    Voir tout l'historique <a href="https://github.com/zDevelopers/ZePS-Core/commits/master">du cœur</a> et
+    <a href="https://github.com/zDevelopers/ZePS-GUI/commits/master">de l'interface</a>.
+</p>
+{% endif %}
 {% endif %}
 
 
 <h3>Bibliothèques</h3>
 
-<p>Le ZéPS utilise un certain nombre de bibliothèques <em>open-source</em> pour fonctionner, et ne pourrait pas exister sans elle.</p>
+<p>Le ZéPS utilise un certain nombre de bibliothèques <em>open-source</em> pour fonctionner, et ne pourrait pas exister
+    sans elle.</p>
 
 <div class="columns">
     <div class="column is-half">
@@ -95,7 +100,8 @@
             <li><a href="https://npmjs.com/">NPM</a></li>
             <li><a href="https://webpack.js.org/">Webpack</a></li>
             <li><a href="https://babeljs.io/">Babel</a></li>
-            <li><a href="http://sass-lang.com/">SCSS</a> et <a href="https://github.com/sass/node-sass">Node-SASS</a></li>
+            <li><a href="http://sass-lang.com/">SCSS</a> et <a href="https://github.com/sass/node-sass">Node-SASS</a>
+            </li>
             <li><a href="https://github.com/postcss/autoprefixer">Autoprefixer</a></li>
         </ul>
     </div>
@@ -117,6 +123,8 @@
 <h3>Dernière note</h3>
 
 <p>
-    Le ZéPS est fourni gracieusement. En contre-partie, nous demandons un usage raisonnable&nbsp;: merci d'éviter de harceler
-    le système avec des dizaines de requêtes automatisées par seconde. <strong>Des chatons vont mourir si vous abusez de ce service.</strong>
+    Le ZéPS est fourni gracieusement. En contre-partie, nous demandons un usage raisonnable&nbsp;: merci d'éviter de
+    harceler
+    le système avec des dizaines de requêtes automatisées par seconde. <strong>Des chatons vont mourir si vous abusez de
+        ce service.</strong>
 </p>

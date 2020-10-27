@@ -1,4 +1,4 @@
-require('../scss/zeps.scss');
+import '../scss/zeps';
 
 import jQuery from 'jquery';
 
