@@ -233,10 +233,21 @@
                     }
 
                     figure {
+                        display: flex;
+                        flex-direction: column;
+
+                        height: 100%;
+
                         margin-left: .8em;
                         margin-right: .5em;
 
                         div.logo {
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+
+                            flex: 2;
+
                             height: 6em;
                             position: relative;
 
@@ -245,14 +256,11 @@
 
                             a {
                                 display: block;
-                                position: absolute;
-                                top: calc(50% - (1.8em / 2));
 
                                 width: 100%;
                                 text-align: center;
-                                text-decoration: none;
 
-                                &:hover {
+                                &, &:hover {
                                     text-decoration: none;
                                 }
 
@@ -262,10 +270,8 @@
                             }
 
                             &.is-tall a {
-                                top: calc(50% - (6.2em / 2));
-
                                 img {
-                                    height: 6.2em;
+                                    height: 100%;
                                 }
                             }
 
@@ -278,8 +284,6 @@
                             margin-top: 1.4em;
                             font-size: .9em;
                             font-style: italic;
-                            text-align: justify;
-                            text-align-last: center;
                             cursor: normal;
                         }
                     }

@@ -234,11 +234,16 @@ class RouteSearchController
         if ($app['request']->isXmlHttpRequest() || $app['request']->query->has('ajax'))
         {
             $highlighted_route = [];
-            foreach ($route->getPath() as $step)
-                $highlighted_route[] = $step->getStation()->getName();
+            if ($route)
+            {
+                foreach ($route->getPath() as $step)
+                {
+                    $highlighted_route[] = $step->getStation()->getName();
+                }
+            }
 
             return $app->json([
-                'title' => $route->getFirstStation()->getDisplayName() . ' → ' . $route->getLastStation()->getDisplayName() . ' ⋅ ZéPS',
+                'title' => $route ? $route->getFirstStation()->getDisplayName() . ' → ' . $route->getLastStation()->getDisplayName() . ' ⋅ ZéPS' : 'ZéPS',
                 'canonical_url' => $app['url_generator']->generate('zeps.search_results', [
                     'from' => $app['zeps.routing']->get_station_by_id($from)->getName(),
                     'to' => $app['zeps.routing']->get_station_by_id($to)->getName(),

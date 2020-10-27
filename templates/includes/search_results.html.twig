@@ -127,7 +127,7 @@
                         {% if step.stationFrom.isVisible %}
                             {{ macros.station(step.stationFrom) }}
                         {% else %}
-                            Vers ({{ step.stationFrom.locationX }} ; {{ step.stationFrom.locationZ }})
+                            Vers ({{ step.stationFrom.locationX }} ; {{ " " ~ step.stationFrom.locationZ }})
                         {% endif %}
                     </p>
                     <p>
@@ -178,7 +178,7 @@
                         <span class="fa fa-train"></span>
                     </span>
                     Le portail de destination n'est pas pourvu d'un arrêt.<br />
-                    Pensez à sauter du chariot.
+                    Pensez à sauter du wagonnet.
                 </p>
                 {% endif %}
             </div>

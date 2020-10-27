@@ -79,7 +79,7 @@
     {% for partner in app.config.roleplay.partners %}
     <div class="column is-half">
         <figure>
-            <div class="logo{% if partner.logo_css_classes %} {{ partner.logo_css_classes }}{% endif %}">
+            <div class="logo{% if partner.logo_css_classes %}{{ " " ~ partner.logo_css_classes }}{% endif %}">
                 <a href="{{ partner.link }}" {% if partner.tooltip %} title="{{ partner.tooltip }}" {% endif %}>
                     <img src="{{ partner.logo }}" alt="{{ partner.name }}" />
                 </a>

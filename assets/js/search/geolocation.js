@@ -70,7 +70,7 @@ function retrieve_nearest_station(player_name)
 
     $.getJSON(routes.get_nearest.replace('playerNamePlaceholder', player_name), function (result)
     {
-        $from_input.val(result.nearest_station.full_name);
+        $from_input.val(result.nearest_station.full_name).addClass('pulse-field');
 
         if (result.from_overworld)
             $from_overworld_field.val('true');
@@ -79,6 +79,8 @@ function retrieve_nearest_station(player_name)
         $('body').removeClass('has-modal');
         $(document).off('keydown.zeps.geolocation');
         $geolocation_modal.find('.geolocation-modal-selector-list-item').off('click.zeps.geolocation_list');
+
+        setTimeout(() => $from_input.removeClass('pulse-field'), 1100);
     })
     .fail(function (error)
     {
@@ -128,7 +130,12 @@ function open_geolocation_dialog(e)
             let list_content = '';
 
             players.forEach(function (player) {
-                list_content += '<div class="column is-half"><div class="geolocation-modal-selector-list-item" data-player-name="' + player.name + '"><img src="' + routes.get_head.replace('playerNamePlaceholder', player.name) + '" alt="[Avatar]" aria-hidden="true" /><span>' + player.name + '</span></div></div>';
+                list_content += `<div class="column is-half">
+                    <div class="geolocation-modal-selector-list-item" data-player-name="${player.name}">
+                        <img src="${routes.get_head.replace('playerNamePlaceholder', player.name)}" aria-hidden="true" />
+                        <span>${player.name}</span>
+                    </div>
+                </div>`;
             });
 
             $geolocation_modal_loading.hide();

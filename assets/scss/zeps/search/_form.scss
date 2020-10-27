@@ -51,6 +51,21 @@
 }
 
 
+.pulse-field {
+    animation: 1s ease-in-out pulse-field;
+}
+
+@keyframes pulse-field {
+    from, to {
+        transform: scale(1) translateX(0);
+    }
+
+    50% {
+        transform: scale(1.1) translateX(16px);
+    }
+}
+
+
 #home-search-form-reduce {
     display: none;
 

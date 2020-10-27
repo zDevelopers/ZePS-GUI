@@ -1,9 +1,9 @@
 {% macro station(station_obj) %}{% spaceless %}
-    <span class="station-name station-withname-{{ station_obj.name }}" title="Coordonnées : {{ station_obj.locationX }} ; {{ station_obj.locationZ }}">
+    <span class="station-name station-withname-{{ station_obj.name }}" title="Coordonnées : {{ " " ~ station_obj.locationX }} ; {{ " " ~ station_obj.locationZ }}">
         {%- if station_obj.isVisible -%}
             {{ station_obj.displayName }}
         {%- else -%}
-            ({{ station_obj.locationX }} ; {{ station_obj.locationZ }})
+            ({{ station_obj.locationX }} ; {{ " " ~ station_obj.locationZ }})
         {%- endif -%}
     </span>
 {% endspaceless %}{% endmacro %}

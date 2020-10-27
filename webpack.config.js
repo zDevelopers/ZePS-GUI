@@ -27,7 +27,9 @@ let config = {
             './images/layers-2x.png$': path.resolve(__dirname, './node_modules/leaflet/dist/images/layers-2x.png'),
             './images/marker-icon.png$': path.resolve(__dirname, './node_modules/leaflet/dist/images/marker-icon.png'),
             './images/marker-icon-2x.png$': path.resolve(__dirname, './node_modules/leaflet/dist/images/marker-icon-2x.png'),
-            './images/marker-shadow.png$': path.resolve(__dirname, './node_modules/leaflet/dist/images/marker-shadow.png')
+            './images/marker-shadow.png$': path.resolve(__dirname, './node_modules/leaflet/dist/images/marker-shadow.png'),
+
+            //'./images/default-head.png$': path.resolve(__dirname, './assets/img/default-head.png')
         },
         unsafeCache: !prod
     },
@@ -57,17 +59,6 @@ let config = {
                         }
                     }
                 ]
-                // loader: [
-                //     prod ? MiniCssExtractPlugin.loader : 'style-loader',
-                //     'css-loader',
-                //     {
-                //         loader: 'sass-loader',
-                //         options: {
-                //             sourceMap: !prod,
-                //             filename: prod ? '[name].[hash].min.css' : '[name].min.css',
-                //         }
-                //     }
-                // ]
             },
             {
                 test: /\.(eot|svg|ttf|woff|woff2)$/,

@@ -173,7 +173,7 @@ class RoutesManager extends NetworkManager
         $json = $this->get_json(str_replace(['{from}', '{to}'], [$from, $to], $this->api_route) . '?' . implode('&', $parameters));
 
         if (!isset($json->result) || $json->result != 'success')
-            throw new \RuntimeException($json->cause, $json->result);
+            throw new \RuntimeException($json->cause);
 
         return RoutingPath::fromJSON($this->app, $json);
     }
