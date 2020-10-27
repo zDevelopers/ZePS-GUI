@@ -5,8 +5,8 @@
         href="http://cecill.info/licences/Licence_CeCILL-B_V1-fr.html">licence CeCILL-B</a>.
 </p>
 <p>
-    Il est développé par {% for author in authors %}{{ macros.person(author) }}, {% endfor %}ainsi que d'autres
-    contributeurs du
+    Il est développé par{{ " " }}{% for author in authors %}{{ macros.person(author) }},{{ " " }}{% endfor %}ainsi que
+    d'autres contributeurs du
     <a href="https://github.com/zDevelopers/ZePS-Core/graphs/contributors">cœur</a> (le moteur d'itinéraire) et de
     <a href="https://github.com/zDevelopers/ZePS-GUI/graphs/contributors">l'interface</a> (ce que vous avez sous les
     yeux).
@@ -44,10 +44,10 @@
 <p>
     {% if last_updates.network %}
     Dernière mise à jour du réseau <strong>le
-        {{ last_updates.network|date("d/m/Y à H:i") }}</strong>.{% if last_updates.zeps %}<br />{% endif %}
+        {{ " " ~ last_updates.network|date("d/m/Y à H:i") }}</strong>.{% if last_updates.zeps %}<br />{% endif %}
     {% endif %}
     {% if last_updates.zeps %}
-    Dernière mise à jour de l'interface <strong>le {{ last_updates.zeps.date|date("d/m/Y à H:i") }}</strong>.
+    Dernière mise à jour de l'interface <strong>le {{ " " ~ last_updates.zeps.date|date("d/m/Y à H:i") }}</strong>.
     {% endif %}
 </p>
 
@@ -57,7 +57,7 @@
     <p class="source">
         —
         {%- if last_updates.zeps.signed -%}<span class="fa fa-lock" title="Commit signé"></span>{% endif %}
-        Le {{ last_updates.zeps.date|date("d/m/Y à H:i") }} par {{ last_updates.zeps.author }}
+        Le {{ " " ~ last_updates.zeps.date|date("d/m/Y à H:i") }} par {{ " " ~ last_updates.zeps.author }}
         &nbsp;&middot;&nbsp;&nbsp;<a href="{{ app.config.git.web_commit_url|format(last_updates.zeps.commit)}}"
             class="git-hash">
             {{- last_updates.zeps.commit|slice(0, 7) -}}
@@ -104,9 +104,8 @@
 
 {% if thanks %}
 <p>
-    Remerciements à {% for thank in thanks %}{{ macros.person(thank) }}, {% endfor %}et tous ceux que j'aurais oublié
-    (désolé), pour leurs contributions plus ou moins directes à
-    l'amélioration du ZéPS.
+    Remerciements à{{ " " }}{% for thank in thanks %}{{ macros.person(thank) }},{{ " " }}{% endfor %}et tous ceux que
+    j'aurais oublié (désolé), pour leurs contributions plus ou moins directes à l'amélioration du ZéPS.
 </p>
 {% endif %}
 
@@ -156,30 +155,12 @@
 </div>
 
 
-<<<<<<< HEAD <h3>Remerciements</h3>
+<h3>Dernière note</h3>
 
-    {% if thanks %}
-    <p>
-        Remerciements à {% for thank in thanks %}{{ macros.person(thank) }}, {% endfor %}et tous ceux que j'aurais
-        oublié
-        (désolé), pour leurs contributions plus ou moins directes à
-        l'amélioration du ZéPS.
-    </p>
-    {% endif %}
-
-    <p>
-        Remerciements à <a href="https://jenkins.io/">Jenkins</a>, serveur d'intégration continue utilisé par le ZéPS.
-    </p>
-
-
-    =======
-    >>>>>>> b7b70f7 (Added partners on about page.)
-    <h3>Dernière note</h3>
-
-    <p>
-        Le ZéPS est fourni gracieusement. En contre-partie, nous demandons un usage raisonnable&nbsp;: merci d'éviter de
-        harceler
-        le système avec des dizaines de requêtes automatisées par seconde. <strong>Des chatons vont mourir si vous
-            abusez de
-            ce service.</strong>
-    </p>
+<p>
+    Le ZéPS est fourni gracieusement. En contre-partie, nous demandons un usage raisonnable&nbsp;: merci d'éviter de
+    harceler
+    le système avec des dizaines de requêtes automatisées par seconde. <strong>Des chatons vont mourir si vous
+        abusez de
+        ce service.</strong>
+</p>

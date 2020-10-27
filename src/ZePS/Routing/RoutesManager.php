@@ -231,6 +231,8 @@ class RoutesManager extends NetworkManager
      *
      * @return array An array with the following keys:
      *               - 'nearest_station': the object of the nearest station;
+     *               - 'distance': the distance between the given coordinates and the station;
+     *               - 'from_overworld': the same as $from_overworld.
      */
     public function get_closest_station($x, $z, $from_overworld)
     {
@@ -250,6 +252,8 @@ class RoutesManager extends NetworkManager
 
         foreach ($this->get_netherrail_stations()['stations'] as $station)
         {
+            if (!$station->isVisible()) continue;
+
             $squared_distance = $this->squared_distance($x, $z, $station->getLocationX(), $station->getLocationZ());
 
             if ($nearest_station === null || $squared_distance < $squared_smallest_distance)

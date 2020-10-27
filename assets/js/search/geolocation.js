@@ -71,7 +71,6 @@ function retrieve_nearest_station(player_name)
     $.getJSON(routes.get_nearest.replace('playerNamePlaceholder', player_name), function (result)
     {
         $from_input.val(result.nearest_station.full_name);
-        $from_input_code.val(result.nearest_station.code_name);
 
         if (result.from_overworld)
             $from_overworld_field.val('true');

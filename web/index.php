@@ -126,9 +126,11 @@ $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path'    => __DIR__.'/../templates',
     'twig.options' => array(
+        'debug' => $app['debug'],
+        'auto_reload' => $app['debug'],
+
         'strict_variables' => false,
-        'cache' => $app['debug'] ? false : $app['config']['twig']['cache'],
-        'auto_reload' => $app['debug']
+        'cache' => $app['debug'] ? false : $app['config']['twig']['cache']
     )
 ));
 

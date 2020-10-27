@@ -1,6 +1,6 @@
 <tr>
     <td style="width: 25%">{{ missing.name }}</td>
-    <td style="width: 15%">{{ missing.location.x }} ; {{ missing.location.z }}</td>
+    <td style="width: 15%">{{ missing.location.x }} ; {{ " " ~ missing.location.z }}</td>
     <td>
         <ul>
             {% for neighbor in missing.neighbors %}
