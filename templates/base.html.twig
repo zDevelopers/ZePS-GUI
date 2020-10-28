@@ -1,39 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <meta name="description" content="">
-        <meta name="author" content="">
-        <link rel="icon" href="{{ app.request.basePath }}/favicon.ico">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>{% block main_title %}{% endblock %}ZéPS</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="{{ app.request.basePath }}/favicon.ico">
 
-        <link href="{{ static('/dist/zeps-gui.min.css') }}" rel="stylesheet" />
+    <title>{% block main_title %}{% endblock %}ZéPS</title>
 
-        {% block stylesheets %}{% endblock %}
-    </head>
+    <link href="{{ static('/dist/zeps-gui[hash].min.css') }}" rel="stylesheet" />
 
-    <body>
-        {% if error == 'unreachable' %}
-            <div class="alert alert-danger">
-                <strong>Le service de recherche d'itinéraire est injoignable.</strong>
-                Il s'agit certainement d'un problème temporaire. Réessayez dans quelques minutes.
-            </div>
-        {% else %}
-            <noscript>
-                <div class="alert alert-warning">
-                    <strong>Javascript est désactivé.</strong>
-                    Certaines fonctionnalités (plan, géolocalisation...) ne marcheront pas.
-                    <a href="http://www.enable-javascript.com/fr/">Cliquez ici pour apprendre comment activer Javascript</a>.
-                </div>
-            </noscript>
-        {% endif %}
+    {% block stylesheets %}{% endblock %}
+</head>
 
-        {% block content %}{% endblock %}
+<body>
+    {% if error == 'unreachable' %}
+    <div class="alert alert-danger">
+        <strong>Le service de recherche d'itinéraire est injoignable.</strong>
+        Il s'agit certainement d'un problème temporaire. Réessayez dans quelques minutes.
+    </div>
+    {% else %}
+    <noscript>
+        <div class="alert alert-warning">
+            <strong>Javascript est désactivé.</strong>
+            Certaines fonctionnalités (plan, géolocalisation...) ne marcheront pas.
+            <a href="http://www.enable-javascript.com/fr/">Cliquez ici pour apprendre comment activer Javascript</a>.
+        </div>
+    </noscript>
+    {% endif %}
 
-        {% block javascripts %}{% endblock %}
-    </body>
+    {% block content %}{% endblock %}
+
+    {% block javascripts %}{% endblock %}
+</body>
+
 </html>

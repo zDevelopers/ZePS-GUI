@@ -5,6 +5,7 @@ const path = require('path');
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const { DumpMetaPlugin } = require('dumpmeta-webpack-plugin');
 
 const prod = process.env.NODE_ENV === 'production';
 
@@ -83,6 +84,10 @@ let config = {
         }),
         new webpack.LoaderOptionsPlugin({
             debug: !prod
+        }),
+        new DumpMetaPlugin({
+            filename: 'web/dist/meta.json',
+            prepare: stats => stats.hash
         })
     ],
     optimization: {

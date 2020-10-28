@@ -9,8 +9,8 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script type="text/javascript" src="{{ static('/dist/vendor.min.js') }}"></script>
-    <script type="text/javascript" src="{{ static('/dist/zeps-gui.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static('/dist/vendor[hash].min.js') }}"></script>
+    <script type="text/javascript" src="{{ static('/dist/zeps-gui[hash].min.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -101,7 +101,7 @@
                 data-dynmap-map-overworld="{{ app.config.world_name_overworld }}"
                 data-dynmap-map-nether="{{ app.config.world_name_nether }}"
                 data-dynmap-map-type="{{ app.config.dynmap.map_type }}"
-                {% if route %}data-highlighted-route="{% for step in route.path %}{{ step.station.name }},{% endfor %}"{% endif %}>
+                {% if route %} data-highlighted-route="{% for step in route.path %}{{ step.station.name }},{% endfor %}"{% endif %}>
                 {% if error != 'unreachable' %}
                     <div class="network-map-loader">
                         <p>

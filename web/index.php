@@ -17,7 +17,7 @@ $app = new Silex\Application();
 
 // Application configuration
 
-$app['version'] = '1.8.2';
+$app['version'] = '1.8.4';
 
 $app['config'] = array
 (
@@ -182,8 +182,13 @@ $app['twig']->addFunction(new Twig_SimpleFunction('static', function($context, $
         $webpack_path = 'http://' . explode(':', $_SERVER['HTTP_HOST'])[0] . ':' . $webpack_path;
     }
 
-    $str = ($webpack_path ? $webpack_path : $context['app']['request']->getBasePath()) . $path;
-    error_log($str);
+    $hash = '';
+
+    if (!$webpack_path) {
+        $hash = '.' . substr(file_get_contents('dist/meta.json'), 1, -1);
+    }
+
+    $str = ($webpack_path ? $webpack_path : $context['app']['request']->getBasePath()) . str_replace('[hash]', $hash, $path);
     return $str;
 }, ['needs_context' => true]));
 
