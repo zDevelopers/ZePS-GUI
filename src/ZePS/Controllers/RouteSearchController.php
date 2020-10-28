@@ -127,6 +127,9 @@ class RouteSearchController
             $from = $app['zeps.routing']->station_name_to_id($from);
             $to   = $app['zeps.routing']->station_name_to_id($to);
 
+            // The station object corresponding to the user input (even if an alternative route is used)
+            $input_from_station = null;
+
             if ($from === null || $to === null)
                 $app->abort(404);
 
@@ -156,6 +159,8 @@ class RouteSearchController
                 }
                 else
                 {
+                    $input_from_station = $route->getFirstStation();
+
                     // We calculate the routes through the main stations to see if it's shorter
                     $shortest_path = $route;
                     $shortest_path_threshold = $app['config']['shortest_path_threshold'];
@@ -210,6 +215,7 @@ class RouteSearchController
             'raw_error' => $raw_error,
             'from' => $from,
             'to' => $to,
+            'input_from_station' => $input_from_station,
             'options' => array('official' => $official, 'accessible' => $accessible),
             'raw_options' => $options,
             'stations' => $stations,
@@ -243,7 +249,7 @@ class RouteSearchController
             }
 
             return $app->json([
-                'title' => $route ? $route->getFirstStation()->getDisplayName() . ' → ' . $route->getLastStation()->getDisplayName() . ' ⋅ ZéPS' : 'ZéPS',
+                'title' => $route ? $input_from_station->getDisplayName() . ' → ' . $route->getLastStation()->getDisplayName() . ' ⋅ ZéPS' : 'ZéPS',
                 'canonical_url' => $app['url_generator']->generate('zeps.search_results', [
                     'from' => $app['zeps.routing']->get_station_by_id($from)->getName(),
                     'to' => $app['zeps.routing']->get_station_by_id($to)->getName(),

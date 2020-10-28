@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack",
     "watch": "webpack serve --watch",
-    "webpack-server": "webpack-dev-server -d --hot --port 8080 --host 0.0.0.0 --config webpack.config.js --watch",
+    "webpack-server": "webpack-dev-server --host 0.0.0.0",
     "php-server": "WEBPACK_DEV_SERVER=\"8080\" php -S 0.0.0.0:8888 -t ./web/",
     "dev": "npm-run-all --parallel php-server webpack-server",
     "prod": "rm -rf web/dist && NODE_ENV=production webpack",
@@ -66,7 +66,7 @@
     "sass-loader": "^6.0.7",
     "style-loader": "^0.20.3",
     "webpack": "^4.8.1",
-    "webpack-cli": "^3",
+    "webpack-cli": "^3.1.1",
     "webpack-dev-server": "^3.1.4"
   }
 }

@@ -4,7 +4,7 @@
 
 {% block main_title %}
     {%- if route -%}
-        {{ attribute(stations.stations, from).displayName }} →  {{ attribute(stations.stations, to).displayName }}&nbsp;&middot;&nbsp;
+        {{ input_from_station.displayName }} → {{ " " ~ attribute(stations.stations, to).displayName }}&nbsp;&middot;&nbsp;
     {%- endif -%}
 {% endblock %}
 
