@@ -36,7 +36,7 @@ class StatisticsManager
         $last_update_network = $this->app['cache.routing']->fetch($this->app['config']['cache']['last_update_cache_key']);
 
         $last_update_zeps = [];
-        $wrapper = new GitWrapper();
+        $wrapper = new GitWrapper($this->app['config']['git']['exec']);
         $git = $wrapper->workingCopy($this->app['root_directory']);
 
         $last_commit = $git->log(['n' => '1', 'pretty' => 'medium', 'date' => 'iso8601', 'no-merges' => true])->getOutput();

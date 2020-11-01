@@ -84,7 +84,8 @@ $app['config'] = array
     ),
 
     'git' => array(
-        'web_commit_url' => 'https://github.com/zDevelopers/ZePS-GUI/commit/%s' // The URL to a commit. %s is the hash.
+        'web_commit_url' => 'https://github.com/zDevelopers/ZePS-GUI/commit/%s', // The URL to a commit. %s is the hash.
+        'exec' => null                                // The absolute path to the git executable, if it's not in the PATH.
     ),
 
     'roleplay' => [

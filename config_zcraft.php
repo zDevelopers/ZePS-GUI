@@ -19,5 +19,9 @@ return [
                 'tooltip' => '(Bon ok, en vrai on a pas de partenariat officiel. Mais le reste reste vrai !)'
             ]
         ]
+    ],
+
+    'git' => [
+        'exec' => '/usr/local/bin/git'
     ]
 ];

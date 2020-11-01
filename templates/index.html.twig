@@ -3,214 +3,209 @@
 {% import "_macros.html.twig" as macros %}
 
 {% block main_title %}
-    {%- if route -%}
-        {{ input_from_station.displayName }} → {{ " " ~ attribute(stations.stations, to).displayName }}&nbsp;&middot;&nbsp;
-    {%- endif -%}
+{%- if route -%}
+{{ input_from_station.displayName }} → {{ " " ~ attribute(stations.stations, to).displayName }}&nbsp;&middot;&nbsp;
+{%- endif -%}
 {% endblock %}
 
 {% block javascripts %}
-    <script type="text/javascript" src="{{ static('/dist/vendor[hash].min.js') }}"></script>
-    <script type="text/javascript" src="{{ static('/dist/zeps-gui[hash].min.js') }}"></script>
+<script type="text/javascript" src="{{ static('/dist/vendor[hash].min.js') }}"></script>
+<script type="text/javascript" src="{{ static('/dist/zeps-gui[hash].min.js') }}"></script>
 {% endblock %}
 
 {% block content %}
-    {% if not error or error != 'unreachable' %}
-        <!-- PAGE CONTENT -->
+{% if not error or error != 'unreachable' %}
+<!-- PAGE CONTENT -->
 
-        <div class="container-fullscreen">
-            <aside class="home-search-form">
-                <form action="{{ path('zeps.homepage') }}" id="search-form">
-                    <header>
-                        <h1><a href="{{ path('zeps.homepage') }}">Z<em>é</em>PS</a></h1>
-                        <ul>
-                            <li title="Stations officielles uniquement" class="tooltip is-tooltip-bottom" data-tooltip="Stations officielles uniquement">
-                                <input type="checkbox" name="official" id="options_official"{% if options.official %} checked="checked"{% endif %} />
-                                <label for="options_official">
-                                    <span class="fa fa-check fa-lg" aria-hidden="true"></span>
-                                    <span class="sr-only">Stations officielles uniquement</span>
-                                </label>
-                            </li>
-                            <li title="Stations sécurisées uniquement" class="tooltip is-tooltip-bottom" data-tooltip="Stations sécurisées uniquement">
-                                <input type="checkbox" name="accessible" id="options_secure"{% if options.accessible %} checked="checked"{% endif %} />
-                                <label for="options_secure">
-                                    <span class="fa fa-lock fa-lg" aria-hidden="true"></span>
-                                    <span class="sr-only">Stations sécurisées uniquement</span>
-                                </label>
-                            </li>
-                        </ul>
-                    </header>
-                    <div>
-                        <input
-                            type="text"
-                            name="from"
-                            id="from"
-                            placeholder="Point de départ ou recherche"
-                            autocomplete="off"
-                            tabindex="10"
-                            value="{{ attribute(stations.stations, from).displayName }}"
-                            data-autocomplete-api="{{ path('zeps.api.autocomplete') }}?input={input}" />
-                        <button class="search-over-button" id="open-geolocation-icon" type="button" title="Me géolocaliser" aria-haspopup="true" tabindex="-1"></button>
-                    </div>
-                    <div>
-                        <input
-                            type="text"
-                            name="to"
-                            id="to"
-                            placeholder="Destination"
-                            autocomplete="off"
-                            tabindex="20"
-                            value="{{ attribute(stations.stations, to).displayName }}"
-                            data-autocomplete-api="{{ path('zeps.api.autocomplete') }}?input={input}" />
-                        <button class="search-over-button" type="submit" title="Rechercher l'itinéraire" tabindex="30">
-                            <span class="fa fa-arrow-right" aria-hidden="true"></span>
-                            <span class="sr-only">Rechercher l'itinéraire</span>
-                        </button>
-                    </div>
-                    <button class="invert-from-to" id="invert-from-to" title="Inverser le point de départ et la destination" tabindex="40">
-                        <span class="fa fa-exchange fa-rotate-90" aria-hidden="true"></span>
-                        <span class="sr-only">Inverser le point de départ et la destination</span>
-                    </button>
-                </form>
-                <div id="home-search-form-autocomplete"></div>
-                <div id="home-search-form-error" class="alert alert-danger" style="display: none;"></div>
-                <div id="home-search-form-loading" style="display: none;">
-                    <div class="loading-dot"></div>
-                </div>
-                <div id="home-search-form-results">
-                    {%- if route -%}
-                        {% include 'includes/search_results.html.twig' with {'route': route, 'error': error} %}
-                    {%- endif -%}
-                </div>
-                <div id="home-search-form-reduce" aria-hidden="true"{% if not route %} class="is-always-hidden"{% endif %}>
-                    <span class="icon"><span class="fa fa-angle-double-up"></span></span>
-                    <span class="reduce-text" data-text-route-hidden="Afficher l'itinéraire" data-text-route-visible="Afficher la carte">Afficher la carte</span>
-                    <span class="icon"><span class="fa fa-angle-double-up"></span></span>
-                </div>
-            </aside>
-
-            <section
-                id="network-map"
-                class="network-map section-fullscreen"
-                data-api-network="{{ path('zeps.api.stations_network') }}"
-                data-api-network-colors="{{ path('zeps.api.stations_network_colors') }}"
-                data-permanent-url-with-anchor="yes"
-                data-form-from-id="from"
-                data-form-to-id="to"
-                data-main-stations="{{ main_stations|join(',') }}" {# Should be read from the API, not in the GUI config #}
-                data-dynmap-root="{{ app.config.dynmap.root }}"
-                data-dynmap-map-overworld="{{ app.config.world_name_overworld }}"
-                data-dynmap-map-nether="{{ app.config.world_name_nether }}"
-                data-dynmap-map-type="{{ app.config.dynmap.map_type }}"
-                {% if route %} data-highlighted-route="{% for step in route.path %}{{ step.station.name }},{% endfor %}"{% endif %}>
-                {% if error != 'unreachable' %}
-                    <div class="network-map-loader">
-                        <p>
-                            <span class="fa fa-map-o"></span>
-                        </p>
-                        <h4>Chargement de la carte en cours...</h4>
-                        <p id="still_nothing_loader">
-                            Toujours rien ? Vérifiez que vous n'avez pas perdu votre accès internet entre temps.
-                        </p>
-                        <blockquote cite="{{ quote.author }}">
-                            <p>{{ quote.quote }}</p>
-                            <cite>—{{ " " ~ quote.author }}</cite>
-                        </blockquote>
-                    </div>
-                {% endif %}
-            </section>
-        </div>
-
-
-        <!-- MODALS -->
-
-        <div
-            id="geo-geolocation-modal"
-            class="modal"
-            tabindex="-1"
-            role="dialog"
-            data-route-get-players="{{ path('zeps.api.logged_in_players', {'world_names': app.config.overworld_and_nether_worlds|join(',')}) }}"
-            data-route-get-nearest="{{ path('zeps.api.nearest_station', {'name': 'playerNamePlaceholder'}) }}"
-            data-route-get-head="{{ path('zeps.player_head', {'name': 'playerNamePlaceholder'}) }}">
-            <div class="modal-background modal-close-handler"></div>
-            <div class="modal-content">
-                <div class="card">
-                    <header class="card-header">
-                        <p class="card-header-title geolocation-modal-title">
-                            Chargement...
-                        </p>
-                    </header>
-                    <div class="card-content">
-                        <div class="geolocation-modal-main-text geolocation-modal-loading">
-                            <img src="{{ app.request.basePath }}/img/loading.gif" alt="Chargement en cours, patientez une seconde..." />
-                        </div>
-
-                        <div class="geolocation-modal-main-selector geolocation-modal-selector">
-                            <div class="columns is-multiline is-mobile geolocation-modal-selector-list"></div>
-                        </div>
-
-                        <div class="geolocation-modal-main-text geolocation-modal-error-nether-empty">
-                            <p>
-                                <strong>Il n'y a personne dans un monde survie.</strong><br />
-                                Allez au préalable dans l'un d'entre eux puis <a href="#" class="geolocation-modal-retry">réessayez</a>.
-                            </p>
-                        </div>
-
-                        <div class="geolocation-modal-main-text geolocation-modal-error-cannot-retrieve">
-                            <p>
-                                <strong>Impossible de récupérer la station.</strong><br />
-                                Le serveur a retourné une erreur.
-                            </p>
-                            <p class="text-muted">
-                                Erreur <span class="geolocation-modal-error-cannot-retrieve-error-id"></span>&nbsp;:
-                                «&nbsp;<span class="geolocation-modal-error-cannot-retrieve-error-message"></span>&nbsp;»
-                            </p>
-                        </div>
-
-                        <p class="geolocation-modal-footer-message">
-                            <a href="#" class="geolocation-modal-retry" title="Cliquez pour réessayer">Pas dans la liste ?</a> Vérifiez que vous êtes dans un monde survie (et hors de l'End).
-                        </p>
-                    </div>
-                    <footer class="card-footer">
-                        <a class="card-footer-item geolocation-modal-retry" disabled>Actualiser la liste des connecté(e)s</a>
-                    </footer>
-                </div>
+<div class="container-fullscreen">
+    <aside class="home-search-form">
+        <form action="{{ path('zeps.homepage') }}" id="search-form">
+            <header>
+                <h1><a href="{{ path('zeps.homepage') }}">Z<em>é</em>PS</a></h1>
+                <ul>
+                    <li title="Stations officielles uniquement" class="tooltip is-tooltip-bottom"
+                        data-tooltip="Stations officielles uniquement">
+                        <input type="checkbox" name="official" id="options_official" {% if options.official %}
+                            checked="checked" {% endif %} />
+                        <label for="options_official">
+                            <span class="fa fa-check fa-lg" aria-hidden="true"></span>
+                            <span class="sr-only">Stations officielles uniquement</span>
+                        </label>
+                    </li>
+                    <li title="Stations sécurisées uniquement" class="tooltip is-tooltip-bottom"
+                        data-tooltip="Stations sécurisées uniquement">
+                        <input type="checkbox" name="accessible" id="options_secure" {% if options.accessible %}
+                            checked="checked" {% endif %} />
+                        <label for="options_secure">
+                            <span class="fa fa-lock fa-lg" aria-hidden="true"></span>
+                            <span class="sr-only">Stations sécurisées uniquement</span>
+                        </label>
+                    </li>
+                </ul>
+            </header>
+            <div>
+                <input type="text" name="from" id="from" placeholder="Point de départ ou recherche" autocomplete="off"
+                    tabindex="10" value="{{ attribute(stations.stations, from).displayName }}"
+                    data-autocomplete-api="{{ path('zeps.api.autocomplete') }}?input={input}" />
+                <button class="search-over-button" id="open-geolocation-icon" type="button" title="Me géolocaliser"
+                    aria-haspopup="true" tabindex="-1"></button>
             </div>
-            <button class="modal-close"></button>
-        </div>
-
-        <div class="modal" tabindex="-1" role="dialog" id="sub-pages-modal">
-            <div class="modal-background modal-close-handler"></div>
-            <div class="modal-content">
-                <header>
-                    <div class="columns is-mobile">
-                        <div class="column is-10"><h2>Z<em>é</em>PS</h2></div>
-                        <div class="column is-2"><button class="delete is-large modal-close-handler" aria-label="close"></button></div>
-                    </div>
-                    <div class="tabs">
-                        <ul>
-                            <li class="is-active"><a href="#a-propos">À propos</a></li>
-                            <li><a href="#statistiques">Statistiques</a></li>
-                            <li><a href="#oublis">Signaler un oubli</a></li>
-                        </ul>
-                    </div>
-                </header>
-                <article id="loading">
-                    <div class="loading-dot"></div>
-                </article>
-                <article id="error">
-                    <p><span class="fa fa-map-o" aria-hidden="true"></span></p>
-                    <p>Impossible de charger la page.</p>
-                    <p class="reason timeout">Votre connexion à internet semble être interrompue.</p>
-                    <p class="reason abort">La connexion a été réinitialisée. Veuillez réessayer.</p>
-                    <div class="reason http">
-                        <p>Quelque chose semble être cassé de notre côté&nbsp;; veuillez réessayer plus tard.</p>
-                        <p class="error-code"></p>
-                    </div>
-                </article>
-                <article id="a-propos" class="content" data-source="{{ path('zeps.sub-pages.about') }}" style="display: none;"></article>
-                <article id="statistiques" data-source="{{ path('zeps.sub-pages.statistics') }}" style="display: none;"></article>
-                <article id="oublis" data-source="{{ path('zeps.sub-pages.missings') }}" data-has-events="true" style="display: none;"></article>
+            <div>
+                <input type="text" name="to" id="to" placeholder="Destination" autocomplete="off" tabindex="20"
+                    value="{{ attribute(stations.stations, to).displayName }}"
+                    data-autocomplete-api="{{ path('zeps.api.autocomplete') }}?input={input}" />
+                <button class="search-over-button" type="submit" title="Rechercher l'itinéraire" tabindex="30">
+                    <span class="fa fa-arrow-right" aria-hidden="true"></span>
+                    <span class="sr-only">Rechercher l'itinéraire</span>
+                </button>
             </div>
+            <button class="invert-from-to" id="invert-from-to" title="Inverser le point de départ et la destination"
+                tabindex="40">
+                <span class="fa fa-exchange fa-rotate-90" aria-hidden="true"></span>
+                <span class="sr-only">Inverser le point de départ et la destination</span>
+            </button>
+        </form>
+        <div id="home-search-form-autocomplete"></div>
+        <div id="home-search-form-error" class="alert alert-danger" style="display: none;"></div>
+        <div id="home-search-form-loading" style="display: none;">
+            <div class="loading-dot"></div>
         </div>
-    {% endif %}
+        <div id="home-search-form-results">
+            {%- if route -%}
+            {% include 'includes/search_results.html.twig' with {'route': route, 'error': error} %}
+            {%- endif -%}
+        </div>
+        <div id="home-search-form-reduce" aria-hidden="true" {% if not route %} class="is-always-hidden" {% endif %}>
+            <span class="icon"><span class="fa fa-angle-double-up"></span></span>
+            <span class="reduce-text" data-text-route-hidden="Afficher l'itinéraire"
+                data-text-route-visible="Afficher la carte">Afficher la carte</span>
+            <span class="icon"><span class="fa fa-angle-double-up"></span></span>
+        </div>
+    </aside>
+
+    <section id="network-map" class="network-map section-fullscreen"
+        data-api-network="{{ path('zeps.api.stations_network') }}"
+        data-api-network-colors="{{ path('zeps.api.stations_network_colors') }}" data-permanent-url-with-anchor="yes"
+        data-form-from-id="from" data-form-to-id="to" data-main-stations="{{ main_stations|join(',') }}"
+        {# Should be read from the API, not in the GUI config #} data-dynmap-root="{{ app.config.dynmap.root }}"
+        data-dynmap-map-overworld="{{ app.config.world_name_overworld }}"
+        data-dynmap-map-nether="{{ app.config.world_name_nether }}"
+        data-dynmap-map-type="{{ app.config.dynmap.map_type }}" {% if route %}
+        data-highlighted-route="{% for step in route.path %}{{ step.station.name }},{% endfor %}" {% endif %}>
+        {% if error != 'unreachable' %}
+        <div class="network-map-loader">
+            <p>
+                <span class="fa fa-map-o"></span>
+            </p>
+            <h4>Chargement de la carte en cours...</h4>
+            <p id="still_nothing_loader">
+                Toujours rien ? Vérifiez que vous n'avez pas perdu votre accès internet entre temps.
+            </p>
+            <blockquote cite="{{ quote.author }}">
+                <p>{{ quote.quote }}</p>
+                <cite>—{{ " " ~ quote.author }}</cite>
+            </blockquote>
+        </div>
+        {% endif %}
+    </section>
+</div>
+
+
+<!-- MODALS -->
+
+<div id="geo-geolocation-modal" class="modal" tabindex="-1" role="dialog"
+    data-route-get-players="{{ path('zeps.api.logged_in_players', {'world_names': app.config.overworld_and_nether_worlds|join(',')}) }}"
+    data-route-get-nearest="{{ path('zeps.api.nearest_station', {'name': 'playerNamePlaceholder'}) }}"
+    data-route-get-head="{{ path('zeps.player_head', {'name': 'playerNamePlaceholder'}) }}">
+    <div class="modal-background modal-close-handler"></div>
+    <div class="modal-content">
+        <div class="card">
+            <header class="card-header">
+                <p class="card-header-title geolocation-modal-title">
+                    Chargement...
+                </p>
+            </header>
+            <div class="card-content">
+                <div class="geolocation-modal-main-text geolocation-modal-loading">
+                    <img src="{{ app.request.basePath }}/img/loading.gif"
+                        alt="Chargement en cours, patientez une seconde..." />
+                </div>
+
+                <div class="geolocation-modal-main-selector geolocation-modal-selector">
+                    <div class="columns is-multiline is-mobile geolocation-modal-selector-list"></div>
+                </div>
+
+                <div class="geolocation-modal-main-text geolocation-modal-error-nether-empty">
+                    <p>
+                        <strong>Il n'y a personne dans un monde survie.</strong><br />
+                        Allez au préalable dans l'un d'entre eux puis <a href="#"
+                            class="geolocation-modal-retry">réessayez</a>.
+                    </p>
+                </div>
+
+                <div class="geolocation-modal-main-text geolocation-modal-error-cannot-retrieve">
+                    <p>
+                        <strong>Impossible de récupérer la station.</strong><br />
+                        Le serveur a retourné une erreur.
+                    </p>
+                    <p class="text-muted">
+                        Erreur <span class="geolocation-modal-error-cannot-retrieve-error-id"></span>&nbsp;:
+                        «&nbsp;<span class="geolocation-modal-error-cannot-retrieve-error-message"></span>&nbsp;»
+                    </p>
+                </div>
+
+                <p class="geolocation-modal-footer-message">
+                    <a href="#" class="geolocation-modal-retry" title="Cliquez pour réessayer">Pas dans la liste ?</a>
+                    Vérifiez que vous êtes dans un monde survie (et hors de l'End).
+                </p>
+            </div>
+            <footer class="card-footer">
+                <a class="card-footer-item geolocation-modal-retry" disabled>Actualiser la liste des connecté(e)s</a>
+            </footer>
+        </div>
+    </div>
+    <button class="modal-close"></button>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="sub-pages-modal">
+    <div class="modal-background modal-close-handler"></div>
+    <div class="modal-content">
+        <header>
+            <div class="columns is-mobile">
+                <div class="column is-10">
+                    <h2>Z<em>é</em>PS</h2>
+                </div>
+                <div class="column is-2"><button class="delete is-large modal-close-handler"
+                        aria-label="close"></button></div>
+            </div>
+            <div class="tabs">
+                <ul>
+                    <li class="is-active"><a href="#a-propos">À propos</a></li>
+                    <li><a href="#statistiques">Statistiques</a></li>
+                    <li><a href="#oublis">Signaler un oubli</a></li>
+                </ul>
+            </div>
+        </header>
+        <article id="loading">
+            <div class="loading-dot"></div>
+        </article>
+        <article id="error">
+            <p><span class="fa fa-map-o" aria-hidden="true"></span></p>
+            <p>Impossible de charger la page.</p>
+            <p class="reason timeout">Votre connexion à internet semble être interrompue.</p>
+            <p class="reason abort">La connexion a été réinitialisée. Veuillez réessayer.</p>
+            <div class="reason http">
+                <p>Quelque chose semble être cassé de notre côté&nbsp;; veuillez réessayer plus tard.</p>
+                <p class="error-code"></p>
+            </div>
+        </article>
+        <article id="a-propos" class="content" data-source="{{ path('zeps.sub-pages.about') }}" style="display: none;">
+        </article>
+        <article id="statistiques" data-source="{{ path('zeps.sub-pages.statistics') }}" style="display: none;">
+        </article>
+        <article id="oublis" data-source="{{ path('zeps.sub-pages.missings') }}" data-has-events="true"
+            style="display: none;"></article>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
