@@ -23,5 +23,8 @@ return [
 
     'git' => [
         'exec' => '/usr/local/bin/git'
-    ]
+    ],
+
+    // For now, while the new main city is being built, we don't have portals to the other main cities.
+    'enable_shortest_path' => false
 ];

@@ -163,29 +163,32 @@ class RouteSearchController
 
                     // We calculate the routes through the main stations to see if it's shorter
                     $shortest_path = $route;
-                    $shortest_path_threshold = $app['config']['shortest_path_threshold'];
 
-                    foreach ($app['zeps.routing']->get_main_stations() as $main_station)
-                    {
-                        /** @var $alternative \Zeps\Routing\RoutingPath */
-                        $alternative = $app['zeps.routing']->get_netherrail_route($app['zeps.routing']->station_name_to_id($main_station), $to, $official, $accessible, $debug);
-                        if ($alternative->getTravelTime() < $route->getTravelTime() - $shortest_path_threshold && $alternative->getTravelTime() < $shortest_path->getTravelTime())
-                        {
-                            $shortest_path = $alternative;
-                        }
-                    }
+                    if ($app['config']['enable_shortest_path']) {
+                        $shortest_path_threshold = $app['config']['shortest_path_threshold'];
 
-                    if ($shortest_path !== $route)
-                    {
-                        if (!$force_direct)
+                        foreach ($app['zeps.routing']->get_main_stations() as $main_station)
                         {
-                            $alternatives[] = new AlternativeRoutingPath($shortest_path, $route, $route, 'direct');
-                            $route = $shortest_path;
-                            $through_spawn = true;
+                            /** @var $alternative \Zeps\Routing\RoutingPath */
+                            $alternative = $app['zeps.routing']->get_netherrail_route($app['zeps.routing']->station_name_to_id($main_station), $to, $official, $accessible, $debug);
+                            if ($alternative->getTravelTime() < $route->getTravelTime() - $shortest_path_threshold && $alternative->getTravelTime() < $shortest_path->getTravelTime())
+                            {
+                                $shortest_path = $alternative;
+                            }
                         }
-                        else
+
+                        if ($shortest_path !== $route)
                         {
-                            $alternatives[] = new AlternativeRoutingPath($route, $shortest_path, $route, 'spawn');
+                            if (!$force_direct)
+                            {
+                                $alternatives[] = new AlternativeRoutingPath($shortest_path, $route, $route, 'direct');
+                                $route = $shortest_path;
+                                $through_spawn = true;
+                            }
+                            else
+                            {
+                                $alternatives[] = new AlternativeRoutingPath($route, $shortest_path, $route, 'spawn');
+                            }
                         }
                     }
 

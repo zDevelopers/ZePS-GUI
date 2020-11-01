@@ -46,6 +46,9 @@ $app['config'] = array
         'json_file' => __DIR__ . '/../missing_stations.json'
     ),
 
+    'enable_shortest_path' => true,             // If true, we'll try to find a shortest path through one of the main stations,
+                                                // because they are connected through portals to the spawn point.
+
     'shortest_path_threshold' => 60,            // If a shortest path is found through a main station but it's not
                                                 // shorter by this amount of seconds at least, it is ignored.
 
